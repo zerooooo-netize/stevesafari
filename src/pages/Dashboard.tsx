@@ -8,7 +8,139 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check } from "lucide-react";
+import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2 } from "lucide-react";
+
+// M-Pesa Payment Widget
+const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
+  const [phone, setPhone] = useState("+254");
+  const [amount, setAmount] = useState("");
+  const [paymentType, setPaymentType] = useState("application_fee");
+  const [selectedApp, setSelectedApp] = useState("");
+  const [sending, setSending] = useState(false);
+  const [pollId, setPollId] = useState<string | null>(null);
+  const [payStatus, setPayStatus] = useState<string | null>(null);
+
+  const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
+
+  const initiate = async () => {
+    if (!phone || phone.length < 12) { toast.error("Enter a valid phone number (+254...)"); return; }
+    if (!amount || parseFloat(amount) <= 0) { toast.error("Enter a valid amount"); return; }
+
+    setSending(true);
+    setPayStatus("sending");
+    try {
+      const resp = await fetch(STK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          phone,
+          amount: parseFloat(amount),
+          userId,
+          applicationId: selectedApp || null,
+          paymentType,
+          description: `${paymentType.replace("_", " ")} payment`,
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || "Payment failed");
+
+      toast.success(data.message || "Check your phone for M-Pesa prompt! 📱");
+      setPollId(data.paymentId);
+      setPayStatus("waiting");
+
+      // Poll for payment status
+      let attempts = 0;
+      const interval = setInterval(async () => {
+        attempts++;
+        if (attempts > 30) { clearInterval(interval); setPayStatus("timeout"); setSending(false); return; }
+        try {
+          const statusResp = await fetch(`${STK_URL}?action=status&payment_id=${data.paymentId}`, {
+            headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          });
+          const statusData = await statusResp.json();
+          if (statusData.status === "completed") {
+            clearInterval(interval);
+            setPayStatus("completed");
+            setSending(false);
+            toast.success("Payment received! ✅");
+            onPaymentComplete();
+          } else if (statusData.status === "failed") {
+            clearInterval(interval);
+            setPayStatus("failed");
+            setSending(false);
+            toast.error("Payment failed. Please try again.");
+          }
+        } catch { /* keep polling */ }
+      }, 5000);
+    } catch (e: any) {
+      toast.error(e.message);
+      setPayStatus(null);
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="border border-border rounded-xl p-4 bg-muted/30 mb-4">
+      <h3 className="font-heading font-medium text-sm mb-3 flex items-center gap-2">
+        <Phone size={16} className="text-safari-gold" /> Pay via M-Pesa
+      </h3>
+
+      {payStatus === "waiting" ? (
+        <div className="text-center py-6">
+          <Loader2 size={32} className="animate-spin mx-auto text-safari-gold mb-3" />
+          <p className="font-medium text-sm">📱 Check your phone!</p>
+          <p className="text-xs text-muted-foreground mt-1">Enter your M-Pesa PIN when prompted. Waiting for confirmation...</p>
+        </div>
+      ) : payStatus === "completed" ? (
+        <div className="text-center py-6">
+          <Check size={32} className="mx-auto text-green-600 mb-3" />
+          <p className="font-medium text-sm text-green-700">Payment Successful! ✅</p>
+          <Button size="sm" variant="outline" className="mt-3" onClick={() => { setPayStatus(null); setAmount(""); }}>Make Another Payment</Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Phone Number *</Label>
+              <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+254712345678" className="text-sm" />
+            </div>
+            <div>
+              <Label className="text-xs">Amount (KES) *</Label>
+              <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="5000" className="text-sm" />
+            </div>
+            <div>
+              <Label className="text-xs">Payment For</Label>
+              <select value={paymentType} onChange={e => setPaymentType(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
+                <option value="application_fee">Application Fee</option>
+                <option value="deposit">Deposit</option>
+                <option value="service_payment">Service Payment</option>
+                <option value="travel_fee">Travel Fee</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            {applications.length > 0 && (
+              <div>
+                <Label className="text-xs">Link to Application</Label>
+                <select value={selectedApp} onChange={e => setSelectedApp(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
+                  <option value="">None</option>
+                  {applications.map(a => <option key={a.id} value={a.id}>{a.jobs?.title || "Application"}</option>)}
+                </select>
+              </div>
+            )}
+          </div>
+          <Button onClick={initiate} disabled={sending} className="w-full text-sm">
+            {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : "📱 Pay with M-Pesa"}
+          </Button>
+          {payStatus === "failed" && <p className="text-xs text-destructive text-center">Payment failed. Please try again.</p>}
+          {payStatus === "timeout" && <p className="text-xs text-yellow-600 text-center">Payment not confirmed yet. Check your payment history.</p>}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const statusSteps = ["registered", "paid", "documents_submitted", "verified", "batch_assigned", "completed"];
 const statusLabels: Record<string, string> = {
@@ -321,9 +453,15 @@ const Dashboard = () => {
           {/* Payments Section */}
           {activeSection === "payments" && (
             <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
-              <h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">💰 Payment History</h2>
+              <h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">💰 Payments</h2>
+
+              {/* M-Pesa Payment Form */}
+              <MpesaPaymentWidget userId={user!.id} applications={applications} onPaymentComplete={loadData} />
+
+              {/* Payment History */}
+              <h3 className="font-heading font-medium text-sm mt-6 mb-3">📜 Payment History</h3>
               {payments.length === 0 ? (
-                <p className="text-muted-foreground text-sm text-center py-8">No payments yet</p>
+                <p className="text-muted-foreground text-sm text-center py-4">No payments yet</p>
               ) : (
                 <div className="space-y-2">
                   {payments.map((p) => (
