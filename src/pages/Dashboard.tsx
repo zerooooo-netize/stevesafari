@@ -321,9 +321,15 @@ const Dashboard = () => {
           {/* Payments Section */}
           {activeSection === "payments" && (
             <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
-              <h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">💰 Payment History</h2>
+              <h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">💰 Payments</h2>
+
+              {/* M-Pesa Payment Form */}
+              <MpesaPaymentWidget userId={user!.id} applications={applications} onPaymentComplete={loadData} />
+
+              {/* Payment History */}
+              <h3 className="font-heading font-medium text-sm mt-6 mb-3">📜 Payment History</h3>
               {payments.length === 0 ? (
-                <p className="text-muted-foreground text-sm text-center py-8">No payments yet</p>
+                <p className="text-muted-foreground text-sm text-center py-4">No payments yet</p>
               ) : (
                 <div className="space-y-2">
                   {payments.map((p) => (

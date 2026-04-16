@@ -422,6 +422,11 @@ const AdminBatches = () => {
 const AdminSettings = () => {
   const [settings, setSettings] = useState<any[]>([]);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+  const [newKey, setNewKey] = useState("");
+  const [newValue, setNewValue] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newSecret, setNewSecret] = useState(false);
 
   useEffect(() => { load(); }, []);
   const load = async () => {
@@ -433,41 +438,117 @@ const AdminSettings = () => {
   };
 
   const saveSetting = async (key: string) => {
+    setSaving(p => ({ ...p, [key]: true }));
     const { error } = await supabase.from("settings").update({ value: editValues[key] }).eq("key", key);
-    if (error) toast.error(error.message); else toast.success(`${key} updated!`);
+    if (error) toast.error(error.message); else toast.success(`${key} saved! ✅`);
+    setSaving(p => ({ ...p, [key]: false }));
   };
 
-  const groupedSettings = {
-    "Fees & Pricing": settings.filter(s => ["registration_fee", "deposit_amount", "allow_deposits"].includes(s.key)),
-    "Kopo Kopo (M-Pesa)": settings.filter(s => s.key.startsWith("kopokopo")),
-    "Email / SMTP": settings.filter(s => ["smtp_host", "smtp_port", "smtp_user", "smtp_password", "sender_email"].includes(s.key)),
-    "Company Info": settings.filter(s => ["company_name", "company_phone", "whatsapp_number"].includes(s.key)),
+  const addSetting = async () => {
+    if (!newKey.trim()) { toast.error("Key is required"); return; }
+    const { error } = await supabase.from("settings").insert({ key: newKey.trim(), value: newValue, description: newDesc || null, is_secret: newSecret });
+    if (error) toast.error(error.message); else { toast.success("Setting added!"); setNewKey(""); setNewValue(""); setNewDesc(""); setNewSecret(false); load(); }
   };
+
+  const deleteSetting = async (id: string, key: string) => {
+    if (!confirm(`Delete setting "${key}"?`)) return;
+    await supabase.from("settings").delete().eq("id", id);
+    toast.success("Deleted"); load();
+  };
+
+  type SettingGroup = { title: string; icon: string; description: string; keys: string[] };
+  const groups: SettingGroup[] = [
+    { title: "Fees & Pricing", icon: "💰", description: "Application fees and deposit configuration", keys: ["registration_fee", "deposit_amount", "allow_deposits"] },
+    { title: "Kopo Kopo (M-Pesa)", icon: "📱", description: "M-Pesa STK Push payment credentials. Enter your Kopo Kopo API details to accept M-Pesa.", keys: ["kopokopo_client_id", "kopokopo_client_secret", "kopokopo_till_number", "kopokopo_environment"] },
+    { title: "Email / SMTP", icon: "📧", description: "Email sending configuration for notifications", keys: ["smtp_host", "smtp_port", "smtp_user", "smtp_password", "sender_email"] },
+    { title: "Company Info", icon: "🏢", description: "Company contact and branding", keys: ["company_name", "company_phone", "whatsapp_number"] },
+  ];
+
+  const groupedSettings = groups.map(g => ({
+    ...g,
+    items: settings.filter(s => g.keys.includes(s.key)),
+  }));
+
+  const ungrouped = settings.filter(s => !groups.some(g => g.keys.includes(s.key)));
 
   return (
     <div>
-      <h2 className="font-heading text-xl font-bold mb-4">Platform Settings</h2>
+      <h2 className="font-heading text-xl font-bold mb-2">Platform Settings</h2>
       <p className="text-sm text-muted-foreground mb-6">Configure fees, API keys, and integrations. Changes take effect immediately.</p>
-      {Object.entries(groupedSettings).map(([group, items]) => (
-        <div key={group} className="bg-card border border-border rounded-lg p-6 mb-6 shadow-card">
-          <h3 className="font-heading font-semibold mb-4">{group}</h3>
-          <div className="space-y-4">
-            {items.map(s => (
-              <div key={s.key} className="flex items-end gap-3">
-                <div className="flex-1">
-                  <Label className="text-xs text-muted-foreground">{s.description || s.key}</Label>
-                  <Input
-                    type={s.is_secret ? "password" : "text"}
-                    value={editValues[s.key] || ""}
-                    onChange={e => setEditValues({ ...editValues, [s.key]: e.target.value })}
-                  />
+
+      {groupedSettings.map((group) => (
+        <div key={group.title} className="bg-card border border-border rounded-xl p-5 sm:p-6 mb-6 shadow-card">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xl">{group.icon}</span>
+            <h3 className="font-heading font-semibold text-lg">{group.title}</h3>
+          </div>
+          <p className="text-xs text-muted-foreground mb-5">{group.description}</p>
+
+          {group.items.length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">No settings configured yet. Add them below.</p>
+          ) : (
+            <div className="space-y-4">
+              {group.items.map(s => (
+                <div key={s.key} className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-3">
+                  <div className="flex-1 w-full">
+                    <Label className="text-xs font-medium text-muted-foreground mb-1 block">{s.description || s.key}</Label>
+                    <Input
+                      type={s.is_secret ? "password" : "text"}
+                      value={editValues[s.key] || ""}
+                      onChange={e => setEditValues({ ...editValues, [s.key]: e.target.value })}
+                      placeholder={s.is_secret ? "••••••••" : `Enter ${s.key.replace(/_/g, " ")}`}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <Button size="sm" onClick={() => saveSetting(s.key)} disabled={saving[s.key]}>
+                      {saving[s.key] ? "Saving..." : "💾 Save"}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => deleteSetting(s.id, s.key)}>
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
                 </div>
-                <Button size="sm" onClick={() => saveSetting(s.key)}>Save</Button>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+
+      {/* Ungrouped settings */}
+      {ungrouped.length > 0 && (
+        <div className="bg-card border border-border rounded-xl p-5 sm:p-6 mb-6 shadow-card">
+          <h3 className="font-heading font-semibold mb-4">⚙️ Other Settings</h3>
+          <div className="space-y-4">
+            {ungrouped.map(s => (
+              <div key={s.key} className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-3">
+                <div className="flex-1 w-full">
+                  <Label className="text-xs font-medium text-muted-foreground mb-1 block">{s.description || s.key}</Label>
+                  <Input type={s.is_secret ? "password" : "text"} value={editValues[s.key] || ""} onChange={e => setEditValues({ ...editValues, [s.key]: e.target.value })} className="text-sm" />
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Button size="sm" onClick={() => saveSetting(s.key)} disabled={saving[s.key]}>{saving[s.key] ? "Saving..." : "💾 Save"}</Button>
+                  <Button size="sm" variant="ghost" onClick={() => deleteSetting(s.id, s.key)}><Trash2 size={14} /></Button>
+                </div>
               </div>
             ))}
           </div>
         </div>
-      ))}
+      )}
+
+      {/* Add new setting */}
+      <div className="bg-card border border-border rounded-xl p-5 sm:p-6 shadow-card">
+        <h3 className="font-heading font-semibold mb-4">➕ Add New Setting</h3>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div><Label className="text-xs">Key *</Label><Input value={newKey} onChange={e => setNewKey(e.target.value)} placeholder="setting_key" className="text-sm" /></div>
+          <div><Label className="text-xs">Value</Label><Input value={newValue} onChange={e => setNewValue(e.target.value)} placeholder="Setting value" className="text-sm" /></div>
+          <div><Label className="text-xs">Description</Label><Input value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="What this setting does" className="text-sm" /></div>
+          <div className="flex items-end gap-3">
+            <div className="flex items-center gap-2"><input type="checkbox" checked={newSecret} onChange={e => setNewSecret(e.target.checked)} id="new-secret" /><Label htmlFor="new-secret" className="text-xs">Secret</Label></div>
+            <Button size="sm" onClick={addSetting}><Plus size={14} /> Add</Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
