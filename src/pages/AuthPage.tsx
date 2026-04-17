@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +30,10 @@ const AuthPage = () => {
         if (!fullName.trim()) { toast.error("Please enter your full name"); setLoading(false); return; }
         const { error } = await signUp(email, password, fullName);
         if (error) throw error;
+        // Fire-and-forget welcome email (no await — don't block UX if SMTP not yet configured)
+        supabase.functions.invoke("send-email", {
+          body: { templateKey: "registration", to: email, data: { full_name: fullName } },
+        }).catch(() => {});
         toast.success("Account created! Please check your email to verify.");
       }
     } catch (err: any) {
@@ -37,6 +42,7 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">

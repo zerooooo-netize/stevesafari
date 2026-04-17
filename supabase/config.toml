@@ -1,1 +1,10 @@
 project_id = "tdfmvjlljtkvyydicmtk"
+
+[functions.chat]
+verify_jwt = false
+
+[functions.mpesa-stk-push]
+verify_jwt = false
+
+[functions.send-email]
+verify_jwt = false

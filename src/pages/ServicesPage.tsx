@@ -17,6 +17,8 @@ const ServicesPage = () => {
   const [services, setServices] = useState<any[]>([]);
   const [selectedService, setSelectedService] = useState<any | null>(null);
   const [details, setDetails] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -31,16 +33,38 @@ const ServicesPage = () => {
   const orderService = async () => {
     if (!user) { navigate("/auth"); return; }
     if (!selectedService) return;
-    const { error } = await supabase.from("service_orders").insert({
-      user_id: user.id,
-      service_id: selectedService.id,
-      details,
-    });
-    if (error) { toast.error(error.message); return; }
-    toast.success("Service ordered! ✅ Check your dashboard.");
-    setSelectedService(null);
-    setDetails("");
-    navigate("/dashboard");
+    if (!details.trim() && !file) {
+      toast.error("Please describe what you need or upload a file");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      let uploadedUrl: string | null = null;
+      if (file) {
+        if (file.size > 10 * 1024 * 1024) { toast.error("File too large (max 10MB)"); setSubmitting(false); return; }
+        const path = `${user.id}/${Date.now()}_${file.name}`;
+        const { error: upErr } = await supabase.storage.from("service-files").upload(path, file);
+        if (upErr) { toast.error("Upload failed: " + upErr.message); setSubmitting(false); return; }
+        const { data: urlData } = supabase.storage.from("service-files").createSignedUrl
+          ? await supabase.storage.from("service-files").createSignedUrl(path, 60 * 60 * 24 * 365)
+          : { data: { signedUrl: "" } } as any;
+        uploadedUrl = urlData?.signedUrl || path;
+      }
+      const { error } = await supabase.from("service_orders").insert({
+        user_id: user.id,
+        service_id: selectedService.id,
+        details,
+        uploaded_file_url: uploadedUrl,
+      });
+      if (error) { toast.error(error.message); setSubmitting(false); return; }
+      toast.success(`Order placed! 💳 Pay KES ${Number(selectedService.price).toLocaleString()} from your dashboard.`);
+      setSelectedService(null);
+      setDetails("");
+      setFile(null);
+      navigate("/dashboard");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -55,6 +79,8 @@ const ServicesPage = () => {
 
           {loading ? (
             <div className="text-center py-12 text-muted-foreground">Loading...</div>
+          ) : services.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">No services available right now.</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {services.map((service, i) => {
@@ -85,16 +111,29 @@ const ServicesPage = () => {
           {/* Order Modal */}
           {selectedService && (
             <div className="fixed inset-0 bg-foreground/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-              <div className="bg-card rounded-t-2xl sm:rounded-2xl border border-border p-5 sm:p-6 w-full sm:max-w-md shadow-elevated">
+              <div className="bg-card rounded-t-2xl sm:rounded-2xl border border-border p-5 sm:p-6 w-full sm:max-w-md shadow-elevated max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-heading font-semibold text-lg">🛒 Order: {selectedService.name}</h3>
                   <button onClick={() => setSelectedService(null)} className="p-1 hover:bg-muted rounded"><X size={20} /></button>
                 </div>
-                <p className="text-sm text-muted-foreground mb-4">💰 Price: {selectedService.currency} {Number(selectedService.price).toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground mb-4">💰 Price: <span className="font-semibold text-safari-gold">{selectedService.currency} {Number(selectedService.price).toLocaleString()}</span></p>
+
                 <Label className="text-xs">Details / What you need</Label>
-                <Textarea value={details} onChange={e => setDetails(e.target.value)} rows={4} placeholder="Describe what you need help with..." className="mb-4 text-sm" />
+                <Textarea value={details} onChange={e => setDetails(e.target.value)} rows={3} placeholder="e.g. Update my CV for warehouse jobs in Toronto" className="mb-3 text-sm" />
+
+                <Label className="text-xs">Attach file (optional, max 10MB)</Label>
+                <input
+                  type="file"
+                  onChange={e => setFile(e.target.files?.[0] || null)}
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                  className="block w-full text-sm mb-4 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-safari-gold/10 file:text-safari-gold file:font-medium"
+                />
+
+                <p className="text-xs text-muted-foreground mb-3">After submitting, pay from your dashboard to start work.</p>
                 <div className="flex gap-2">
-                  <Button onClick={orderService} className="flex-1 h-11">✅ Submit Order</Button>
+                  <Button onClick={orderService} disabled={submitting} className="flex-1 h-11">
+                    {submitting ? "Submitting..." : "✅ Submit Order"}
+                  </Button>
                   <Button variant="outline" onClick={() => setSelectedService(null)} className="h-11">Cancel</Button>
                 </div>
               </div>
