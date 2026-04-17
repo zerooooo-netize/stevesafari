@@ -589,4 +589,118 @@ const AdminSettings = () => {
   );
 };
 
+// ========================= SERVICE ORDERS =========================
+const AdminServiceOrders = () => {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+
+  useEffect(() => { load(); }, []);
+  const load = async () => {
+    const { data } = await supabase.from("service_orders")
+      .select("*, services(name, price, currency), profiles:user_id(full_name, email)")
+      .order("created_at", { ascending: false });
+    setOrders(data || []);
+  };
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("service_orders").update({ status }).eq("id", id);
+    toast.success("Updated"); load();
+  };
+
+  const uploadCompleted = async (order: any, file: File) => {
+    setUploadingId(order.id);
+    try {
+      const path = `completed/${order.user_id}/${Date.now()}_${file.name}`;
+      const { error: upErr } = await supabase.storage.from("service-files").upload(path, file);
+      if (upErr) { toast.error(upErr.message); return; }
+      const { data: signed } = await supabase.storage.from("service-files").createSignedUrl(path, 60 * 60 * 24 * 365);
+      await supabase.from("service_orders").update({ completed_file_url: signed?.signedUrl, status: "completed" }).eq("id", order.id);
+      const email = (order.profiles as any)?.email;
+      const fullName = (order.profiles as any)?.full_name || "Customer";
+      if (email) {
+        supabase.functions.invoke("send-email", {
+          body: { templateKey: "service_complete", to: email, data: { full_name: fullName, service_name: (order.services as any)?.name } },
+        }).catch(() => {});
+      }
+      toast.success("Completed file uploaded & user notified ✅");
+      load();
+    } finally { setUploadingId(null); }
+  };
+
+  return (
+    <div>
+      <h2 className="font-heading text-xl font-bold mb-4">Service Orders ({orders.length})</h2>
+      <div className="space-y-3">
+        {orders.map(o => (
+          <div key={o.id} className="bg-card border border-border rounded-lg p-4">
+            <div className="flex justify-between items-start flex-wrap gap-2">
+              <div>
+                <h4 className="font-semibold">{(o.services as any)?.name}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {(o.profiles as any)?.full_name} • {(o.profiles as any)?.email} • {(o.services as any)?.currency} {Number((o.services as any)?.price).toLocaleString()}
+                </p>
+                {o.details && <p className="text-xs mt-1">📝 {o.details}</p>}
+                {o.uploaded_file_url && <a href={o.uploaded_file_url} target="_blank" rel="noreferrer" className="text-xs text-safari-gold hover:underline">📎 User's file</a>}
+              </div>
+              <select value={o.status} onChange={e => updateStatus(o.id, e.target.value)} className="text-sm border border-border rounded px-2 py-1 bg-background">
+                {["pending","paid","in_progress","completed","rejected"].map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <label className="text-xs text-muted-foreground">📤 Upload completed file:</label>
+              <input type="file" disabled={uploadingId === o.id}
+                onChange={e => { const f = e.target.files?.[0]; if (f) uploadCompleted(o, f); }}
+                className="text-xs" />
+              {uploadingId === o.id && <span className="text-xs text-muted-foreground">Uploading...</span>}
+              {o.completed_file_url && <a href={o.completed_file_url} target="_blank" rel="noreferrer" className="text-xs text-green-600">✅ View completed</a>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ========================= EMAIL TEMPLATES =========================
+const AdminEmailTemplates = () => {
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [edits, setEdits] = useState<Record<string, { subject: string; body: string }>>({});
+
+  useEffect(() => { load(); }, []);
+  const load = async () => {
+    const { data } = await supabase.from("email_templates").select("*").order("template_key");
+    setTemplates(data || []);
+    const e: any = {};
+    (data || []).forEach((t: any) => { e[t.id] = { subject: t.subject, body: t.body }; });
+    setEdits(e);
+  };
+
+  const save = async (t: any) => {
+    const { error } = await supabase.from("email_templates").update(edits[t.id]).eq("id", t.id);
+    if (error) toast.error(error.message); else toast.success("Template saved ✅");
+  };
+
+  return (
+    <div>
+      <h2 className="font-heading text-xl font-bold mb-2">Email Templates</h2>
+      <p className="text-sm text-muted-foreground mb-6">Edit subject + body. Use <code className="bg-muted px-1 rounded">{`{{variable}}`}</code> for dynamic values (e.g. <code className="bg-muted px-1 rounded">{`{{full_name}}`}</code>, <code className="bg-muted px-1 rounded">{`{{amount}}`}</code>, <code className="bg-muted px-1 rounded">{`{{receipt_number}}`}</code>).</p>
+      <div className="space-y-4">
+        {templates.map(t => (
+          <div key={t.id} className="bg-card border border-border rounded-xl p-5 shadow-card">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-heading font-semibold">📧 {t.template_key}</h3>
+              <span className="text-xs text-muted-foreground">{t.description}</span>
+            </div>
+            <Label className="text-xs">Subject</Label>
+            <Input value={edits[t.id]?.subject || ""} onChange={e => setEdits({ ...edits, [t.id]: { ...edits[t.id], subject: e.target.value } })} className="mb-3 text-sm" />
+            <Label className="text-xs">Body</Label>
+            <Textarea rows={8} value={edits[t.id]?.body || ""} onChange={e => setEdits({ ...edits, [t.id]: { ...edits[t.id], body: e.target.value } })} className="text-sm font-mono" />
+            <Button size="sm" className="mt-3" onClick={() => save(t)}>💾 Save Template</Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default AdminPanel;
