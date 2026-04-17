@@ -13,6 +13,7 @@ import AdminPanel from "./pages/AdminPanel";
 import JobsPage from "./pages/JobsPage";
 import ServicesPage from "./pages/ServicesPage";
 import AIChatbot from "./components/AIChatbot";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AIChatbot />
+          <WhatsAppButton />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

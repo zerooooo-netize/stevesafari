@@ -96,6 +96,50 @@ serve(async (req) => {
               balance_line: balanceLine,
             });
           }
+
+          // ---- REFERRAL REWARD ----
+          // Credit referrer when this user makes a successful application_fee payment
+          if (paymentRow.payment_type === "application_fee" || paymentRow.is_deposit) {
+            const { data: refRow } = await supabase
+              .from("referrals")
+              .select("id, referrer_id, reward_paid, status")
+              .eq("referred_user_id", paymentRow.user_id)
+              .maybeSingle();
+
+            if (refRow && !refRow.reward_paid) {
+              const { data: refSettings } = await supabase
+                .from("settings").select("key,value")
+                .in("key", ["referral_bonus_amount", "referral_enabled"]);
+              const sMap = Object.fromEntries((refSettings || []).map((s: any) => [s.key, s.value]));
+              const enabled = sMap.referral_enabled !== "false";
+              const bonus = Number(sMap.referral_bonus_amount || 0);
+
+              if (enabled && bonus > 0) {
+                await supabase.from("referrals").update({
+                  status: "rewarded",
+                  reward_amount: bonus,
+                  reward_currency: "KES",
+                  reward_paid: true,
+                  payment_id: paymentRow.id,
+                }).eq("id", refRow.id);
+
+                // Notify referrer
+                const { data: refProfile } = await supabase
+                  .from("profiles").select("full_name, email").eq("user_id", refRow.referrer_id).single();
+                if (refProfile?.email) {
+                  await sendEmail(supabaseUrl, serviceKey, "payment_success", refProfile.email, {
+                    full_name: refProfile.full_name || "Customer",
+                    receipt_number: `REF-${refRow.id.slice(0, 8)}`,
+                    amount: bonus.toLocaleString(),
+                    payment_type: "referral bonus",
+                    reference: "Referral reward",
+                    date: new Date().toLocaleString(),
+                    balance_line: "Bonus credited to your account. Contact admin to redeem.",
+                  });
+                }
+              }
+            }
+          }
         }
       }
       return new Response(JSON.stringify({ success: true }), {

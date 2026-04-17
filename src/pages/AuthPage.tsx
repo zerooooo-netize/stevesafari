@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,13 +9,23 @@ import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const refFromUrl = (searchParams.get("ref") || "").toUpperCase();
+  const [isLogin, setIsLogin] = useState(!refFromUrl);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [referralCode, setReferralCode] = useState(refFromUrl);
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (refFromUrl) {
+      setReferralCode(refFromUrl);
+      setIsLogin(false);
+    }
+  }, [refFromUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +38,11 @@ const AuthPage = () => {
         navigate("/dashboard");
       } else {
         if (!fullName.trim()) { toast.error("Please enter your full name"); setLoading(false); return; }
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName, referred_by: referralCode || null } },
+        });
         if (error) throw error;
         // Fire-and-forget welcome email (no await — don't block UX if SMTP not yet configured)
         supabase.functions.invoke("send-email", {
@@ -74,6 +88,21 @@ const AuthPage = () => {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
           </div>
+          {!isLogin && (
+            <div>
+              <Label htmlFor="referralCode">Referral Code (Optional)</Label>
+              <Input
+                id="referralCode"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                placeholder="e.g. AB12CD34"
+                maxLength={12}
+              />
+              {refFromUrl && (
+                <p className="text-xs text-safari-gold mt-1">✓ You were referred by code {refFromUrl}</p>
+              )}
+            </div>
+          )}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
           </Button>
