@@ -135,6 +135,36 @@ export type Database = {
           },
         ]
       }
+      email_templates: {
+        Row: {
+          body: string
+          created_at: string
+          description: string | null
+          id: string
+          subject: string
+          template_key: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          subject: string
+          template_key: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          subject?: string
+          template_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           application_fee: number | null
@@ -143,6 +173,9 @@ export type Database = {
           created_at: string
           currency: string | null
           deadline: string | null
+          deposit_enabled: boolean | null
+          deposit_type: string | null
+          deposit_value: number | null
           description: string | null
           id: string
           is_active: boolean | null
@@ -160,6 +193,9 @@ export type Database = {
           created_at?: string
           currency?: string | null
           deadline?: string | null
+          deposit_enabled?: boolean | null
+          deposit_type?: string | null
+          deposit_value?: number | null
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -177,6 +213,9 @@ export type Database = {
           created_at?: string
           currency?: string | null
           deadline?: string | null
+          deposit_enabled?: boolean | null
+          deposit_type?: string | null
+          deposit_value?: number | null
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -193,14 +232,17 @@ export type Database = {
         Row: {
           amount: number
           application_id: string | null
+          balance_remaining: number | null
           created_at: string
           currency: string | null
           description: string | null
           id: string
+          is_deposit: boolean | null
           payment_method: string | null
           payment_reference: string | null
           payment_type: string | null
           phone_number: string | null
+          receipt_number: string | null
           service_order_id: string | null
           status: string
           updated_at: string
@@ -209,14 +251,17 @@ export type Database = {
         Insert: {
           amount: number
           application_id?: string | null
+          balance_remaining?: number | null
           created_at?: string
           currency?: string | null
           description?: string | null
           id?: string
+          is_deposit?: boolean | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_type?: string | null
           phone_number?: string | null
+          receipt_number?: string | null
           service_order_id?: string | null
           status?: string
           updated_at?: string
@@ -225,14 +270,17 @@ export type Database = {
         Update: {
           amount?: number
           application_id?: string | null
+          balance_remaining?: number | null
           created_at?: string
           currency?: string | null
           description?: string | null
           id?: string
+          is_deposit?: boolean | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_type?: string | null
           phone_number?: string | null
+          receipt_number?: string | null
           service_order_id?: string | null
           status?: string
           updated_at?: string
@@ -303,6 +351,7 @@ export type Database = {
           details: string | null
           id: string
           notes: string | null
+          payment_id: string | null
           service_id: string
           status: string
           updated_at: string
@@ -315,6 +364,7 @@ export type Database = {
           details?: string | null
           id?: string
           notes?: string | null
+          payment_id?: string | null
           service_id: string
           status?: string
           updated_at?: string
@@ -327,6 +377,7 @@ export type Database = {
           details?: string | null
           id?: string
           notes?: string | null
+          payment_id?: string | null
           service_id?: string
           status?: string
           updated_at?: string
