@@ -258,7 +258,18 @@ const AdminApplications = () => {
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("applications").update({ status }).eq("id", id);
-    if (error) toast.error(error.message); else { toast.success("Status updated!"); load(); }
+    if (error) { toast.error(error.message); return; }
+    toast.success("Status updated!");
+    // Send status update email
+    const app = apps.find(a => a.id === id);
+    const email = (app?.profiles as any)?.email;
+    const fullName = (app?.profiles as any)?.full_name || "Customer";
+    if (email) {
+      supabase.functions.invoke("send-email", {
+        body: { templateKey: "status_update", to: email, data: { full_name: fullName, status: status.replace(/_/g, " ") } },
+      }).catch(() => {});
+    }
+    load();
   };
 
   const assignBatch = async (appId: string, batchId: string) => {
