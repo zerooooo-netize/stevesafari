@@ -10,21 +10,56 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2 } from "lucide-react";
 
-// M-Pesa Payment Widget
+// M-Pesa Payment Widget — deposit-aware
 const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
   const [phone, setPhone] = useState("+254");
   const [amount, setAmount] = useState("");
   const [paymentType, setPaymentType] = useState("application_fee");
   const [selectedApp, setSelectedApp] = useState("");
+  const [payMode, setPayMode] = useState<"full" | "deposit">("full");
   const [sending, setSending] = useState(false);
   const [pollId, setPollId] = useState<string | null>(null);
   const [payStatus, setPayStatus] = useState<string | null>(null);
 
   const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
 
+  // When app changes, prefill amount from job
+  const selectedAppRow = applications.find(a => a.id === selectedApp);
+  const job = selectedAppRow?.jobs;
+  const fullFee = Number(job?.application_fee || 0);
+  const depositEnabled = !!job?.deposit_enabled;
+  const depositValue = Number(job?.deposit_value || 0);
+  const depositAmount = job?.deposit_type === "fixed"
+    ? depositValue
+    : Math.round((fullFee * depositValue) / 100);
+
+  const applyJob = (id: string) => {
+    setSelectedApp(id);
+    const a = applications.find(x => x.id === id);
+    if (a?.jobs?.application_fee) {
+      setPaymentType("application_fee");
+      setAmount(String(a.jobs.application_fee));
+      setPayMode("full");
+    }
+  };
+
+  const setMode = (mode: "full" | "deposit") => {
+    setPayMode(mode);
+    if (mode === "deposit" && depositAmount > 0) {
+      setAmount(String(depositAmount));
+      setPaymentType("deposit");
+    } else if (mode === "full" && fullFee > 0) {
+      setAmount(String(fullFee));
+      setPaymentType("application_fee");
+    }
+  };
+
   const initiate = async () => {
     if (!phone || phone.length < 12) { toast.error("Enter a valid phone number (+254...)"); return; }
     if (!amount || parseFloat(amount) <= 0) { toast.error("Enter a valid amount"); return; }
+
+    const isDeposit = payMode === "deposit" && !!selectedApp;
+    const balanceRemaining = isDeposit ? Math.max(fullFee - parseFloat(amount), 0) : 0;
 
     setSending(true);
     setPayStatus("sending");
@@ -36,11 +71,9 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          phone,
-          amount: parseFloat(amount),
-          userId,
+          phone, amount: parseFloat(amount), userId,
           applicationId: selectedApp || null,
-          paymentType,
+          paymentType, isDeposit, balanceRemaining,
           description: `${paymentType.replace("_", " ")} payment`,
         }),
       });
@@ -51,7 +84,6 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
       setPollId(data.paymentId);
       setPayStatus("waiting");
 
-      // Poll for payment status
       let attempts = 0;
       const interval = setInterval(async () => {
         attempts++;
@@ -65,7 +97,7 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
             clearInterval(interval);
             setPayStatus("completed");
             setSending(false);
-            toast.success("Payment received! ✅");
+            toast.success(`Payment received! ✅ Receipt ${statusData.receipt_number || ""}`);
             onPaymentComplete();
           } else if (statusData.status === "failed") {
             clearInterval(interval);
@@ -98,11 +130,33 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
         <div className="text-center py-6">
           <Check size={32} className="mx-auto text-green-600 mb-3" />
           <p className="font-medium text-sm text-green-700">Payment Successful! ✅</p>
+          <p className="text-xs text-muted-foreground mt-1">Receipt sent to your email.</p>
           <Button size="sm" variant="outline" className="mt-3" onClick={() => { setPayStatus(null); setAmount(""); }}>Make Another Payment</Button>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {applications.length > 0 && (
+              <div className="sm:col-span-2">
+                <Label className="text-xs">Pay for which application?</Label>
+                <select value={selectedApp} onChange={e => applyJob(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
+                  <option value="">— Generic payment —</option>
+                  {applications.map(a => <option key={a.id} value={a.id}>{a.jobs?.title || "Application"} (KES {Number(a.jobs?.application_fee || 0).toLocaleString()})</option>)}
+                </select>
+              </div>
+            )}
+
+            {selectedApp && depositEnabled && depositAmount > 0 && (
+              <div className="sm:col-span-2 flex gap-2">
+                <button type="button" onClick={() => setMode("full")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "full" ? "bg-primary text-primary-foreground border-primary" : "bg-background border-border"}`}>
+                  Pay Full (KES {fullFee.toLocaleString()})
+                </button>
+                <button type="button" onClick={() => setMode("deposit")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "deposit" ? "bg-primary text-primary-foreground border-primary" : "bg-background border-border"}`}>
+                  Deposit Only (KES {depositAmount.toLocaleString()})
+                </button>
+              </div>
+            )}
+
             <div>
               <Label className="text-xs">Phone Number *</Label>
               <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+254712345678" className="text-sm" />
@@ -111,22 +165,16 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
               <Label className="text-xs">Amount (KES) *</Label>
               <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="5000" className="text-sm" />
             </div>
-            <div>
-              <Label className="text-xs">Payment For</Label>
-              <select value={paymentType} onChange={e => setPaymentType(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
-                <option value="application_fee">Application Fee</option>
-                <option value="deposit">Deposit</option>
-                <option value="service_payment">Service Payment</option>
-                <option value="travel_fee">Travel Fee</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            {applications.length > 0 && (
-              <div>
-                <Label className="text-xs">Link to Application</Label>
-                <select value={selectedApp} onChange={e => setSelectedApp(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
-                  <option value="">None</option>
-                  {applications.map(a => <option key={a.id} value={a.id}>{a.jobs?.title || "Application"}</option>)}
+            {!selectedApp && (
+              <div className="sm:col-span-2">
+                <Label className="text-xs">Payment For</Label>
+                <select value={paymentType} onChange={e => setPaymentType(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
+                  <option value="application_fee">Application Fee</option>
+                  <option value="deposit">Deposit</option>
+                  <option value="balance">Balance Payment</option>
+                  <option value="service_payment">Service Payment</option>
+                  <option value="travel_fee">Travel Fee</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
             )}
