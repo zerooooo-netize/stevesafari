@@ -309,6 +309,7 @@ export type Database = {
           nationality: string | null
           passport_number: string | null
           phone: string | null
+          referral_code: string | null
           updated_at: string
           user_id: string
         }
@@ -324,6 +325,7 @@ export type Database = {
           nationality?: string | null
           passport_number?: string | null
           phone?: string | null
+          referral_code?: string | null
           updated_at?: string
           user_id: string
         }
@@ -339,8 +341,51 @@ export type Database = {
           nationality?: string | null
           passport_number?: string | null
           phone?: string | null
+          referral_code?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          payment_id: string | null
+          referral_code: string
+          referred_user_id: string
+          referrer_id: string
+          reward_amount: number | null
+          reward_currency: string | null
+          reward_paid: boolean | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payment_id?: string | null
+          referral_code: string
+          referred_user_id: string
+          referrer_id: string
+          reward_amount?: number | null
+          reward_currency?: string | null
+          reward_paid?: boolean | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payment_id?: string | null
+          referral_code?: string
+          referred_user_id?: string
+          referrer_id?: string
+          reward_amount?: number | null
+          reward_currency?: string | null
+          reward_paid?: boolean | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -457,6 +502,45 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string
+        }
+        Relationships: []
+      }
+      success_stories: {
+        Row: {
+          country: string | null
+          created_at: string
+          display_order: number | null
+          full_name: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          job_title: string | null
+          story: string
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          display_order?: number | null
+          full_name: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          job_title?: string | null
+          story: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          display_order?: number | null
+          full_name?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          job_title?: string | null
+          story?: string
+          updated_at?: string
         }
         Relationships: []
       }

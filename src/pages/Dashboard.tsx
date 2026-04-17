@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2 } from "lucide-react";
+import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift } from "lucide-react";
+import ReferralCard from "@/components/ReferralCard";
 
 // M-Pesa Payment Widget — deposit-aware
 const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
@@ -285,6 +286,7 @@ const Dashboard = () => {
     { key: "documents", label: "📄 Documents", icon: FileText },
     { key: "services", label: "🛒 Services", icon: ShoppingBag },
     { key: "payments", label: "💰 Payments", icon: CreditCard },
+    { key: "refer", label: "🎁 Refer & Earn", icon: Gift },
   ];
 
   return (
@@ -529,7 +531,11 @@ const Dashboard = () => {
             </section>
           )}
 
-          {/* Quick action buttons at bottom */}
+          {/* Refer & Earn Section */}
+          {activeSection === "refer" && (
+            <ReferralCard userId={user!.id} referralCode={profile?.referral_code || null} />
+          )}
+
           <div className="grid grid-cols-2 gap-3 mt-6">
             <Button variant="outline" className="h-14 text-sm" onClick={() => navigate("/jobs")}>
               🔍 Browse Jobs
