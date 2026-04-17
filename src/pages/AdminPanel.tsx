@@ -9,10 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import {
   Briefcase, Users, CreditCard, FileText, Settings, Plane, ShoppingBag,
-  Plus, Pencil, Trash2, ArrowLeft, X, Eye, Check, XCircle
+  Plus, Pencil, Trash2, ArrowLeft, X, Eye, Check, XCircle, Star, Gift
 } from "lucide-react";
 
-type Tab = "jobs" | "services" | "applications" | "service_orders" | "users" | "payments" | "batches" | "settings" | "templates";
+type Tab = "jobs" | "services" | "applications" | "service_orders" | "users" | "payments" | "batches" | "settings" | "templates" | "stories" | "referrals";
 
 const AdminPanel = () => {
   const { isAdmin, signOut } = useAuth();
@@ -27,6 +27,8 @@ const AdminPanel = () => {
     { key: "users", label: "Users", icon: Users },
     { key: "payments", label: "Payments", icon: CreditCard },
     { key: "batches", label: "Travel Batches", icon: Plane },
+    { key: "stories", label: "Success Stories", icon: Star },
+    { key: "referrals", label: "Referrals", icon: Gift },
     { key: "templates", label: "Email Templates", icon: FileText },
     { key: "settings", label: "Settings", icon: Settings },
   ];
@@ -71,6 +73,8 @@ const AdminPanel = () => {
         {activeTab === "users" && <AdminUsers />}
         {activeTab === "payments" && <AdminPayments />}
         {activeTab === "batches" && <AdminBatches />}
+        {activeTab === "stories" && <AdminSuccessStories />}
+        {activeTab === "referrals" && <AdminReferrals />}
         {activeTab === "templates" && <AdminEmailTemplates />}
         {activeTab === "settings" && <AdminSettings />}
       </div>
