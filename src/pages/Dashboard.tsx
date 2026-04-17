@@ -235,7 +235,7 @@ const Dashboard = () => {
 
   const loadData = async () => {
     const [appsRes, paysRes, docsRes, ordersRes] = await Promise.all([
-      supabase.from("applications").select("*, jobs(title, country, salary)").eq("user_id", user!.id),
+      supabase.from("applications").select("*, jobs(title, country, salary, application_fee, deposit_enabled, deposit_type, deposit_value)").eq("user_id", user!.id),
       supabase.from("payments").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("documents").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("service_orders").select("*, services(name, price, currency)").eq("user_id", user!.id).order("created_at", { ascending: false }),
