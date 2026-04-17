@@ -82,7 +82,7 @@ const AdminPanel = () => {
 const AdminJobs = () => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
-  const [form, setForm] = useState({ title: "", country: "Canada", city: "", description: "", requirements: "", salary: "", currency: "CAD", job_type: "Full-Time", application_fee: "0", slots_available: "0", deadline: "", is_active: true });
+  const [form, setForm] = useState({ title: "", country: "Canada", city: "", description: "", requirements: "", salary: "", currency: "CAD", job_type: "Full-Time", application_fee: "0", slots_available: "0", deadline: "", is_active: true, deposit_enabled: false, deposit_type: "percentage", deposit_value: "0" });
 
   useEffect(() => { loadJobs(); }, []);
 
@@ -91,10 +91,10 @@ const AdminJobs = () => {
     setJobs(data || []);
   };
 
-  const resetForm = () => { setForm({ title: "", country: "Canada", city: "", description: "", requirements: "", salary: "", currency: "CAD", job_type: "Full-Time", application_fee: "0", slots_available: "0", deadline: "", is_active: true }); setEditing(null); };
+  const resetForm = () => { setForm({ title: "", country: "Canada", city: "", description: "", requirements: "", salary: "", currency: "CAD", job_type: "Full-Time", application_fee: "0", slots_available: "0", deadline: "", is_active: true, deposit_enabled: false, deposit_type: "percentage", deposit_value: "0" }); setEditing(null); };
 
   const save = async () => {
-    const payload = { ...form, application_fee: parseFloat(form.application_fee) || 0, slots_available: parseInt(form.slots_available) || 0, deadline: form.deadline || null };
+    const payload = { ...form, application_fee: parseFloat(form.application_fee) || 0, slots_available: parseInt(form.slots_available) || 0, deadline: form.deadline || null, deposit_value: parseFloat(form.deposit_value) || 0 };
     if (editing) {
       const { error } = await supabase.from("jobs").update(payload).eq("id", editing.id);
       if (error) { toast.error(error.message); return; }
@@ -117,7 +117,7 @@ const AdminJobs = () => {
 
   const startEdit = (job: any) => {
     setEditing(job);
-    setForm({ title: job.title, country: job.country, city: job.city || "", description: job.description || "", requirements: job.requirements || "", salary: job.salary || "", currency: job.currency, job_type: job.job_type, application_fee: String(job.application_fee), slots_available: String(job.slots_available), deadline: job.deadline || "", is_active: job.is_active });
+    setForm({ title: job.title, country: job.country, city: job.city || "", description: job.description || "", requirements: job.requirements || "", salary: job.salary || "", currency: job.currency, job_type: job.job_type, application_fee: String(job.application_fee), slots_available: String(job.slots_available), deadline: job.deadline || "", is_active: job.is_active, deposit_enabled: !!job.deposit_enabled, deposit_type: job.deposit_type || "percentage", deposit_value: String(job.deposit_value || 0) });
   };
 
   return (
@@ -139,6 +139,27 @@ const AdminJobs = () => {
           <div className="flex items-center gap-2">
             <input type="checkbox" checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} id="active" />
             <Label htmlFor="active">Active</Label>
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3 border-t border-border pt-4 mt-2">
+            <div className="flex items-center gap-2 mb-3">
+              <input type="checkbox" checked={form.deposit_enabled} onChange={e => setForm({ ...form, deposit_enabled: e.target.checked })} id="dep-en" />
+              <Label htmlFor="dep-en" className="font-semibold">💳 Allow Deposit Payment for this Job</Label>
+            </div>
+            {form.deposit_enabled && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <Label>Deposit Type</Label>
+                  <select value={form.deposit_type} onChange={e => setForm({ ...form, deposit_type: e.target.value })} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
+                    <option value="percentage">Percentage of fee (%)</option>
+                    <option value="fixed">Fixed amount (KES)</option>
+                  </select>
+                </div>
+                <div>
+                  <Label>Deposit Value ({form.deposit_type === "percentage" ? "%" : "KES"})</Label>
+                  <Input type="number" value={form.deposit_value} onChange={e => setForm({ ...form, deposit_value: e.target.value })} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex gap-2 mt-4">
