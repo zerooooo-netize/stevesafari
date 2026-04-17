@@ -707,4 +707,173 @@ const AdminEmailTemplates = () => {
   );
 };
 
+// ===================== Admin Success Stories =====================
+const AdminSuccessStories = () => {
+  const [stories, setStories] = useState<any[]>([]);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const load = async () => {
+    const { data } = await supabase.from("success_stories").select("*").order("display_order");
+    setStories(data || []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const empty = { full_name: "", job_title: "", country: "", story: "", image_url: "", is_active: true, display_order: 0 };
+
+  const save = async () => {
+    if (!editing.full_name || !editing.story) { toast.error("Name and story are required"); return; }
+    const payload = { ...editing };
+    delete payload.id;
+    if (editing.id) {
+      const { error } = await supabase.from("success_stories").update(payload).eq("id", editing.id);
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("success_stories").insert(payload);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Saved");
+    setEditing(null);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Delete this success story?")) return;
+    await supabase.from("success_stories").delete().eq("id", id);
+    toast.success("Deleted");
+    load();
+  };
+
+  const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const path = `${Date.now()}_${file.name}`;
+    const { error } = await supabase.storage.from("success-stories").upload(path, file);
+    if (error) { toast.error(error.message); setUploading(false); return; }
+    const { data } = supabase.storage.from("success-stories").getPublicUrl(path);
+    setEditing({ ...editing, image_url: data.publicUrl });
+    setUploading(false);
+    toast.success("Image uploaded");
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="font-heading text-xl font-bold">Success Stories</h2>
+        <Button size="sm" onClick={() => setEditing(empty)}><Plus size={16} /> Add Story</Button>
+      </div>
+
+      {editing && (
+        <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div><Label>Full Name *</Label><Input value={editing.full_name} onChange={e => setEditing({ ...editing, full_name: e.target.value })} /></div>
+            <div><Label>Job Title</Label><Input value={editing.job_title || ""} onChange={e => setEditing({ ...editing, job_title: e.target.value })} placeholder="Caregiver" /></div>
+            <div><Label>Country</Label><Input value={editing.country || ""} onChange={e => setEditing({ ...editing, country: e.target.value })} placeholder="Canada" /></div>
+            <div><Label>Display Order</Label><Input type="number" value={editing.display_order} onChange={e => setEditing({ ...editing, display_order: Number(e.target.value) })} /></div>
+            <div className="md:col-span-2"><Label>Story *</Label><Textarea rows={4} value={editing.story} onChange={e => setEditing({ ...editing, story: e.target.value })} /></div>
+            <div className="md:col-span-2">
+              <Label>Image</Label>
+              <div className="flex items-center gap-3">
+                {editing.image_url && <img src={editing.image_url} alt="" className="w-16 h-16 rounded-full object-cover" />}
+                <input type="file" accept="image/*" onChange={uploadImage} disabled={uploading} className="text-sm" />
+                {uploading && <span className="text-xs text-muted-foreground">Uploading…</span>}
+              </div>
+              <Input className="mt-2" placeholder="Or paste image URL" value={editing.image_url || ""} onChange={e => setEditing({ ...editing, image_url: e.target.value })} />
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={editing.is_active} onChange={e => setEditing({ ...editing, is_active: e.target.checked })} />
+              Active (show on homepage)
+            </label>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={save}>💾 Save</Button>
+            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {stories.map(s => (
+          <div key={s.id} className="bg-card border border-border rounded-lg p-4 flex gap-3">
+            {s.image_url && <img src={s.image_url} alt={s.full_name} className="w-14 h-14 rounded-full object-cover shrink-0" />}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold truncate">{s.full_name}</p>
+                {!s.is_active && <span className="text-xs text-muted-foreground">(hidden)</span>}
+              </div>
+              <p className="text-xs text-muted-foreground">{s.job_title} {s.country && `· ${s.country}`}</p>
+              <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{s.story}</p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Button size="icon" variant="ghost" onClick={() => setEditing(s)}><Pencil size={14} /></Button>
+              <Button size="icon" variant="ghost" onClick={() => remove(s.id)}><Trash2 size={14} /></Button>
+            </div>
+          </div>
+        ))}
+        {stories.length === 0 && <p className="text-sm text-muted-foreground col-span-full text-center py-6">No success stories yet.</p>}
+      </div>
+    </div>
+  );
+};
+
+// ===================== Admin Referrals =====================
+const AdminReferrals = () => {
+  const [referrals, setReferrals] = useState<any[]>([]);
+
+  const load = async () => {
+    const { data } = await supabase.from("referrals").select("*").order("created_at", { ascending: false });
+    if (!data) { setReferrals([]); return; }
+    const userIds = Array.from(new Set([...data.map(r => r.referrer_id), ...data.map(r => r.referred_user_id)]));
+    const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
+    const map = Object.fromEntries((profs || []).map(p => [p.user_id, p]));
+    setReferrals(data.map(r => ({ ...r, referrer: map[r.referrer_id], referred: map[r.referred_user_id] })));
+  };
+  useEffect(() => { load(); }, []);
+
+  const togglePaid = async (r: any) => {
+    await supabase.from("referrals").update({ reward_paid: !r.reward_paid, status: !r.reward_paid ? "rewarded" : "pending" }).eq("id", r.id);
+    load();
+  };
+
+  return (
+    <div className="space-y-3">
+      <h2 className="font-heading text-xl font-bold">Referrals</h2>
+      <div className="bg-card border border-border rounded-lg overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-muted text-left text-xs">
+            <tr>
+              <th className="p-3">Referrer</th>
+              <th className="p-3">Referred</th>
+              <th className="p-3">Code</th>
+              <th className="p-3">Status</th>
+              <th className="p-3">Reward</th>
+              <th className="p-3">Date</th>
+              <th className="p-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {referrals.map(r => (
+              <tr key={r.id} className="border-t border-border">
+                <td className="p-3">{r.referrer?.full_name || "—"}<br /><span className="text-xs text-muted-foreground">{r.referrer?.email}</span></td>
+                <td className="p-3">{r.referred?.full_name || "—"}<br /><span className="text-xs text-muted-foreground">{r.referred?.email}</span></td>
+                <td className="p-3 font-mono text-xs">{r.referral_code}</td>
+                <td className="p-3"><span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "rewarded" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{r.status}</span></td>
+                <td className="p-3">{r.reward_currency} {Number(r.reward_amount).toLocaleString()} {r.reward_paid ? "✅" : ""}</td>
+                <td className="p-3 text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
+                <td className="p-3">
+                  <Button size="sm" variant="outline" onClick={() => togglePaid(r)}>
+                    {r.reward_paid ? "Mark Unpaid" : "Mark Paid"}
+                  </Button>
+                </td>
+              </tr>
+            ))}
+            {referrals.length === 0 && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">No referrals yet.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 export default AdminPanel;
