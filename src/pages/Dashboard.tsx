@@ -190,10 +190,11 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
   );
 };
 
-const statusSteps = ["registered", "paid", "documents_submitted", "verified", "batch_assigned", "completed"];
+const statusSteps = ["registered", "deposit_paid", "paid", "documents_submitted", "verified", "batch_assigned", "completed"];
 const statusLabels: Record<string, string> = {
   registered: "✅ Registered",
-  paid: "💰 Paid",
+  deposit_paid: "💳 Deposit Paid",
+  paid: "💰 Paid in Full",
   documents_submitted: "📄 Docs Sent",
   verified: "✔️ Verified",
   batch_assigned: "✈️ Batch Ready",
