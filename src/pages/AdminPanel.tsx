@@ -12,7 +12,7 @@ import {
   Plus, Pencil, Trash2, ArrowLeft, X, Eye, Check, XCircle
 } from "lucide-react";
 
-type Tab = "jobs" | "services" | "applications" | "users" | "payments" | "batches" | "settings";
+type Tab = "jobs" | "services" | "applications" | "service_orders" | "users" | "payments" | "batches" | "settings" | "templates";
 
 const AdminPanel = () => {
   const { isAdmin, signOut } = useAuth();
@@ -23,9 +23,11 @@ const AdminPanel = () => {
     { key: "jobs", label: "Jobs", icon: Briefcase },
     { key: "services", label: "Services", icon: ShoppingBag },
     { key: "applications", label: "Applications", icon: FileText },
+    { key: "service_orders", label: "Service Orders", icon: ShoppingBag },
     { key: "users", label: "Users", icon: Users },
     { key: "payments", label: "Payments", icon: CreditCard },
     { key: "batches", label: "Travel Batches", icon: Plane },
+    { key: "templates", label: "Email Templates", icon: FileText },
     { key: "settings", label: "Settings", icon: Settings },
   ];
 
@@ -65,9 +67,11 @@ const AdminPanel = () => {
         {activeTab === "jobs" && <AdminJobs />}
         {activeTab === "services" && <AdminServices />}
         {activeTab === "applications" && <AdminApplications />}
+        {activeTab === "service_orders" && <AdminServiceOrders />}
         {activeTab === "users" && <AdminUsers />}
         {activeTab === "payments" && <AdminPayments />}
         {activeTab === "batches" && <AdminBatches />}
+        {activeTab === "templates" && <AdminEmailTemplates />}
         {activeTab === "settings" && <AdminSettings />}
       </div>
     </div>
