@@ -88,6 +88,93 @@ export type Database = {
           },
         ]
       }
+      discount_codes: {
+        Row: {
+          applies_to: string
+          code: string
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          description: string | null
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          job_id: string | null
+          max_uses: number | null
+          updated_at: string
+          uses_count: number
+        }
+        Insert: {
+          applies_to?: string
+          code: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          job_id?: string | null
+          max_uses?: number | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Update: {
+          applies_to?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          job_id?: string | null
+          max_uses?: number | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      discount_redemptions: {
+        Row: {
+          amount_discounted: number
+          code: string
+          created_at: string
+          discount_code_id: string | null
+          id: string
+          payment_id: string | null
+          source: string
+          user_id: string
+        }
+        Insert: {
+          amount_discounted?: number
+          code: string
+          created_at?: string
+          discount_code_id?: string | null
+          id?: string
+          payment_id?: string | null
+          source?: string
+          user_id: string
+        }
+        Update: {
+          amount_discounted?: number
+          code?: string
+          created_at?: string
+          discount_code_id?: string | null
+          id?: string
+          payment_id?: string | null
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           admin_notes: string | null
@@ -588,6 +675,42 @@ export type Database = {
           is_active?: boolean | null
           job_title?: string | null
           story?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_order: number
+          full_name: string
+          id: string
+          is_active: boolean
+          photo_url: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          full_name: string
+          id?: string
+          is_active?: boolean
+          photo_url?: string | null
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          photo_url?: string | null
+          role?: string
           updated_at?: string
         }
         Relationships: []
