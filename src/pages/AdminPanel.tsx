@@ -886,9 +886,14 @@ const AdminSponsorship = () => {
   const load = async () => {
     const { data } = await supabase
       .from("sponsorship_applications")
-      .select("*, profiles!inner(full_name, email, user_id)")
+      .select("*")
       .order("created_at", { ascending: false });
-    setList(data || []);
+    const ids = Array.from(new Set((data || []).map((d: any) => d.user_id)));
+    const { data: profs } = ids.length
+      ? await supabase.from("profiles").select("user_id, full_name, email").in("user_id", ids)
+      : { data: [] as any[] };
+    const map = Object.fromEntries((profs || []).map((p: any) => [p.user_id, p]));
+    setList((data || []).map((d: any) => ({ ...d, profiles: map[d.user_id] })));
   };
   useEffect(() => { load(); }, []);
 
@@ -938,9 +943,14 @@ const AdminWalletRedemptions = () => {
   const load = async () => {
     const { data } = await supabase
       .from("wallet_redemptions")
-      .select("*, profiles!inner(full_name, email)")
+      .select("*")
       .order("created_at", { ascending: false });
-    setList(data || []);
+    const ids = Array.from(new Set((data || []).map((d: any) => d.user_id)));
+    const { data: profs } = ids.length
+      ? await supabase.from("profiles").select("user_id, full_name, email").in("user_id", ids)
+      : { data: [] as any[] };
+    const map = Object.fromEntries((profs || []).map((p: any) => [p.user_id, p]));
+    setList((data || []).map((d: any) => ({ ...d, profiles: map[d.user_id] })));
   };
   useEffect(() => { load(); }, []);
 
