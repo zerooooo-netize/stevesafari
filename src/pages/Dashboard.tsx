@@ -287,6 +287,7 @@ const Dashboard = () => {
     { key: "services", label: "🛒 Services", icon: ShoppingBag },
     { key: "payments", label: "💰 Payments", icon: CreditCard },
     { key: "refer", label: "🎁 Refer & Earn", icon: Gift },
+    { key: "sponsorship", label: "🤝 Sponsorship", icon: Gift },
   ];
 
   return (
@@ -534,6 +535,11 @@ const Dashboard = () => {
           {/* Refer & Earn Section */}
           {activeSection === "refer" && (
             <ReferralCard userId={user!.id} referralCode={profile?.referral_code || null} />
+          )}
+
+          {/* Sponsorship Section */}
+          {activeSection === "sponsorship" && (
+            <SponsorshipCard userId={user!.id} />
           )}
 
           <div className="grid grid-cols-2 gap-3 mt-6">
