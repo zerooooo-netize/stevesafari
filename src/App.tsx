@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import JobsPage from "./pages/JobsPage";
 import ServicesPage from "./pages/ServicesPage";
+import PathChoice from "./pages/PathChoice";
 import AIChatbot from "./components/AIChatbot";
 import WhatsAppButton from "./components/WhatsAppButton";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route path="/welcome" element={<ProtectedRoute><PathChoice /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />

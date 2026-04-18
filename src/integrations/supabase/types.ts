@@ -300,6 +300,7 @@ export type Database = {
         Row: {
           address: string | null
           avatar_url: string | null
+          chosen_path: string | null
           created_at: string
           date_of_birth: string | null
           email: string | null
@@ -316,6 +317,7 @@ export type Database = {
         Insert: {
           address?: string | null
           avatar_url?: string | null
+          chosen_path?: string | null
           created_at?: string
           date_of_birth?: string | null
           email?: string | null
@@ -332,6 +334,7 @@ export type Database = {
         Update: {
           address?: string | null
           avatar_url?: string | null
+          chosen_path?: string | null
           created_at?: string
           date_of_birth?: string | null
           email?: string | null
@@ -505,6 +508,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsorship_applications: {
+        Row: {
+          admin_notes: string | null
+          application_fee_payment_id: string | null
+          application_id: string | null
+          created_at: string
+          currency: string | null
+          id: string
+          reason: string
+          requested_amount: number
+          service_order_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          application_fee_payment_id?: string | null
+          application_id?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          reason: string
+          requested_amount?: number
+          service_order_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          application_fee_payment_id?: string | null
+          application_id?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          reason?: string
+          requested_amount?: number
+          service_order_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       success_stories: {
         Row: {
           country: string | null
@@ -603,6 +651,51 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallet_redemptions: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          application_id: string | null
+          created_at: string
+          currency: string | null
+          id: string
+          payment_id: string | null
+          purpose: string | null
+          service_order_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          application_id?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          payment_id?: string | null
+          purpose?: string | null
+          service_order_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          application_id?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          payment_id?: string | null
+          purpose?: string | null
+          service_order_id?: string | null
+          status?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

@@ -35,7 +35,7 @@ const AuthPage = () => {
         const { error } = await signIn(email, password);
         if (error) throw error;
         toast.success("Welcome back!");
-        navigate("/dashboard");
+        navigate("/welcome");
       } else {
         if (!fullName.trim()) { toast.error("Please enter your full name"); setLoading(false); return; }
         const { error } = await supabase.auth.signUp({

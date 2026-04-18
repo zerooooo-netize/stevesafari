@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift } from "lucide-react";
 import ReferralCard from "@/components/ReferralCard";
+import SponsorshipCard from "@/components/SponsorshipCard";
 
 // M-Pesa Payment Widget — deposit-aware
 const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
@@ -287,6 +288,7 @@ const Dashboard = () => {
     { key: "services", label: "🛒 Services", icon: ShoppingBag },
     { key: "payments", label: "💰 Payments", icon: CreditCard },
     { key: "refer", label: "🎁 Refer & Earn", icon: Gift },
+    { key: "sponsorship", label: "🤝 Sponsorship", icon: Gift },
   ];
 
   return (
@@ -534,6 +536,11 @@ const Dashboard = () => {
           {/* Refer & Earn Section */}
           {activeSection === "refer" && (
             <ReferralCard userId={user!.id} referralCode={profile?.referral_code || null} />
+          )}
+
+          {/* Sponsorship Section */}
+          {activeSection === "sponsorship" && (
+            <SponsorshipCard userId={user!.id} />
           )}
 
           <div className="grid grid-cols-2 gap-3 mt-6">
