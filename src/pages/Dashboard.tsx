@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift } from "lucide-react";
 import ReferralCard from "@/components/ReferralCard";
+import SponsorshipCard from "@/components/SponsorshipCard";
 
 // M-Pesa Payment Widget — deposit-aware
 const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
