@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift } from "lucide-react";
+import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift, Download, Shield } from "lucide-react";
 import ReferralCard from "@/components/ReferralCard";
 import SponsorshipCard from "@/components/SponsorshipCard";
+import ApplicationTracker from "@/components/ApplicationTracker";
+import DiscountCodeInput from "@/components/DiscountCodeInput";
+import TrustBar from "@/components/TrustBar";
+import { downloadReceiptPDF } from "@/lib/receipt";
 
 // M-Pesa Payment Widget — deposit-aware
 const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
