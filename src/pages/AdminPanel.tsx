@@ -9,10 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import {
   Briefcase, Users, CreditCard, FileText, Settings, Plane, ShoppingBag,
-  Plus, Pencil, Trash2, ArrowLeft, X, Eye, Check, XCircle, Star, Gift
+  Plus, Pencil, Trash2, ArrowLeft, X, Eye, Check, XCircle, Star, Gift, HandCoins, Wallet
 } from "lucide-react";
 
-type Tab = "jobs" | "services" | "applications" | "service_orders" | "users" | "payments" | "batches" | "settings" | "templates" | "stories" | "referrals";
+type Tab = "jobs" | "services" | "applications" | "service_orders" | "users" | "payments" | "batches" | "settings" | "templates" | "stories" | "referrals" | "sponsorship" | "wallet";
 
 const AdminPanel = () => {
   const { isAdmin, signOut } = useAuth();
@@ -29,6 +29,8 @@ const AdminPanel = () => {
     { key: "batches", label: "Travel Batches", icon: Plane },
     { key: "stories", label: "Success Stories", icon: Star },
     { key: "referrals", label: "Referrals", icon: Gift },
+    { key: "wallet", label: "Wallet Redeem", icon: Wallet },
+    { key: "sponsorship", label: "Sponsorship", icon: HandCoins },
     { key: "templates", label: "Email Templates", icon: FileText },
     { key: "settings", label: "Settings", icon: Settings },
   ];
@@ -75,6 +77,8 @@ const AdminPanel = () => {
         {activeTab === "batches" && <AdminBatches />}
         {activeTab === "stories" && <AdminSuccessStories />}
         {activeTab === "referrals" && <AdminReferrals />}
+        {activeTab === "wallet" && <AdminWalletRedemptions />}
+        {activeTab === "sponsorship" && <AdminSponsorship />}
         {activeTab === "templates" && <AdminEmailTemplates />}
         {activeTab === "settings" && <AdminSettings />}
       </div>
@@ -869,6 +873,119 @@ const AdminReferrals = () => {
               </tr>
             ))}
             {referrals.length === 0 && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">No referrals yet.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+// ========================= SPONSORSHIP =========================
+const AdminSponsorship = () => {
+  const [list, setList] = useState<any[]>([]);
+  const load = async () => {
+    const { data } = await supabase
+      .from("sponsorship_applications")
+      .select("*, profiles!inner(full_name, email, user_id)")
+      .order("created_at", { ascending: false });
+    setList(data || []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const decide = async (id: string, status: "approved" | "rejected") => {
+    const notes = window.prompt(`Notes for ${status}?`) || "";
+    const { error } = await supabase
+      .from("sponsorship_applications")
+      .update({ status, admin_notes: notes }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(`Marked ${status}`);
+    load();
+  };
+
+  return (
+    <div>
+      <h2 className="font-heading text-xl font-bold mb-4">Sponsorship Applications</h2>
+      <div className="space-y-3">
+        {list.map(s => (
+          <div key={s.id} className="bg-card border border-border rounded-lg p-4">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <p className="font-semibold text-sm">{(s.profiles as any)?.full_name || "—"} <span className="text-muted-foreground">({(s.profiles as any)?.email})</span></p>
+                <p className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleString()}</p>
+              </div>
+              <span className={`text-xs px-2 py-0.5 rounded-full ${s.status === "approved" ? "bg-green-100 text-green-700" : s.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>{s.status}</span>
+            </div>
+            <p className="text-sm mb-1"><strong>Amount:</strong> {s.currency} {Number(s.requested_amount).toLocaleString()}</p>
+            <p className="text-sm mb-2"><strong>Reason:</strong> {s.reason}</p>
+            {s.admin_notes && <p className="text-xs italic text-muted-foreground mb-2">Notes: {s.admin_notes}</p>}
+            {(s.status === "pending" || s.status === "fee_pending") && (
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => decide(s.id, "approved")}><Check size={14} /> Approve</Button>
+                <Button size="sm" variant="outline" onClick={() => decide(s.id, "rejected")}><XCircle size={14} /> Reject</Button>
+              </div>
+            )}
+          </div>
+        ))}
+        {list.length === 0 && <p className="text-center text-muted-foreground py-6">No sponsorship applications yet.</p>}
+      </div>
+    </div>
+  );
+};
+
+// ========================= WALLET REDEMPTIONS =========================
+const AdminWalletRedemptions = () => {
+  const [list, setList] = useState<any[]>([]);
+  const load = async () => {
+    const { data } = await supabase
+      .from("wallet_redemptions")
+      .select("*, profiles!inner(full_name, email)")
+      .order("created_at", { ascending: false });
+    setList(data || []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const setStatus = async (id: string, status: string) => {
+    const notes = status === "rejected" ? (window.prompt("Reason for rejection?") || "") : null;
+    const update: any = { status };
+    if (notes !== null) update.admin_notes = notes;
+    const { error } = await supabase.from("wallet_redemptions").update(update).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(`Marked ${status}`);
+    load();
+  };
+
+  return (
+    <div>
+      <h2 className="font-heading text-xl font-bold mb-4">Wallet Redemption Requests</h2>
+      <p className="text-sm text-muted-foreground mb-4">Users requesting to use their referral earnings to pay for services or balances.</p>
+      <div className="overflow-x-auto bg-card border border-border rounded-lg">
+        <table className="w-full text-sm">
+          <thead className="bg-muted text-xs uppercase">
+            <tr><th className="p-3 text-left">User</th><th className="p-3">Amount</th><th className="p-3">Purpose</th><th className="p-3">Status</th><th className="p-3">Date</th><th className="p-3">Actions</th></tr>
+          </thead>
+          <tbody>
+            {list.map(r => (
+              <tr key={r.id} className="border-t border-border">
+                <td className="p-3">
+                  <div className="text-xs">{(r.profiles as any)?.full_name}</div>
+                  <div className="text-xs text-muted-foreground">{(r.profiles as any)?.email}</div>
+                </td>
+                <td className="p-3 text-center font-semibold">KES {Number(r.amount).toLocaleString()}</td>
+                <td className="p-3 text-xs">{r.purpose}</td>
+                <td className="p-3 text-center">
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "approved" || r.status === "applied" ? "bg-green-100 text-green-700" : r.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>{r.status}</span>
+                </td>
+                <td className="p-3 text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
+                <td className="p-3">
+                  <div className="flex gap-1">
+                    {r.status === "pending" && <Button size="sm" onClick={() => setStatus(r.id, "approved")}>Approve</Button>}
+                    {r.status === "approved" && <Button size="sm" variant="outline" onClick={() => setStatus(r.id, "applied")}>Mark Applied</Button>}
+                    {r.status !== "rejected" && r.status !== "applied" && <Button size="sm" variant="ghost" onClick={() => setStatus(r.id, "rejected")}>Reject</Button>}
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {list.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No redemptions yet.</td></tr>}
           </tbody>
         </table>
       </div>
