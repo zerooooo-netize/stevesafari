@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift } from "lucide-react";
+import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift, Download, Shield } from "lucide-react";
 import ReferralCard from "@/components/ReferralCard";
 import SponsorshipCard from "@/components/SponsorshipCard";
+import ApplicationTracker from "@/components/ApplicationTracker";
+import DiscountCodeInput from "@/components/DiscountCodeInput";
+import TrustBar from "@/components/TrustBar";
+import { downloadReceiptPDF } from "@/lib/receipt";
 
 // M-Pesa Payment Widget — deposit-aware
 const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
@@ -22,6 +26,7 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
   const [sending, setSending] = useState(false);
   const [pollId, setPollId] = useState<string | null>(null);
   const [payStatus, setPayStatus] = useState<string | null>(null);
+  const [discount, setDiscount] = useState<{ code: string | null; discountAmount: number; finalAmount: number; source: "manual" | "referral_auto" | null }>({ code: null, discountAmount: 0, finalAmount: 0, source: null });
 
   const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
 
@@ -77,6 +82,9 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
           applicationId: selectedApp || null,
           paymentType, isDeposit, balanceRemaining,
           description: `${paymentType.replace("_", " ")} payment`,
+          discountCode: discount.code,
+          discountAmount: discount.discountAmount,
+          finalAmount: discount.finalAmount > 0 ? discount.finalAmount : parseFloat(amount),
         }),
       });
       const data = await resp.json();
@@ -181,8 +189,23 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
               </div>
             )}
           </div>
+          <DiscountCodeInput
+            userId={userId}
+            baseAmount={parseFloat(amount) || 0}
+            applyTo={paymentType === "service_payment" ? "service" : paymentType === "application_fee" ? "application_fee" : "any"}
+            onChange={setDiscount}
+          />
+          {discount.discountAmount > 0 && (
+            <div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">
+              Original: KES {(parseFloat(amount) || 0).toLocaleString()} • Discount: −KES {discount.discountAmount.toLocaleString()} • <strong className="text-foreground">You pay: KES {discount.finalAmount.toLocaleString()}</strong>
+            </div>
+          )}
+          <div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5">
+            <Shield size={12} className="text-safari-gold mt-0.5 shrink-0" />
+            <span>Securely processed via M-Pesa (Kopo Kopo). You'll get an official receipt instantly. We never ask for payments outside this platform.</span>
+          </div>
           <Button onClick={initiate} disabled={sending} className="w-full text-sm">
-            {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : "📱 Pay with M-Pesa"}
+            {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : `📱 Pay KES ${(discount.finalAmount > 0 ? discount.finalAmount : parseFloat(amount) || 0).toLocaleString()} with M-Pesa`}
           </Button>
           {payStatus === "failed" && <p className="text-xs text-destructive text-center">Payment failed. Please try again.</p>}
           {payStatus === "timeout" && <p className="text-xs text-yellow-600 text-center">Payment not confirmed yet. Check your payment history.</p>}
