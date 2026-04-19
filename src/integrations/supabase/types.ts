@@ -16,29 +16,35 @@ export type Database = {
     Tables: {
       applications: {
         Row: {
+          checklist_completed: boolean
           created_at: string
           id: string
           job_id: string
           notes: string | null
           status: string
+          submitted_at: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          checklist_completed?: boolean
           created_at?: string
           id?: string
           job_id: string
           notes?: string | null
           status?: string
+          submitted_at?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          checklist_completed?: boolean
           created_at?: string
           id?: string
           job_id?: string
           notes?: string | null
           status?: string
+          submitted_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -400,6 +406,7 @@ export type Database = {
           referral_code: string | null
           updated_at: string
           user_id: string
+          verification_status: string
         }
         Insert: {
           address?: string | null
@@ -417,6 +424,7 @@ export type Database = {
           referral_code?: string | null
           updated_at?: string
           user_id: string
+          verification_status?: string
         }
         Update: {
           address?: string | null
@@ -434,6 +442,7 @@ export type Database = {
           referral_code?: string | null
           updated_at?: string
           user_id?: string
+          verification_status?: string
         }
         Relationships: []
       }

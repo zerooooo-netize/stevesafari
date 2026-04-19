@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -99,9 +99,14 @@ const ServicesPage = () => {
                     <h3 className="font-heading font-semibold text-foreground text-sm sm:text-base">{service.name}</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-2 mb-4">{service.description}</p>
                     <div className="font-heading font-bold text-safari-gold text-lg mb-4">{service.currency} {Number(service.price).toLocaleString()}</div>
-                    <Button variant="outline" size="sm" className="w-full h-10" onClick={() => setSelectedService(service)}>
-                      🛒 Order Now <ArrowRight size={14} />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="flex-1 h-10" asChild>
+                        <Link to={`/services/${service.id}`}>Details</Link>
+                      </Button>
+                      <Button size="sm" className="flex-1 h-10" onClick={() => setSelectedService(service)}>
+                        Order <ArrowRight size={14} />
+                      </Button>
+                    </div>
                   </motion.div>
                 );
               })}

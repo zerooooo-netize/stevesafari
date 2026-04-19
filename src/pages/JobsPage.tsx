@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -100,9 +100,14 @@ const JobsPage = () => {
                     <p className="text-xs text-muted-foreground mt-3">💰 Application fee: KES {Number(job.application_fee).toLocaleString()}</p>
                   )}
 
-                  <Button className="w-full mt-4 h-11 text-sm" onClick={() => applyForJob(job.id)}>
-                    ✅ Apply Now
-                  </Button>
+                  <div className="flex gap-2 mt-4">
+                    <Button variant="outline" className="flex-1 h-11 text-sm" asChild>
+                      <Link to={`/jobs/${job.id}`}>View Details</Link>
+                    </Button>
+                    <Button className="flex-1 h-11 text-sm" onClick={() => applyForJob(job.id)}>
+                      Apply
+                    </Button>
+                  </div>
                 </motion.div>
               ))}
             </div>

@@ -12,8 +12,11 @@ import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import JobsPage from "./pages/JobsPage";
+import JobDetailPage from "./pages/JobDetailPage";
 import ServicesPage from "./pages/ServicesPage";
+import ServiceDetailPage from "./pages/ServiceDetailPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
+import TrustHubPage from "./pages/TrustHubPage";
 import PathChoice from "./pages/PathChoice";
 import AIChatbot from "./components/AIChatbot";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -29,14 +32,23 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <Routes>
+              {/* Public */}
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/jobs" element={<JobsPage />} />
+              <Route path="/jobs/:id" element={<JobDetailPage />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/services/:id" element={<ServiceDetailPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
+              <Route path="/trust" element={<TrustHubPage />} />
+
+              {/* Authenticated */}
               <Route path="/welcome" element={<ProtectedRoute><PathChoice /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
+              {/* Admin */}
               <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
             <AIChatbot />
