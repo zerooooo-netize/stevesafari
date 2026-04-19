@@ -10,12 +10,18 @@ const navLinks = [
   { label: "Jobs", href: "/jobs" },
   { label: "Services", href: "/services" },
   { label: "How It Works", href: "/how-it-works" },
+  { label: "Trust", href: "/trust" },
 ];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const ctaClick = () => {
+    navigate(user ? "/dashboard" : "/auth?redirect=/welcome");
+    setOpen(false);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
@@ -33,11 +39,7 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
-          {user ? (
-            <Button size="sm" onClick={() => navigate("/dashboard")}>Dashboard</Button>
-          ) : (
-            <Button size="sm" onClick={() => navigate("/auth")}>Get Started</Button>
-          )}
+          <Button size="sm" onClick={ctaClick}>{user ? "Dashboard" : "Get Started"}</Button>
         </div>
 
         <button className="md:hidden p-2 text-foreground" onClick={() => setOpen(!open)} aria-label="Toggle menu">
@@ -53,11 +55,7 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            {user ? (
-              <Button size="sm" className="w-full mt-2" onClick={() => { navigate("/dashboard"); setOpen(false); }}>Dashboard</Button>
-            ) : (
-              <Button size="sm" className="w-full mt-2" onClick={() => { navigate("/auth"); setOpen(false); }}>Get Started</Button>
-            )}
+            <Button size="sm" className="w-full mt-2" onClick={ctaClick}>{user ? "Dashboard" : "Get Started"}</Button>
           </div>
         </div>
       )}
