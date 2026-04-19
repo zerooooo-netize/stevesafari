@@ -1,3 +1,4 @@
+// Dashboard.tsx
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { User, FileText, CreditCard, Upload, LogOut, Settings, Briefcase, ShoppingBag, Check, Phone, Loader2, Gift, Download, Shield } from "lucide-react";
+import {
+  User, FileText, CreditCard, Upload, LogOut, Settings,
+  Briefcase, ShoppingBag, Check, Phone, Loader2, Gift,
+  Download, Shield, Lock, ChevronRight, Trophy, Star,
+  ArrowRight, CheckCircle2, Circle, Award, Sparkles
+} from "lucide-react";
 import ReferralCard from "@/components/ReferralCard";
 import SponsorshipCard from "@/components/SponsorshipCard";
 import ApplicationTracker from "@/components/ApplicationTracker";
@@ -16,21 +22,42 @@ import DiscountCodeInput from "@/components/DiscountCodeInput";
 import TrustBar from "@/components/TrustBar";
 import { downloadReceiptPDF } from "@/lib/receipt";
 
-// M-Pesa Payment Widget — deposit-aware
-const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userId: string; applications: any[]; onPaymentComplete: () => void }) => {
+// --- Reusable M-Pesa Payment Widget (Extended for registration & services) ---
+interface MpesaPaymentWidgetProps {
+  userId: string;
+  applications?: any[];         // optional – for application fees
+  paymentType: string;
+  fixedAmount?: number;         // for registration fee
+  serviceId?: string;           // for service orders
+  onPaymentComplete: () => void;
+  compact?: boolean;
+}
+
+const MpesaPaymentWidget = ({
+  userId,
+  applications = [],
+  paymentType,
+  fixedAmount,
+  serviceId,
+  onPaymentComplete,
+  compact = false
+}: MpesaPaymentWidgetProps) => {
   const [phone, setPhone] = useState("+254");
-  const [amount, setAmount] = useState("");
-  const [paymentType, setPaymentType] = useState("application_fee");
+  const [amount, setAmount] = useState(fixedAmount ? String(fixedAmount) : "");
   const [selectedApp, setSelectedApp] = useState("");
   const [payMode, setPayMode] = useState<"full" | "deposit">("full");
   const [sending, setSending] = useState(false);
   const [pollId, setPollId] = useState<string | null>(null);
   const [payStatus, setPayStatus] = useState<string | null>(null);
-  const [discount, setDiscount] = useState<{ code: string | null; discountAmount: number; finalAmount: number; source: "manual" | "referral_auto" | null }>({ code: null, discountAmount: 0, finalAmount: 0, source: null });
+  const [discount, setDiscount] = useState<{
+    code: string | null;
+    discountAmount: number;
+    finalAmount: number;
+    source: "manual" | "referral_auto" | null;
+  }>({ code: null, discountAmount: 0, finalAmount: 0, source: null });
 
   const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
 
-  // When app changes, prefill amount from job
   const selectedAppRow = applications.find(a => a.id === selectedApp);
   const job = selectedAppRow?.jobs;
   const fullFee = Number(job?.application_fee || 0);
@@ -44,7 +71,6 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
     setSelectedApp(id);
     const a = applications.find(x => x.id === id);
     if (a?.jobs?.application_fee) {
-      setPaymentType("application_fee");
       setAmount(String(a.jobs.application_fee));
       setPayMode("full");
     }
@@ -54,16 +80,15 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
     setPayMode(mode);
     if (mode === "deposit" && depositAmount > 0) {
       setAmount(String(depositAmount));
-      setPaymentType("deposit");
     } else if (mode === "full" && fullFee > 0) {
       setAmount(String(fullFee));
-      setPaymentType("application_fee");
     }
   };
 
   const initiate = async () => {
     if (!phone || phone.length < 12) { toast.error("Enter a valid phone number (+254...)"); return; }
-    if (!amount || parseFloat(amount) <= 0) { toast.error("Enter a valid amount"); return; }
+    const finalAmountValue = discount.finalAmount > 0 ? discount.finalAmount : parseFloat(amount);
+    if (!finalAmountValue || finalAmountValue <= 0) { toast.error("Enter a valid amount"); return; }
 
     const isDeposit = payMode === "deposit" && !!selectedApp;
     const balanceRemaining = isDeposit ? Math.max(fullFee - parseFloat(amount), 0) : 0;
@@ -78,13 +103,14 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          phone, amount: parseFloat(amount), userId,
+          phone, amount: finalAmountValue, userId,
           applicationId: selectedApp || null,
           paymentType, isDeposit, balanceRemaining,
+          serviceId: serviceId || null,
           description: `${paymentType.replace("_", " ")} payment`,
           discountCode: discount.code,
           discountAmount: discount.discountAmount,
-          finalAmount: discount.finalAmount > 0 ? discount.finalAmount : parseFloat(amount),
+          finalAmount: finalAmountValue,
         }),
       });
       const data = await resp.json();
@@ -125,28 +151,32 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
   };
 
   return (
-    <div className="border border-border rounded-xl p-4 bg-muted/30 mb-4">
-      <h3 className="font-heading font-medium text-sm mb-3 flex items-center gap-2">
-        <Phone size={16} className="text-safari-gold" /> Pay via M-Pesa
-      </h3>
+    <div className={`border border-border rounded-xl p-4 bg-muted/30 ${compact ? 'mb-2' : 'mb-4'}`}>
+      {!compact && (
+        <h3 className="font-heading font-medium text-sm mb-3 flex items-center gap-2">
+          <Phone size={16} className="text-safari-gold" /> Pay via M-Pesa
+        </h3>
+      )}
 
       {payStatus === "waiting" ? (
         <div className="text-center py-6">
           <Loader2 size={32} className="animate-spin mx-auto text-safari-gold mb-3" />
           <p className="font-medium text-sm">📱 Check your phone!</p>
-          <p className="text-xs text-muted-foreground mt-1">Enter your M-Pesa PIN when prompted. Waiting for confirmation...</p>
+          <p className="text-xs text-muted-foreground mt-1">Enter your M-Pesa PIN when prompted.</p>
         </div>
       ) : payStatus === "completed" ? (
         <div className="text-center py-6">
-          <Check size={32} className="mx-auto text-green-600 mb-3" />
-          <p className="font-medium text-sm text-green-700">Payment Successful! ✅</p>
+          <CheckCircle2 size={32} className="mx-auto text-green-600 mb-3" />
+          <p className="font-medium text-sm text-green-700">Payment Successful!</p>
           <p className="text-xs text-muted-foreground mt-1">Receipt sent to your email.</p>
-          <Button size="sm" variant="outline" className="mt-3" onClick={() => { setPayStatus(null); setAmount(""); }}>Make Another Payment</Button>
+          <Button size="sm" variant="outline" className="mt-3" onClick={() => { setPayStatus(null); setAmount(fixedAmount ? String(fixedAmount) : ""); }}>
+            Make Another Payment
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {applications.length > 0 && (
+          <div className="grid grid-cols-1 gap-3">
+            {applications.length > 0 && !fixedAmount && (
               <div className="sm:col-span-2">
                 <Label className="text-xs">Pay for which application?</Label>
                 <select value={selectedApp} onChange={e => applyJob(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
@@ -171,62 +201,96 @@ const MpesaPaymentWidget = ({ userId, applications, onPaymentComplete }: { userI
               <Label className="text-xs">Phone Number *</Label>
               <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+254712345678" className="text-sm" />
             </div>
-            <div>
-              <Label className="text-xs">Amount (KES) *</Label>
-              <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="5000" className="text-sm" />
-            </div>
-            {!selectedApp && (
-              <div className="sm:col-span-2">
+            {!fixedAmount && (
+              <div>
+                <Label className="text-xs">Amount (KES) *</Label>
+                <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="5000" className="text-sm" />
+              </div>
+            )}
+            {!selectedApp && !fixedAmount && (
+              <div>
                 <Label className="text-xs">Payment For</Label>
-                <select value={paymentType} onChange={e => setPaymentType(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm">
-                  <option value="application_fee">Application Fee</option>
-                  <option value="deposit">Deposit</option>
-                  <option value="balance">Balance Payment</option>
-                  <option value="service_payment">Service Payment</option>
-                  <option value="travel_fee">Travel Fee</option>
-                  <option value="other">Other</option>
+                <select value={paymentType} onChange={e => {}} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm" disabled>
+                  <option value={paymentType}>{paymentType.replace("_", " ")}</option>
                 </select>
               </div>
             )}
           </div>
-          <DiscountCodeInput
-            userId={userId}
-            baseAmount={parseFloat(amount) || 0}
-            applyTo={paymentType === "service_payment" ? "service" : paymentType === "application_fee" ? "application_fee" : "any"}
-            onChange={setDiscount}
-          />
+
+          {!fixedAmount && (
+            <DiscountCodeInput
+              userId={userId}
+              baseAmount={parseFloat(amount) || 0}
+              applyTo={paymentType === "service_payment" ? "service" : "application_fee"}
+              onChange={setDiscount}
+            />
+          )}
           {discount.discountAmount > 0 && (
             <div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">
-              Original: KES {(parseFloat(amount) || 0).toLocaleString()} • Discount: −KES {discount.discountAmount.toLocaleString()} • <strong className="text-foreground">You pay: KES {discount.finalAmount.toLocaleString()}</strong>
+              Original: KES {(parseFloat(amount) || 0).toLocaleString()} • Discount: −KES {discount.discountAmount.toLocaleString()} • <strong>You pay: KES {discount.finalAmount.toLocaleString()}</strong>
             </div>
           )}
           <div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5">
             <Shield size={12} className="text-safari-gold mt-0.5 shrink-0" />
-            <span>Securely processed via M-Pesa (Kopo Kopo). You'll get an official receipt instantly. We never ask for payments outside this platform.</span>
+            <span>Securely processed via M-Pesa. Official receipt provided.</span>
           </div>
           <Button onClick={initiate} disabled={sending} className="w-full text-sm">
             {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : `📱 Pay KES ${(discount.finalAmount > 0 ? discount.finalAmount : parseFloat(amount) || 0).toLocaleString()} with M-Pesa`}
           </Button>
-          {payStatus === "failed" && <p className="text-xs text-destructive text-center">Payment failed. Please try again.</p>}
-          {payStatus === "timeout" && <p className="text-xs text-yellow-600 text-center">Payment not confirmed yet. Check your payment history.</p>}
+          {payStatus === "failed" && <p className="text-xs text-destructive text-center">Payment failed. Try again.</p>}
+          {payStatus === "timeout" && <p className="text-xs text-yellow-600 text-center">Payment not confirmed. Check history.</p>}
         </div>
       )}
     </div>
   );
 };
 
-const statusSteps = ["registered", "deposit_paid", "paid", "documents_submitted", "verified", "batch_assigned", "completed"];
-const statusLabels: Record<string, string> = {
-  registered: "✅ Registered",
-  deposit_paid: "💳 Deposit Paid",
-  paid: "💰 Paid in Full",
-  documents_submitted: "📄 Docs Sent",
-  verified: "✔️ Verified",
-  batch_assigned: "✈️ Batch Ready",
-  completed: "🎉 Complete",
-  rejected: "❌ Rejected",
+// --- Level Progress Bar (Game-like) ---
+const LevelProgress = ({ currentLevel, maxLevel = 5 }: { currentLevel: number; maxLevel?: number }) => {
+  const levels = [
+    { name: "Registration", icon: User },
+    { name: "Profile", icon: Settings },
+    { name: "Apply Jobs", icon: Briefcase },
+    { name: "Documents", icon: FileText },
+    { name: "Complete", icon: Trophy },
+  ];
+
+  return (
+    <div className="mb-8">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-heading font-semibold text-sm flex items-center gap-1">
+          <Sparkles size={16} className="text-safari-gold" /> Your Journey
+        </h3>
+        <span className="text-xs text-muted-foreground">Level {currentLevel}/{maxLevel}</span>
+      </div>
+      <div className="relative">
+        <div className="absolute top-1/2 left-0 right-0 h-1 bg-muted -translate-y-1/2 z-0" />
+        <div className="relative z-10 flex justify-between">
+          {levels.slice(0, maxLevel).map((level, idx) => {
+            const isCompleted = idx < currentLevel - 1;
+            const isCurrent = idx === currentLevel - 1;
+            const isLocked = idx > currentLevel - 1;
+            const Icon = level.icon;
+            return (
+              <div key={idx} className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  isCompleted ? "bg-green-500 text-white" :
+                  isCurrent ? "bg-safari-gold text-white ring-4 ring-safari-gold/20" :
+                  "bg-muted text-muted-foreground"
+                }`}>
+                  {isCompleted ? <CheckCircle2 size={16} /> : idx + 1}
+                </div>
+                <span className="text-[10px] mt-1 text-center hidden sm:block">{level.name}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 };
 
+// --- Main Dashboard Component ---
 const Dashboard = () => {
   const { user, profile, isAdmin, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
@@ -235,10 +299,19 @@ const Dashboard = () => {
   const [payments, setPayments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ full_name: "", phone: "", address: "", id_number: "", passport_number: "", date_of_birth: "", nationality: "Kenyan" });
+  const [form, setForm] = useState({
+    full_name: "", phone: "", address: "", id_number: "",
+    passport_number: "", date_of_birth: "", nationality: "Kenyan"
+  });
   const [uploading, setUploading] = useState(false);
   const [docType, setDocType] = useState("cv");
   const [activeSection, setActiveSection] = useState("profile");
+  const [showRegistrationPayment, setShowRegistrationPayment] = useState(false);
+  const [selectedServiceForPayment, setSelectedServiceForPayment] = useState<string | null>(null);
+  const [uploadedDocForService, setUploadedDocForService] = useState<any>(null);
+
+  // Registration fee constant
+  const REGISTRATION_FEE = 500; // KES
 
   useEffect(() => {
     if (!user) return;
@@ -288,42 +361,103 @@ const Dashboard = () => {
     const { error: uploadErr } = await supabase.storage.from("user-documents").upload(filePath, file);
     if (uploadErr) { toast.error("Upload failed: " + uploadErr.message); setUploading(false); return; }
     const { data: urlData } = supabase.storage.from("user-documents").getPublicUrl(filePath);
-    const { error: insertErr } = await supabase.from("documents").insert({
+    const { data: docData, error: insertErr } = await supabase.from("documents").insert({
       user_id: user.id,
       document_type: docType,
       file_url: urlData.publicUrl,
       file_name: file.name,
       application_id: applications.length > 0 ? applications[0].id : null,
-    });
-    if (insertErr) { toast.error(insertErr.message); } else { toast.success("Document uploaded! 📄"); loadData(); }
+    }).select().single();
+    if (insertErr) { toast.error(insertErr.message); } else { 
+      toast.success("Document uploaded! 📄");
+      setUploadedDocForService(docData);
+      loadData(); 
+    }
     setUploading(false);
   };
 
-  const getProgressIndex = (status: string) => {
-    const idx = statusSteps.indexOf(status);
-    return idx === -1 ? 0 : idx;
+  // Compute current level based on profile completion
+  const getCurrentLevel = () => {
+    if (!profile?.registration_fee_paid) return 1;
+    const profileCompleted = profile.full_name && profile.phone && profile.id_number;
+    if (!profileCompleted) return 2;
+    if (applications.length === 0) return 3;
+    // If they have at least one application with paid status, move to level 4
+    const hasPaidApp = applications.some(app => app.status === "paid" || app.status === "deposit_paid");
+    if (!hasPaidApp) return 3;
+    if (documents.length === 0) return 4;
+    return 5; // Complete
   };
 
-  const sections = [
-    { key: "profile", label: "👤 Profile", icon: User },
-    { key: "applications", label: "📋 Applications", icon: Briefcase },
-    { key: "documents", label: "📄 Documents", icon: FileText },
-    { key: "services", label: "🛒 Services", icon: ShoppingBag },
-    { key: "payments", label: "💰 Payments", icon: CreditCard },
-    { key: "refer", label: "🎁 Refer & Earn", icon: Gift },
-    { key: "sponsorship", label: "🤝 Sponsorship", icon: Gift },
-  ];
+  const currentLevel = getCurrentLevel();
+  const maxLevel = 5;
 
+  // If registration not paid, show payment prompt
+  if (!profile?.registration_fee_paid) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-20 pb-12 px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">🚀 Welcome to Safari Jobs!</h1>
+              <p className="text-muted-foreground">Complete your registration to unlock all features.</p>
+            </div>
+            <LevelProgress currentLevel={1} maxLevel={maxLevel} />
+            
+            <div className="bg-card border border-border rounded-2xl p-6 shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-safari-gold/10 flex items-center justify-center">
+                  <Trophy size={24} className="text-safari-gold" />
+                </div>
+                <div>
+                  <h2 className="font-heading font-semibold text-lg">Level 1: Registration Fee</h2>
+                  <p className="text-sm text-muted-foreground">One-time payment to join our agency.</p>
+                </div>
+              </div>
+              
+              {!showRegistrationPayment ? (
+                <div className="space-y-4">
+                  <div className="bg-muted/30 rounded-xl p-4">
+                    <p className="text-sm mb-2">Registration Fee: <span className="font-bold text-lg">KES {REGISTRATION_FEE}</span></p>
+                    <p className="text-xs text-muted-foreground">This fee covers agency processing and unlocks all job applications.</p>
+                  </div>
+                  <Button onClick={() => setShowRegistrationPayment(true)} className="w-full" size="lg">
+                    Pay Registration Fee <ArrowRight size={16} className="ml-2" />
+                  </Button>
+                </div>
+              ) : (
+                <MpesaPaymentWidget
+                  userId={user!.id}
+                  paymentType="registration_fee"
+                  fixedAmount={REGISTRATION_FEE}
+                  onPaymentComplete={() => {
+                    refreshProfile();
+                    toast.success("🎉 Registration complete! Level 2 unlocked.");
+                    setShowRegistrationPayment(false);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Registration paid - show full dashboard
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-20 pb-12 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Welcome header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
             <div>
-              <h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground">
-                👋 Welcome, {profile?.full_name || "User"}
+              <h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
+                👋 Welcome, {profile?.full_name || "Explorer"}!
+                {currentLevel === maxLevel && <Award size={20} className="text-safari-gold" />}
               </h1>
               <p className="text-muted-foreground text-xs sm:text-sm">{user?.email}</p>
             </div>
@@ -339,26 +473,51 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Section tabs - scrollable on mobile */}
+          {/* Game-like level progress */}
+          <LevelProgress currentLevel={currentLevel} maxLevel={maxLevel} />
+
+          {/* Section tabs with lock states */}
           <div className="flex gap-2 overflow-x-auto pb-3 mb-6 -mx-4 px-4 scrollbar-hide">
-            {sections.map((s) => (
-              <button
-                key={s.key}
-                onClick={() => setActiveSection(s.key)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeSection === s.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
+            {[
+              { key: "profile", label: "👤 Profile", icon: User, minLevel: 2 },
+              { key: "applications", label: "📋 Applications", icon: Briefcase, minLevel: 3 },
+              { key: "documents", label: "📄 Documents", icon: FileText, minLevel: 4 },
+              { key: "services", label: "🛒 Services", icon: ShoppingBag, minLevel: 2 },
+              { key: "payments", label: "💰 Payments", icon: CreditCard, minLevel: 2 },
+              { key: "refer", label: "🎁 Refer & Earn", icon: Gift, minLevel: 2 },
+              { key: "sponsorship", label: "🤝 Sponsorship", icon: Gift, minLevel: 2 },
+            ].map((s) => {
+              const isLocked = currentLevel < s.minLevel;
+              return (
+                <button
+                  key={s.key}
+                  onClick={() => !isLocked && setActiveSection(s.key)}
+                  disabled={isLocked}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
+                    activeSection === s.key && !isLocked
+                      ? "bg-primary text-primary-foreground"
+                      : isLocked
+                      ? "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  {isLocked ? <Lock size={12} /> : <s.icon size={12} />}
+                  {s.label}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Profile Section */}
+          {/* Profile Section (Level 2) */}
           {activeSection === "profile" && (
             <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-heading font-semibold flex items-center gap-2 text-base sm:text-lg">👤 My Profile</h2>
+                <h2 className="font-heading font-semibold flex items-center gap-2 text-base sm:text-lg">
+                  <User size={18} /> My Profile
+                  {profile?.full_name && profile.phone && profile.id_number && (
+                    <CheckCircle2 size={16} className="text-green-500 ml-1" />
+                  )}
+                </h2>
                 <Button variant="outline" size="sm" className="text-xs" onClick={() => setEditing(!editing)}>
                   {editing ? "Cancel" : "✏️ Edit"}
                 </Button>
@@ -384,10 +543,18 @@ const Dashboard = () => {
                   <div className="bg-muted/50 rounded-lg p-3"><span className="text-muted-foreground text-xs block">Address</span><span className="font-medium">{profile?.address || "—"}</span></div>
                 </div>
               )}
+              {currentLevel === 2 && profile?.full_name && profile.phone && profile.id_number && (
+                <div className="mt-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p className="text-sm flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-green-600" />
+                    Profile complete! Level 3 unlocked.
+                  </p>
+                </div>
+              )}
             </section>
           )}
 
-          {/* Applications Section */}
+          {/* Applications Section (Level 3) */}
           {activeSection === "applications" && (
             <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
               <h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">📋 My Applications</h2>
@@ -399,38 +566,58 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {applications.map((app) => (
-                    <div key={app.id} className="border border-border rounded-xl p-4">
-                      <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-3">
-                        <div>
-                          <h3 className="font-semibold text-sm">{app.jobs?.title}</h3>
-                          <p className="text-xs text-muted-foreground">{app.jobs?.country} • {app.jobs?.salary}</p>
-                        </div>
-                        <span className={`text-xs px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${app.status === 'rejected' ? 'bg-destructive/10 text-destructive' : 'bg-safari-gold/10 text-safari-gold'}`}>
-                          {statusLabels[app.status] || app.status}
-                        </span>
-                      </div>
-                      {/* Visual progress */}
-                      {app.status !== "rejected" && (
-                        <div className="space-y-1">
-                          <div className="flex gap-1">
-                            {statusSteps.map((step, i) => (
-                              <div key={step} className={`h-2.5 flex-1 rounded-full transition-colors ${i <= getProgressIndex(app.status) ? 'bg-safari-gold' : 'bg-muted'}`} />
-                            ))}
+                  {applications.map((app) => {
+                    const statusSteps = ["registered", "deposit_paid", "paid", "documents_submitted", "verified", "batch_assigned", "completed"];
+                    const statusLabels: Record<string, string> = {
+                      registered: "✅ Registered", deposit_paid: "💳 Deposit Paid", paid: "💰 Paid in Full",
+                      documents_submitted: "📄 Docs Sent", verified: "✔️ Verified", batch_assigned: "✈️ Batch Ready",
+                      completed: "🎉 Complete", rejected: "❌ Rejected",
+                    };
+                    const getProgressIndex = (status: string) => statusSteps.indexOf(status);
+                    return (
+                      <div key={app.id} className="border border-border rounded-xl p-4">
+                        <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-3">
+                          <div>
+                            <h3 className="font-semibold text-sm">{app.jobs?.title}</h3>
+                            <p className="text-xs text-muted-foreground">{app.jobs?.country} • {app.jobs?.salary}</p>
                           </div>
-                          <p className="text-[10px] text-muted-foreground text-center">
-                            Step {getProgressIndex(app.status) + 1} of {statusSteps.length}: {statusLabels[app.status]}
-                          </p>
+                          <span className={`text-xs px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${app.status === 'rejected' ? 'bg-destructive/10 text-destructive' : 'bg-safari-gold/10 text-safari-gold'}`}>
+                            {statusLabels[app.status] || app.status}
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {app.status !== "rejected" && (
+                          <div className="space-y-1">
+                            <div className="flex gap-1">
+                              {statusSteps.map((step, i) => (
+                                <div key={step} className={`h-2.5 flex-1 rounded-full transition-colors ${i <= getProgressIndex(app.status) ? 'bg-safari-gold' : 'bg-muted'}`} />
+                              ))}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground text-center">
+                              Step {getProgressIndex(app.status) + 1} of {statusSteps.length}: {statusLabels[app.status]}
+                            </p>
+                          </div>
+                        )}
+                        {/* Payment widget for applications that need fee */}
+                        {app.status === "registered" && app.jobs?.application_fee > 0 && (
+                          <div className="mt-3">
+                            <MpesaPaymentWidget
+                              userId={user!.id}
+                              applications={[app]}
+                              paymentType="application_fee"
+                              onPaymentComplete={loadData}
+                              compact
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </section>
           )}
 
-          {/* Documents Section */}
+          {/* Documents Section with Service Payment Flow (Level 4) */}
           {activeSection === "documents" && (
             <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
               <h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">📄 My Documents</h2>
@@ -460,7 +647,43 @@ const Dashboard = () => {
                 </div>
               </div>
 
+              {/* After upload, offer service payment if it's a paid service document */}
+              {uploadedDocForService && !selectedServiceForPayment && (
+                <div className="mb-4 p-4 border border-safari-gold/30 bg-safari-gold/5 rounded-xl">
+                  <p className="text-sm font-medium mb-2">Document uploaded! Would you like professional processing?</p>
+                  <div className="space-y-2">
+                    <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => setSelectedServiceForPayment("cv_writing")}>
+                      <FileText size={14} className="mr-2" /> CV Writing & Optimization (KES 1500)
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => setSelectedServiceForPayment("passport_assistance")}>
+                      <FileText size={14} className="mr-2" /> Passport Application Assistance (KES 3000)
+                    </Button>
+                    <Button variant="ghost" size="sm" className="w-full" onClick={() => setUploadedDocForService(null)}>
+                      Skip for now
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {selectedServiceForPayment && (
+                <div className="mb-4">
+                  <MpesaPaymentWidget
+                    userId={user!.id}
+                    paymentType="service_payment"
+                    serviceId={selectedServiceForPayment}
+                    fixedAmount={selectedServiceForPayment === "cv_writing" ? 1500 : 3000}
+                    onPaymentComplete={() => {
+                      toast.success("Payment successful! Service order created.");
+                      setSelectedServiceForPayment(null);
+                      setUploadedDocForService(null);
+                      loadData();
+                    }}
+                  />
+                </div>
+              )}
+
               {/* Document list */}
+              <h3 className="font-medium text-sm mt-6 mb-3">Uploaded Documents</h3>
               {documents.length === 0 ? (
                 <p className="text-muted-foreground text-sm text-center py-4">No documents uploaded yet</p>
               ) : (
@@ -471,12 +694,7 @@ const Dashboard = () => {
                         <p className="text-sm font-medium truncate">{doc.file_name || doc.document_type}</p>
                         <p className="text-xs text-muted-foreground capitalize">{doc.document_type.replace("_", " ")} • {doc.status}</p>
                       </div>
-                      <a
-                        href={doc.file_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-xs text-safari-gold hover:underline shrink-0 ml-2"
-                      >
+                      <a href={doc.file_url} target="_blank" rel="noreferrer" className="text-xs text-safari-gold hover:underline shrink-0 ml-2">
                         View
                       </a>
                     </div>
@@ -531,11 +749,8 @@ const Dashboard = () => {
             <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
               <h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">💰 Payments</h2>
 
-              {/* M-Pesa Payment Form */}
-              <MpesaPaymentWidget userId={user!.id} applications={applications} onPaymentComplete={loadData} />
-
               {/* Payment History */}
-              <h3 className="font-heading font-medium text-sm mt-6 mb-3">📜 Payment History</h3>
+              <h3 className="font-heading font-medium text-sm mb-3">📜 Payment History</h3>
               {payments.length === 0 ? (
                 <p className="text-muted-foreground text-sm text-center py-4">No payments yet</p>
               ) : (
