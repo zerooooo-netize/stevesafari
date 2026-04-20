@@ -123,6 +123,9 @@ const JobDetailPage = () => {
   const [applying, setApplying] = useState(false);
   const [existingApp, setExistingApp] = useState<any>(null);
   const [showRegistrationPrompt, setShowRegistrationPrompt] = useState(false);
+  const { num: settingNum } = useSettings(["registration_fee", "max_active_applications"]);
+  const REG_FEE = settingNum("registration_fee", 500);
+  const MAX_APPS = settingNum("max_active_applications", 3);
 
   useSEO({
     title: job ? `${job.title} — ${job.country} | Steve Safari` : "Job Detail | Steve Safari",
@@ -158,7 +161,7 @@ const JobDetailPage = () => {
       return;
     }
 
-    // Check registration fee paid
+    // Check registration fee paid (only required for the jobs path)
     if (!profile?.registration_fee_paid) {
       setShowRegistrationPrompt(true);
       return;
@@ -169,8 +172,19 @@ const JobDetailPage = () => {
       return;
     }
 
+    // Enforce per-user active applications cap (default 3)
+    const { count } = await supabase
+      .from("applications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .not("status", "in", "(rejected,completed)");
+    if ((count || 0) >= MAX_APPS) {
+      toast.error(`You can have at most ${MAX_APPS} active applications. Complete or cancel one first.`);
+      return;
+    }
+
     setApplying(true);
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("applications")
       .insert({ user_id: user.id, job_id: job.id, status: "registered" })
       .select("id")
@@ -238,7 +252,7 @@ const JobDetailPage = () => {
               <div className="flex-1">
                 <p className="font-medium text-sm">Complete registration to apply</p>
                 <p className="text-xs text-muted-foreground">
-                  A one‑time agency fee of KES 500 is required before you can apply for jobs.
+                  A one‑time agency fee of KES {REG_FEE.toLocaleString()} is required before you can apply for jobs.
                 </p>
               </div>
               <Button size="sm" variant="outline" onClick={() => setShowRegistrationPrompt(true)}>
@@ -255,10 +269,11 @@ const JobDetailPage = () => {
                 Unlock Your Journey
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Pay the KES 500 registration fee to apply for this job and access all agency services.
+                Pay the KES {REG_FEE.toLocaleString()} registration fee to apply for this job and access all agency services.
               </p>
-              <MpesaPaymentWidget
+              <MpesaRegWidget
                 userId={user!.id}
+                amount={REG_FEE}
                 onPaymentComplete={async () => {
                   await refreshProfile();
                   setShowRegistrationPrompt(false);
