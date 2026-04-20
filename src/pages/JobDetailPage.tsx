@@ -381,7 +381,7 @@ const JobDetailPage = () => {
                 {[
                   {
                     title: "Complete Registration",
-                    desc: "Pay one‑time agency fee (KES 500) to unlock job applications.",
+                    desc: `Pay one‑time agency fee (KES ${REG_FEE.toLocaleString()}) to unlock job applications.`,
                     icon: Lock,
                     status: isRegistered ? "completed" : "pending",
                   },
@@ -471,7 +471,7 @@ const JobDetailPage = () => {
                     ? `Status: ${existingApp.status.replace("_", " ")}`
                     : isRegistered
                     ? `Start with KES ${(depositEnabled ? depositAmount : fee).toLocaleString()}`
-                    : "One‑time KES 500 registration fee"}
+                    : `One‑time KES ${REG_FEE.toLocaleString()} registration fee`}
                 </p>
               </div>
               <Button
