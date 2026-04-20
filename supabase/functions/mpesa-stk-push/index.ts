@@ -261,7 +261,7 @@ serve(async (req) => {
       payment_channel: "M-PESA STK Push",
       till_number: cfg.kopokopo_till_number,
       subscriber: { first_name: firstName || "", last_name: lastName || "", phone_number: phone, email: email || "" },
-      amount: { currency: "KES", value: String(amount) },
+      amount: { currency: "KES", value: String(chargeAmount) },
       metadata: { ...metadata, payment_id: payment.id },
       _links: { callback_url: callbackUrl },
     };
