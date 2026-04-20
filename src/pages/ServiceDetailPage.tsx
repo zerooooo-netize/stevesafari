@@ -354,24 +354,32 @@ const ServiceDetailPage = () => {
           <section className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card mb-6">
             <h2 className="font-heading font-bold text-lg mb-3">Payment options</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="border border-safari-gold rounded-xl p-4 bg-safari-gold/5">
+              <button
+                type="button"
+                onClick={() => setPayMode("full")}
+                className={`text-left rounded-xl p-4 border transition-colors ${
+                  payMode === "full"
+                    ? "border-safari-gold bg-safari-gold/5 ring-2 ring-safari-gold/40"
+                    : "border-border hover:border-safari-gold/50"
+                }`}
+              >
                 <p className="text-xs text-muted-foreground">Full payment</p>
-                <p className="font-heading text-xl font-bold mt-1">
-                  KES {price.toLocaleString()}
-                </p>
-                <p className="text-[11px] text-green-700 mt-1">
-                  ✓ Get final file immediately on delivery
-                </p>
-              </div>
-              <div className="border border-border rounded-xl p-4">
+                <p className="font-heading text-xl font-bold mt-1">KES {price.toLocaleString()}</p>
+                <p className="text-[11px] text-green-700 mt-1">✓ Get final file immediately on delivery</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPayMode("half")}
+                className={`text-left rounded-xl p-4 border transition-colors ${
+                  payMode === "half"
+                    ? "border-safari-gold bg-safari-gold/5 ring-2 ring-safari-gold/40"
+                    : "border-border hover:border-safari-gold/50"
+                }`}
+              >
                 <p className="text-xs text-muted-foreground">Half payment</p>
-                <p className="font-heading text-xl font-bold mt-1">
-                  KES {halfPrice.toLocaleString()}
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-1">
-                  ⏳ Final file unlocked after balance paid
-                </p>
-              </div>
+                <p className="font-heading text-xl font-bold mt-1">KES {halfPrice.toLocaleString()}</p>
+                <p className="text-[11px] text-muted-foreground mt-1">⏳ Final file unlocked after balance paid</p>
+              </button>
             </div>
             <div className="flex items-start gap-2 mt-3 text-xs bg-muted/50 rounded p-2">
               <Clock size={12} className="text-muted-foreground mt-0.5 shrink-0" />
@@ -466,14 +474,17 @@ const ServiceDetailPage = () => {
                       </p>
                     )}
                     <p className="text-xs font-medium mt-2 pt-2 border-t border-border">
-                      Total: KES {price.toLocaleString()}
+                      Total now: KES {(payMode === "half" ? halfPrice : price).toLocaleString()}
+                      {payMode === "half" && (
+                        <span className="block text-[10px] text-muted-foreground font-normal">Balance KES {halfPrice.toLocaleString()} due before delivery</span>
+                      )}
                     </p>
                   </div>
 
                   <MpesaPaymentWidget
                     userId={user!.id}
                     serviceId={service.id}
-                    amount={price}
+                    amount={payMode === "half" ? halfPrice : price}
                     onPaymentComplete={handlePaymentComplete}
                   />
 
