@@ -404,6 +404,7 @@ export type Database = {
           passport_number: string | null
           phone: string | null
           referral_code: string | null
+          registration_fee_paid: boolean | null
           updated_at: string
           user_id: string
           verification_status: string
@@ -422,6 +423,7 @@ export type Database = {
           passport_number?: string | null
           phone?: string | null
           referral_code?: string | null
+          registration_fee_paid?: boolean | null
           updated_at?: string
           user_id: string
           verification_status?: string
@@ -440,6 +442,7 @@ export type Database = {
           passport_number?: string | null
           phone?: string | null
           referral_code?: string | null
+          registration_fee_paid?: boolean | null
           updated_at?: string
           user_id?: string
           verification_status?: string
