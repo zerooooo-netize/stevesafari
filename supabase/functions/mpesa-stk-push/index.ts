@@ -116,10 +116,15 @@ serve(async (req) => {
             if (refRow && !refRow.reward_paid) {
               const { data: refSettings } = await supabase
                 .from("settings").select("key,value")
-                .in("key", ["referral_bonus_amount", "referral_enabled"]);
+                .in("key", ["referral_bonus_amount", "referral_enabled", "referral_bonus_mode", "referral_bonus_percent"]);
               const sMap = Object.fromEntries((refSettings || []).map((s: any) => [s.key, s.value]));
               const enabled = sMap.referral_enabled !== "false";
-              const bonus = Number(sMap.referral_bonus_amount || 0);
+              const mode = (sMap.referral_bonus_mode || "fixed").toLowerCase();
+              const fixedBonus = Number(sMap.referral_bonus_amount || 0);
+              const pct = Number(sMap.referral_bonus_percent || 0);
+              const bonus = mode === "percent"
+                ? Math.round((Number(paymentRow.amount) * pct) / 100)
+                : fixedBonus;
 
               if (enabled && bonus > 0) {
                 await supabase.from("referrals").update({
@@ -138,10 +143,10 @@ serve(async (req) => {
                     full_name: refProfile.full_name || "Customer",
                     receipt_number: `REF-${refRow.id.slice(0, 8)}`,
                     amount: bonus.toLocaleString(),
-                    payment_type: "referral bonus",
+                    payment_type: `referral bonus (${mode === "percent" ? pct + "%" : "fixed"})`,
                     reference: "Referral reward",
                     date: new Date().toLocaleString(),
-                    balance_line: "Bonus credited to your account. Contact admin to redeem.",
+                    balance_line: "Bonus credited to your wallet. Redeem from your dashboard.",
                   });
                 }
               }
@@ -173,9 +178,13 @@ serve(async (req) => {
     const body = await req.json();
     const { phone, amount, firstName, lastName, email, metadata, userId,
       applicationId, serviceOrderId, paymentType, description,
-      isDeposit, balanceRemaining } = body;
+      isDeposit, balanceRemaining, serviceId,
+      discountCode, discountAmount, finalAmount } = body;
 
-    if (!phone || !amount || amount <= 0) {
+    // Use the discounted final amount if provided
+    const chargeAmount = Number(finalAmount && finalAmount > 0 ? finalAmount : amount);
+
+    if (!phone || !chargeAmount || chargeAmount <= 0) {
       return new Response(JSON.stringify({ error: "Valid phone and amount > 0 required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -204,7 +213,7 @@ serve(async (req) => {
       user_id: userId,
       application_id: applicationId || null,
       service_order_id: serviceOrderId || null,
-      amount,
+      amount: chargeAmount,
       currency: "KES",
       payment_method: "mpesa",
       phone_number: phone,
@@ -222,6 +231,29 @@ serve(async (req) => {
       });
     }
 
+    // ---- Record discount redemption (if a code was applied) ----
+    if (discountCode && Number(discountAmount) > 0) {
+      try {
+        const { data: dc } = await supabase
+          .from("discount_codes").select("id").eq("code", String(discountCode).toUpperCase()).maybeSingle();
+        await supabase.from("discount_redemptions").insert({
+          user_id: userId,
+          code: String(discountCode).toUpperCase(),
+          discount_code_id: dc?.id || null,
+          payment_id: payment.id,
+          amount_discounted: Number(discountAmount),
+          source: "manual",
+        });
+        if (dc?.id) {
+          // Best-effort increment of uses_count
+          const { data: cur } = await supabase.from("discount_codes").select("uses_count").eq("id", dc.id).single();
+          await supabase.from("discount_codes").update({ uses_count: (cur?.uses_count || 0) + 1 }).eq("id", dc.id);
+        }
+      } catch (e) {
+        console.error("discount redemption insert failed:", e);
+      }
+    }
+
     const token = await getAccessToken(cfg.kopokopo_client_id, cfg.kopokopo_client_secret, env);
     const callbackUrl = `${supabaseUrl}/functions/v1/mpesa-stk-push?action=callback`;
 
@@ -229,7 +261,7 @@ serve(async (req) => {
       payment_channel: "M-PESA STK Push",
       till_number: cfg.kopokopo_till_number,
       subscriber: { first_name: firstName || "", last_name: lastName || "", phone_number: phone, email: email || "" },
-      amount: { currency: "KES", value: String(amount) },
+      amount: { currency: "KES", value: String(chargeAmount) },
       metadata: { ...metadata, payment_id: payment.id },
       _links: { callback_url: callbackUrl },
     };

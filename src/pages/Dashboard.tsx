@@ -511,6 +511,22 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Retry banner if any data failed to load */}
+          {loadError && (
+            <div className="mb-4 bg-destructive/10 border border-destructive/30 rounded-xl p-3 flex items-center justify-between gap-3">
+              <div className="flex items-start gap-2 text-sm">
+                <AlertCircle size={18} className="text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium text-destructive">Couldn't load all your data</p>
+                  <p className="text-xs text-muted-foreground">{loadError}</p>
+                </div>
+              </div>
+              <Button size="sm" variant="outline" onClick={loadData} disabled={dataLoading}>
+                <RefreshCw size={14} className={`mr-1 ${dataLoading ? 'animate-spin' : ''}`} /> Retry
+              </Button>
+            </div>
+          )}
+
           {/* Game-like level progress */}
           <LevelProgress currentLevel={currentLevel} maxLevel={maxLevel} />
 
@@ -647,6 +663,17 @@ const Dashboard = () => {
                             />
                           </div>
                         )}
+                        {/* Inline pre-application checklist gate */}
+                        {!["verified","batch_assigned","completed","rejected"].includes(app.status) && (
+                          <div className="mt-3">
+                            <PreApplicationChecklist
+                              userId={user!.id}
+                              applicationId={app.id}
+                              jobFee={Number(app.jobs?.application_fee || 0)}
+                              onReady={loadData}
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -685,17 +712,18 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* After upload, offer service payment if it's a paid service document */}
-              {uploadedDocForService && !selectedServiceForPayment && (
+              {/* After upload, offer dynamic services from DB (no hardcoded amounts) */}
+              {uploadedDocForService && !selectedServiceForPayment && activeServices.length > 0 && (
                 <div className="mb-4 p-4 border border-safari-gold/30 bg-safari-gold/5 rounded-xl">
-                  <p className="text-sm font-medium mb-2">Document uploaded! Would you like professional processing?</p>
+                  <p className="text-sm font-medium mb-2">Document uploaded! Need professional processing?</p>
                   <div className="space-y-2">
-                    <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => setSelectedServiceForPayment("cv_writing")}>
-                      <FileText size={14} className="mr-2" /> CV Writing & Optimization (KES 1500)
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => setSelectedServiceForPayment("passport_assistance")}>
-                      <FileText size={14} className="mr-2" /> Passport Application Assistance (KES 3000)
-                    </Button>
+                    {activeServices.map((s) => (
+                      <Button key={s.id} variant="outline" size="sm" className="w-full justify-start"
+                        onClick={() => setSelectedServiceForPayment(s)}>
+                        <FileText size={14} className="mr-2" />
+                        {s.name} ({s.currency || "KES"} {Number(s.price).toLocaleString()})
+                      </Button>
+                    ))}
                     <Button variant="ghost" size="sm" className="w-full" onClick={() => setUploadedDocForService(null)}>
                       Skip for now
                     </Button>
@@ -703,13 +731,13 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {selectedServiceForPayment && (
+              {selectedServiceForPayment && typeof selectedServiceForPayment === "object" && (
                 <div className="mb-4">
                   <MpesaPaymentWidget
                     userId={user!.id}
                     paymentType="service_payment"
-                    serviceId={selectedServiceForPayment}
-                    fixedAmount={selectedServiceForPayment === "cv_writing" ? 1500 : 3000}
+                    serviceId={selectedServiceForPayment.id}
+                    fixedAmount={Number(selectedServiceForPayment.price)}
                     onPaymentComplete={() => {
                       toast.success("Payment successful! Service order created.");
                       setSelectedServiceForPayment(null);
@@ -770,11 +798,15 @@ const Dashboard = () => {
                           {order.status}
                         </span>
                       </div>
-                      {order.completed_file_url && (
+                      {order.completed_file_url && order.status === "completed" ? (
                         <a href={order.completed_file_url} target="_blank" rel="noreferrer" className="text-xs text-safari-gold hover:underline mt-2 inline-block">
                           📥 Download Completed File
                         </a>
-                      )}
+                      ) : order.completed_file_url && order.status !== "completed" ? (
+                        <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1.5 bg-muted/50 rounded p-2">
+                          <Lock size={12} /> File ready — complete full payment to download.
+                        </div>
+                      ) : null}
                     </div>
                   ))}
                 </div>
