@@ -183,6 +183,7 @@ const ServiceDetailPage = () => {
   const [details, setDetails] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [payMode, setPayMode] = useState<"full" | "half">("full");
 
   useSEO({
     title: service ? `${service.name} | Steve Safari` : "Service | Steve Safari",
@@ -214,6 +215,7 @@ const ServiceDetailPage = () => {
     setOrderStep("details");
     setDetails("");
     setFile(null);
+    setPayMode("full");
   };
 
   const handlePaymentComplete = async (receiptNumber?: string) => {
@@ -238,13 +240,16 @@ const ServiceDetailPage = () => {
       uploadedUrl = urlData.publicUrl;
     }
 
-    // Create service order (paid status)
+    // Create service order. status reflects payment progress: half_paid or paid.
+    const fullPrice = Number(service.price || 0);
+    const isHalf = payMode === "half";
     const { error } = await supabase.from("service_orders").insert({
       user_id: user.id,
       service_id: service.id,
       details: details.trim(),
       uploaded_file_url: uploadedUrl,
-      status: "paid", // or appropriate status after payment
+      status: isHalf ? "half_paid" : "paid",
+      notes: isHalf ? `Half payment received. Balance KES ${Math.round(fullPrice / 2).toLocaleString()} due before delivery.` : null,
     });
 
     setSubmitting(false);
@@ -253,7 +258,7 @@ const ServiceDetailPage = () => {
       return;
     }
 
-    toast.success("Order placed successfully! 🎉 Check your dashboard for updates.");
+    toast.success(isHalf ? "Half-payment received! Balance due before delivery." : "Order placed successfully! 🎉");
     setShowOrder(false);
     navigate("/dashboard");
   };
