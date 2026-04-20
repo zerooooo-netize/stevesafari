@@ -420,38 +420,48 @@ const Dashboard = () => {
   const currentLevel = getCurrentLevel();
   const maxLevel = 5;
 
-  // If registration not paid, show payment prompt
-  if (!profile?.registration_fee_paid) {
+  // If registration not paid AND user's chosen path requires it (jobs path), show payment gate.
+  // Services-only users skip this entirely.
+  if (needsRegistration) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="pt-20 pb-12 px-4">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-6">
-              <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">🚀 Welcome to Safari Jobs!</h1>
-              <p className="text-muted-foreground">Complete your registration to unlock all features.</p>
+              <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">🚀 Welcome to Steve Safari!</h1>
+              <p className="text-muted-foreground">Complete your one‑time registration to unlock job applications.</p>
             </div>
             <LevelProgress currentLevel={1} maxLevel={maxLevel} />
-            
+
             <div className="bg-card border border-border rounded-2xl p-6 shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-safari-gold/10 flex items-center justify-center">
                   <Trophy size={24} className="text-safari-gold" />
                 </div>
                 <div>
-                  <h2 className="font-heading font-semibold text-lg">Level 1: Registration Fee</h2>
+                  <h2 className="font-heading font-semibold text-lg">Step 1: Registration Fee</h2>
                   <p className="text-sm text-muted-foreground">One-time payment to join our agency.</p>
                 </div>
               </div>
-              
-              {!showRegistrationPayment ? (
+
+              {settingsLoading ? (
+                <div className="text-center py-6 text-sm text-muted-foreground"><Loader2 className="inline animate-spin mr-1" size={14} /> Loading fee…</div>
+              ) : REGISTRATION_FEE <= 0 ? (
+                <div className="bg-destructive/10 text-destructive rounded p-3 text-sm">
+                  Registration fee is not configured. Please contact support.
+                </div>
+              ) : !showRegistrationPayment ? (
                 <div className="space-y-4">
                   <div className="bg-muted/30 rounded-xl p-4">
-                    <p className="text-sm mb-2">Registration Fee: <span className="font-bold text-lg">KES {REGISTRATION_FEE}</span></p>
+                    <p className="text-sm mb-2">Registration Fee: <span className="font-bold text-lg">KES {REGISTRATION_FEE.toLocaleString()}</span></p>
                     <p className="text-xs text-muted-foreground">This fee covers agency processing and unlocks all job applications.</p>
                   </div>
                   <Button onClick={() => setShowRegistrationPayment(true)} className="w-full" size="lg">
                     Pay Registration Fee <ArrowRight size={16} className="ml-2" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="w-full text-xs" onClick={() => navigate("/welcome")}>
+                    ← Switch to Document Services (no fee)
                   </Button>
                 </div>
               ) : (
@@ -461,7 +471,7 @@ const Dashboard = () => {
                   fixedAmount={REGISTRATION_FEE}
                   onPaymentComplete={() => {
                     refreshProfile();
-                    toast.success("🎉 Registration complete! Level 2 unlocked.");
+                    toast.success("🎉 Registration complete! You can now apply for jobs.");
                     setShowRegistrationPayment(false);
                   }}
                 />
