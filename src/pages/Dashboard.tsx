@@ -13,14 +13,17 @@ import {
   User, FileText, CreditCard, Upload, LogOut, Settings,
   Briefcase, ShoppingBag, Check, Phone, Loader2, Gift,
   Download, Shield, Lock, ChevronRight, Trophy, Star,
-  ArrowRight, CheckCircle2, Circle, Award, Sparkles
+  ArrowRight, CheckCircle2, Circle, Award, Sparkles, RefreshCw, AlertCircle
 } from "lucide-react";
 import ReferralCard from "@/components/ReferralCard";
 import SponsorshipCard from "@/components/SponsorshipCard";
 import ApplicationTracker from "@/components/ApplicationTracker";
 import DiscountCodeInput from "@/components/DiscountCodeInput";
 import TrustBar from "@/components/TrustBar";
+import PreApplicationChecklist from "@/components/PreApplicationChecklist";
 import { downloadReceiptPDF } from "@/lib/receipt";
+import { useSettings } from "@/hooks/useSettings";
+import { withRetry } from "@/lib/dbRetry";
 
 // --- Reusable M-Pesa Payment Widget (Extended for registration & services) ---
 interface MpesaPaymentWidgetProps {
@@ -298,6 +301,7 @@ const Dashboard = () => {
   const [serviceOrders, setServiceOrders] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [activeServices, setActiveServices] = useState<any[]>([]);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     full_name: "", phone: "", address: "", id_number: "",
@@ -307,11 +311,23 @@ const Dashboard = () => {
   const [docType, setDocType] = useState("cv");
   const [activeSection, setActiveSection] = useState("profile");
   const [showRegistrationPayment, setShowRegistrationPayment] = useState(false);
-  const [selectedServiceForPayment, setSelectedServiceForPayment] = useState<string | null>(null);
+  const [selectedServiceForPayment, setSelectedServiceForPayment] = useState<any | null>(null);
   const [uploadedDocForService, setUploadedDocForService] = useState<any>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
 
-  // Registration fee constant
-  const REGISTRATION_FEE = 500; // KES
+  // Registration fee + path requirement loaded from DB (no hardcoded amounts)
+  const { num: settingNum, str: settingStr, loading: settingsLoading } = useSettings([
+    "registration_fee",
+    "registration_fee_required_for",
+    "max_active_applications",
+  ]);
+  const REGISTRATION_FEE = settingNum("registration_fee", 0);
+  const requiredFor = settingStr("registration_fee_required_for", "jobs")
+    .split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+  const userPath = (profile?.chosen_path || "").toLowerCase();
+  // Services-only users skip registration fee
+  const needsRegistration = !!userPath && requiredFor.includes(userPath) && !profile?.registration_fee_paid;
 
   useEffect(() => {
     if (!user) return;
@@ -333,16 +349,28 @@ const Dashboard = () => {
   }, [profile]);
 
   const loadData = async () => {
-    const [appsRes, paysRes, docsRes, ordersRes] = await Promise.all([
-      supabase.from("applications").select("*, jobs(title, country, salary, application_fee, deposit_enabled, deposit_type, deposit_value)").eq("user_id", user!.id),
-      supabase.from("payments").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
-      supabase.from("documents").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
-      supabase.from("service_orders").select("*, services(name, price, currency)").eq("user_id", user!.id).order("created_at", { ascending: false }),
-    ]);
-    setApplications(appsRes.data || []);
-    setPayments(paysRes.data || []);
-    setDocuments(docsRes.data || []);
-    setServiceOrders(ordersRes.data || []);
+    setLoadError(null);
+    setDataLoading(true);
+    try {
+      const [appsRes, paysRes, docsRes, ordersRes, servicesRes] = await withRetry(() =>
+        Promise.all([
+          supabase.from("applications").select("*, jobs(title, country, salary, application_fee, deposit_enabled, deposit_type, deposit_value)").eq("user_id", user!.id),
+          supabase.from("payments").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
+          supabase.from("documents").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
+          supabase.from("service_orders").select("*, services(name, price, currency)").eq("user_id", user!.id).order("created_at", { ascending: false }),
+          supabase.from("services").select("id, name, price, currency").eq("is_active", true).order("name"),
+        ])
+      );
+      setApplications(appsRes.data || []);
+      setPayments(paysRes.data || []);
+      setDocuments(docsRes.data || []);
+      setServiceOrders(ordersRes.data || []);
+      setActiveServices(servicesRes.data || []);
+    } catch (e: any) {
+      setLoadError(e?.message || "Could not load your dashboard data. Tap retry.");
+    } finally {
+      setDataLoading(false);
+    }
   };
 
   const saveProfile = async () => {
