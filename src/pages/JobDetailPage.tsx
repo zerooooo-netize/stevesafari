@@ -15,16 +15,27 @@ import {
   Sparkles, Lock, Trophy, Award, Star, ChevronRight, Phone, Upload,
 } from "lucide-react";
 
-// Reuse M-Pesa payment widget (registration fee version)
-const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onPaymentComplete: () => void }) => {
+import { useSettings } from "@/hooks/useSettings";
+
+// Reusable M-Pesa payment widget for the agency registration fee.
+// Amount is provided by the parent (loaded from settings table).
+const MpesaRegWidget = ({
+  userId,
+  amount,
+  onPaymentComplete,
+}: {
+  userId: string;
+  amount: number;
+  onPaymentComplete: () => void;
+}) => {
   const [phone, setPhone] = useState("+254");
   const [sending, setSending] = useState(false);
   const [payStatus, setPayStatus] = useState<string | null>(null);
-  const REGISTRATION_FEE = 500;
   const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
 
   const initiate = async () => {
     if (!phone || phone.length < 12) { toast.error("Enter a valid phone number (+254...)"); return; }
+    if (!amount || amount <= 0) { toast.error("Registration fee not configured. Please contact support."); return; }
     setSending(true);
     setPayStatus("sending");
     try {
@@ -35,7 +46,7 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          phone, amount: REGISTRATION_FEE, userId,
+          phone, amount, userId,
           paymentType: "registration_fee",
           description: "Agency registration fee",
         }),
@@ -54,23 +65,17 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
           });
           const statusData = await statusResp.json();
           if (statusData.status === "completed") {
-            clearInterval(interval);
-            setPayStatus("completed");
-            setSending(false);
+            clearInterval(interval); setPayStatus("completed"); setSending(false);
             toast.success("Registration fee paid! ✅");
             onPaymentComplete();
           } else if (statusData.status === "failed") {
-            clearInterval(interval);
-            setPayStatus("failed");
-            setSending(false);
+            clearInterval(interval); setPayStatus("failed"); setSending(false);
             toast.error("Payment failed. Try again.");
           }
-        } catch { }
+        } catch { /* keep polling */ }
       }, 5000);
     } catch (e: any) {
-      toast.error(e.message);
-      setPayStatus(null);
-      setSending(false);
+      toast.error(e.message); setPayStatus(null); setSending(false);
     }
   };
 
@@ -83,7 +88,6 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
       </div>
     );
   }
-
   if (payStatus === "completed") {
     return (
       <div className="text-center py-6">
@@ -93,21 +97,18 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
       </div>
     );
   }
-
   return (
     <div className="space-y-3">
       <div>
         <label className="text-xs font-medium">Phone Number</label>
         <input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
           placeholder="+254712345678"
           className="w-full border rounded-md px-3 py-2 text-sm bg-background"
         />
       </div>
       <Button onClick={initiate} disabled={sending} className="w-full">
-        {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : `Pay KES ${REGISTRATION_FEE} with M-Pesa`}
+        {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : `Pay KES ${amount.toLocaleString()} with M-Pesa`}
       </Button>
     </div>
   );

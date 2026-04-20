@@ -139,13 +139,11 @@ const ServicesPage = () => {
 
   const handleOrderClick = (service: any) => {
     if (!user) {
-      navigate("/auth?redirect=/services");
+      navigate(`/auth?redirect=/services/${service.id}`);
       return;
     }
-    setSelectedService(service);
-    setOrderStep("details");
-    setDetails("");
-    setFile(null);
+    // Single source of truth — always order via the detail page (full/half payment + checkout)
+    navigate(`/services/${service.id}`);
   };
 
   const handlePaymentComplete = async (receiptNumber?: string) => {
