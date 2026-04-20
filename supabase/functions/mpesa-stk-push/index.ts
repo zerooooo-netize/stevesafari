@@ -70,14 +70,21 @@ serve(async (req) => {
           .single();
 
         if (isSuccess && paymentRow) {
+          // Flip registration_fee_paid on profile when this is the agency registration fee
+          if (paymentRow.payment_type === "registration_fee") {
+            await supabase.from("profiles")
+              .update({ registration_fee_paid: true })
+              .eq("user_id", paymentRow.user_id);
+          }
           // Update linked application status
           if (paymentRow.application_id) {
             const newAppStatus = paymentRow.is_deposit ? "deposit_paid" : "paid";
             await supabase.from("applications").update({ status: newAppStatus }).eq("id", paymentRow.application_id);
           }
-          // Mark service order as paid
+          // Mark service order as paid (or half_paid based on payment_type)
           if (paymentRow.service_order_id) {
-            await supabase.from("service_orders").update({ status: "paid", payment_id: paymentRow.id }).eq("id", paymentRow.service_order_id);
+            const newOrderStatus = paymentRow.payment_type === "service_half_payment" ? "half_paid" : "paid";
+            await supabase.from("service_orders").update({ status: newOrderStatus, payment_id: paymentRow.id }).eq("id", paymentRow.service_order_id);
           }
           // Send receipt email
           const { data: profile } = await supabase
@@ -235,10 +242,17 @@ serve(async (req) => {
 
     if (!stkResp.ok) {
       const errText = await stkResp.text();
-      console.error("STK push error:", stkResp.status, errText);
-      await supabase.from("payments").update({ status: "failed" }).eq("id", payment.id);
-      return new Response(JSON.stringify({ error: "Failed to initiate M-Pesa payment. Please try again." }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      console.error("STK push error:", stkResp.status, errText, "payload:", JSON.stringify(stkPayload));
+      await supabase.from("payments").update({ status: "failed", description: `STK error: ${errText.slice(0, 200)}` }).eq("id", payment.id);
+      // Pass back upstream error for easier debugging in the UI/logs
+      let userMsg = "Failed to initiate M-Pesa payment. Please try again.";
+      try {
+        const j = JSON.parse(errText);
+        if (j?.error_message) userMsg = `M-Pesa: ${j.error_message}`;
+        else if (j?.errors) userMsg = `M-Pesa: ${JSON.stringify(j.errors)}`;
+      } catch { /* leave default */ }
+      return new Response(JSON.stringify({ error: userMsg, upstream: errText.slice(0, 500) }), {
+        status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 

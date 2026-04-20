@@ -41,8 +41,9 @@ const getPasswordStrength = (pwd: string): { score: number; label: string; color
 const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const refFromUrl = (searchParams.get("ref") || "").toUpperCase();
-  const redirectTo = searchParams.get("redirect") || "/dashboard";
-  
+  // After auth, take user to /welcome (path choice gate); /welcome itself forwards to the right place
+  const redirectTo = searchParams.get("redirect") || "/welcome";
+
   const [isLogin, setIsLogin] = useState(!refFromUrl);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,18 +53,18 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(false);
-  
+
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
 
   const passwordStrength = getPasswordStrength(password);
 
   useEffect(() => {
-    // If user is already logged in, redirect to dashboard
+    // If user is already logged in, send to redirectTo (defaults to /welcome → handles path choice)
     if (user) {
-      navigate("/dashboard");
+      navigate(redirectTo, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, redirectTo]);
 
   useEffect(() => {
     if (refFromUrl) {

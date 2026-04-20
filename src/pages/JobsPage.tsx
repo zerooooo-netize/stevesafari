@@ -25,16 +25,10 @@ const JobsPage = () => {
     setLoading(false);
   };
 
-  const applyForJob = async (jobId: string) => {
-    if (!user) { navigate("/auth"); return; }
-    const { error } = await supabase.from("applications").insert({ user_id: user.id, job_id: jobId });
-    if (error) {
-      if (error.code === "23505") toast.error("You've already applied for this job.");
-      else toast.error(error.message);
-      return;
-    }
-    toast.success("Application submitted! ✅ Check your dashboard.");
-    navigate("/dashboard");
+  const applyForJob = (jobId: string) => {
+    if (!user) { navigate(`/auth?redirect=/jobs/${jobId}`); return; }
+    // Always route through the detail page so the registration + checklist gates fire
+    navigate(`/jobs/${jobId}`);
   };
 
   const filtered = jobs.filter(j =>

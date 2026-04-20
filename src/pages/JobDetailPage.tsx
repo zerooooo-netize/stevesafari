@@ -15,16 +15,27 @@ import {
   Sparkles, Lock, Trophy, Award, Star, ChevronRight, Phone, Upload,
 } from "lucide-react";
 
-// Reuse M-Pesa payment widget (registration fee version)
-const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onPaymentComplete: () => void }) => {
+import { useSettings } from "@/hooks/useSettings";
+
+// Reusable M-Pesa payment widget for the agency registration fee.
+// Amount is provided by the parent (loaded from settings table).
+const MpesaRegWidget = ({
+  userId,
+  amount,
+  onPaymentComplete,
+}: {
+  userId: string;
+  amount: number;
+  onPaymentComplete: () => void;
+}) => {
   const [phone, setPhone] = useState("+254");
   const [sending, setSending] = useState(false);
   const [payStatus, setPayStatus] = useState<string | null>(null);
-  const REGISTRATION_FEE = 500;
   const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
 
   const initiate = async () => {
     if (!phone || phone.length < 12) { toast.error("Enter a valid phone number (+254...)"); return; }
+    if (!amount || amount <= 0) { toast.error("Registration fee not configured. Please contact support."); return; }
     setSending(true);
     setPayStatus("sending");
     try {
@@ -35,7 +46,7 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          phone, amount: REGISTRATION_FEE, userId,
+          phone, amount, userId,
           paymentType: "registration_fee",
           description: "Agency registration fee",
         }),
@@ -54,23 +65,17 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
           });
           const statusData = await statusResp.json();
           if (statusData.status === "completed") {
-            clearInterval(interval);
-            setPayStatus("completed");
-            setSending(false);
+            clearInterval(interval); setPayStatus("completed"); setSending(false);
             toast.success("Registration fee paid! ✅");
             onPaymentComplete();
           } else if (statusData.status === "failed") {
-            clearInterval(interval);
-            setPayStatus("failed");
-            setSending(false);
+            clearInterval(interval); setPayStatus("failed"); setSending(false);
             toast.error("Payment failed. Try again.");
           }
-        } catch { }
+        } catch { /* keep polling */ }
       }, 5000);
     } catch (e: any) {
-      toast.error(e.message);
-      setPayStatus(null);
-      setSending(false);
+      toast.error(e.message); setPayStatus(null); setSending(false);
     }
   };
 
@@ -83,7 +88,6 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
       </div>
     );
   }
-
   if (payStatus === "completed") {
     return (
       <div className="text-center py-6">
@@ -93,21 +97,18 @@ const MpesaPaymentWidget = ({ userId, onPaymentComplete }: { userId: string; onP
       </div>
     );
   }
-
   return (
     <div className="space-y-3">
       <div>
         <label className="text-xs font-medium">Phone Number</label>
         <input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
           placeholder="+254712345678"
           className="w-full border rounded-md px-3 py-2 text-sm bg-background"
         />
       </div>
       <Button onClick={initiate} disabled={sending} className="w-full">
-        {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : `Pay KES ${REGISTRATION_FEE} with M-Pesa`}
+        {sending ? <><Loader2 size={14} className="animate-spin mr-1" /> Processing...</> : `Pay KES ${amount.toLocaleString()} with M-Pesa`}
       </Button>
     </div>
   );
@@ -122,6 +123,9 @@ const JobDetailPage = () => {
   const [applying, setApplying] = useState(false);
   const [existingApp, setExistingApp] = useState<any>(null);
   const [showRegistrationPrompt, setShowRegistrationPrompt] = useState(false);
+  const { num: settingNum } = useSettings(["registration_fee", "max_active_applications"]);
+  const REG_FEE = settingNum("registration_fee", 500);
+  const MAX_APPS = settingNum("max_active_applications", 3);
 
   useSEO({
     title: job ? `${job.title} — ${job.country} | Steve Safari` : "Job Detail | Steve Safari",
@@ -157,7 +161,7 @@ const JobDetailPage = () => {
       return;
     }
 
-    // Check registration fee paid
+    // Check registration fee paid (only required for the jobs path)
     if (!profile?.registration_fee_paid) {
       setShowRegistrationPrompt(true);
       return;
@@ -168,8 +172,19 @@ const JobDetailPage = () => {
       return;
     }
 
+    // Enforce per-user active applications cap (default 3)
+    const { count } = await supabase
+      .from("applications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .not("status", "in", "(rejected,completed)");
+    if ((count || 0) >= MAX_APPS) {
+      toast.error(`You can have at most ${MAX_APPS} active applications. Complete or cancel one first.`);
+      return;
+    }
+
     setApplying(true);
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("applications")
       .insert({ user_id: user.id, job_id: job.id, status: "registered" })
       .select("id")
@@ -237,7 +252,7 @@ const JobDetailPage = () => {
               <div className="flex-1">
                 <p className="font-medium text-sm">Complete registration to apply</p>
                 <p className="text-xs text-muted-foreground">
-                  A one‑time agency fee of KES 500 is required before you can apply for jobs.
+                  A one‑time agency fee of KES {REG_FEE.toLocaleString()} is required before you can apply for jobs.
                 </p>
               </div>
               <Button size="sm" variant="outline" onClick={() => setShowRegistrationPrompt(true)}>
@@ -254,10 +269,11 @@ const JobDetailPage = () => {
                 Unlock Your Journey
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Pay the KES 500 registration fee to apply for this job and access all agency services.
+                Pay the KES {REG_FEE.toLocaleString()} registration fee to apply for this job and access all agency services.
               </p>
-              <MpesaPaymentWidget
+              <MpesaRegWidget
                 userId={user!.id}
+                amount={REG_FEE}
                 onPaymentComplete={async () => {
                   await refreshProfile();
                   setShowRegistrationPrompt(false);
@@ -365,7 +381,7 @@ const JobDetailPage = () => {
                 {[
                   {
                     title: "Complete Registration",
-                    desc: "Pay one‑time agency fee (KES 500) to unlock job applications.",
+                    desc: `Pay one‑time agency fee (KES ${REG_FEE.toLocaleString()}) to unlock job applications.`,
                     icon: Lock,
                     status: isRegistered ? "completed" : "pending",
                   },
@@ -455,7 +471,7 @@ const JobDetailPage = () => {
                     ? `Status: ${existingApp.status.replace("_", " ")}`
                     : isRegistered
                     ? `Start with KES ${(depositEnabled ? depositAmount : fee).toLocaleString()}`
-                    : "One‑time KES 500 registration fee"}
+                    : `One‑time KES ${REG_FEE.toLocaleString()} registration fee`}
                 </p>
               </div>
               <Button

@@ -13,14 +13,17 @@ import {
   User, FileText, CreditCard, Upload, LogOut, Settings,
   Briefcase, ShoppingBag, Check, Phone, Loader2, Gift,
   Download, Shield, Lock, ChevronRight, Trophy, Star,
-  ArrowRight, CheckCircle2, Circle, Award, Sparkles
+  ArrowRight, CheckCircle2, Circle, Award, Sparkles, RefreshCw, AlertCircle
 } from "lucide-react";
 import ReferralCard from "@/components/ReferralCard";
 import SponsorshipCard from "@/components/SponsorshipCard";
 import ApplicationTracker from "@/components/ApplicationTracker";
 import DiscountCodeInput from "@/components/DiscountCodeInput";
 import TrustBar from "@/components/TrustBar";
+import PreApplicationChecklist from "@/components/PreApplicationChecklist";
 import { downloadReceiptPDF } from "@/lib/receipt";
+import { useSettings } from "@/hooks/useSettings";
+import { withRetry } from "@/lib/dbRetry";
 
 // --- Reusable M-Pesa Payment Widget (Extended for registration & services) ---
 interface MpesaPaymentWidgetProps {
@@ -298,6 +301,7 @@ const Dashboard = () => {
   const [serviceOrders, setServiceOrders] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [activeServices, setActiveServices] = useState<any[]>([]);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     full_name: "", phone: "", address: "", id_number: "",
@@ -307,11 +311,23 @@ const Dashboard = () => {
   const [docType, setDocType] = useState("cv");
   const [activeSection, setActiveSection] = useState("profile");
   const [showRegistrationPayment, setShowRegistrationPayment] = useState(false);
-  const [selectedServiceForPayment, setSelectedServiceForPayment] = useState<string | null>(null);
+  const [selectedServiceForPayment, setSelectedServiceForPayment] = useState<any | null>(null);
   const [uploadedDocForService, setUploadedDocForService] = useState<any>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
 
-  // Registration fee constant
-  const REGISTRATION_FEE = 500; // KES
+  // Registration fee + path requirement loaded from DB (no hardcoded amounts)
+  const { num: settingNum, str: settingStr, loading: settingsLoading } = useSettings([
+    "registration_fee",
+    "registration_fee_required_for",
+    "max_active_applications",
+  ]);
+  const REGISTRATION_FEE = settingNum("registration_fee", 0);
+  const requiredFor = settingStr("registration_fee_required_for", "jobs")
+    .split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+  const userPath = (profile?.chosen_path || "").toLowerCase();
+  // Services-only users skip registration fee
+  const needsRegistration = !!userPath && requiredFor.includes(userPath) && !profile?.registration_fee_paid;
 
   useEffect(() => {
     if (!user) return;
@@ -333,16 +349,28 @@ const Dashboard = () => {
   }, [profile]);
 
   const loadData = async () => {
-    const [appsRes, paysRes, docsRes, ordersRes] = await Promise.all([
-      supabase.from("applications").select("*, jobs(title, country, salary, application_fee, deposit_enabled, deposit_type, deposit_value)").eq("user_id", user!.id),
-      supabase.from("payments").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
-      supabase.from("documents").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
-      supabase.from("service_orders").select("*, services(name, price, currency)").eq("user_id", user!.id).order("created_at", { ascending: false }),
-    ]);
-    setApplications(appsRes.data || []);
-    setPayments(paysRes.data || []);
-    setDocuments(docsRes.data || []);
-    setServiceOrders(ordersRes.data || []);
+    setLoadError(null);
+    setDataLoading(true);
+    try {
+      const [appsRes, paysRes, docsRes, ordersRes, servicesRes] = await withRetry(() =>
+        Promise.all([
+          supabase.from("applications").select("*, jobs(title, country, salary, application_fee, deposit_enabled, deposit_type, deposit_value)").eq("user_id", user!.id),
+          supabase.from("payments").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
+          supabase.from("documents").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
+          supabase.from("service_orders").select("*, services(name, price, currency)").eq("user_id", user!.id).order("created_at", { ascending: false }),
+          supabase.from("services").select("id, name, price, currency").eq("is_active", true).order("name"),
+        ])
+      );
+      setApplications(appsRes.data || []);
+      setPayments(paysRes.data || []);
+      setDocuments(docsRes.data || []);
+      setServiceOrders(ordersRes.data || []);
+      setActiveServices(servicesRes.data || []);
+    } catch (e: any) {
+      setLoadError(e?.message || "Could not load your dashboard data. Tap retry.");
+    } finally {
+      setDataLoading(false);
+    }
   };
 
   const saveProfile = async () => {
@@ -392,38 +420,48 @@ const Dashboard = () => {
   const currentLevel = getCurrentLevel();
   const maxLevel = 5;
 
-  // If registration not paid, show payment prompt
-  if (!profile?.registration_fee_paid) {
+  // If registration not paid AND user's chosen path requires it (jobs path), show payment gate.
+  // Services-only users skip this entirely.
+  if (needsRegistration) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="pt-20 pb-12 px-4">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-6">
-              <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">🚀 Welcome to Safari Jobs!</h1>
-              <p className="text-muted-foreground">Complete your registration to unlock all features.</p>
+              <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">🚀 Welcome to Steve Safari!</h1>
+              <p className="text-muted-foreground">Complete your one‑time registration to unlock job applications.</p>
             </div>
             <LevelProgress currentLevel={1} maxLevel={maxLevel} />
-            
+
             <div className="bg-card border border-border rounded-2xl p-6 shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-safari-gold/10 flex items-center justify-center">
                   <Trophy size={24} className="text-safari-gold" />
                 </div>
                 <div>
-                  <h2 className="font-heading font-semibold text-lg">Level 1: Registration Fee</h2>
+                  <h2 className="font-heading font-semibold text-lg">Step 1: Registration Fee</h2>
                   <p className="text-sm text-muted-foreground">One-time payment to join our agency.</p>
                 </div>
               </div>
-              
-              {!showRegistrationPayment ? (
+
+              {settingsLoading ? (
+                <div className="text-center py-6 text-sm text-muted-foreground"><Loader2 className="inline animate-spin mr-1" size={14} /> Loading fee…</div>
+              ) : REGISTRATION_FEE <= 0 ? (
+                <div className="bg-destructive/10 text-destructive rounded p-3 text-sm">
+                  Registration fee is not configured. Please contact support.
+                </div>
+              ) : !showRegistrationPayment ? (
                 <div className="space-y-4">
                   <div className="bg-muted/30 rounded-xl p-4">
-                    <p className="text-sm mb-2">Registration Fee: <span className="font-bold text-lg">KES {REGISTRATION_FEE}</span></p>
+                    <p className="text-sm mb-2">Registration Fee: <span className="font-bold text-lg">KES {REGISTRATION_FEE.toLocaleString()}</span></p>
                     <p className="text-xs text-muted-foreground">This fee covers agency processing and unlocks all job applications.</p>
                   </div>
                   <Button onClick={() => setShowRegistrationPayment(true)} className="w-full" size="lg">
                     Pay Registration Fee <ArrowRight size={16} className="ml-2" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="w-full text-xs" onClick={() => navigate("/welcome")}>
+                    ← Switch to Document Services (no fee)
                   </Button>
                 </div>
               ) : (
@@ -433,7 +471,7 @@ const Dashboard = () => {
                   fixedAmount={REGISTRATION_FEE}
                   onPaymentComplete={() => {
                     refreshProfile();
-                    toast.success("🎉 Registration complete! Level 2 unlocked.");
+                    toast.success("🎉 Registration complete! You can now apply for jobs.");
                     setShowRegistrationPayment(false);
                   }}
                 />
