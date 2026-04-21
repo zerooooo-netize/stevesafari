@@ -885,6 +885,8 @@ const AdminReferrals = () => {
 // ========================= SPONSORSHIP =========================
 const AdminSponsorship = () => {
   const [list, setList] = useState<any[]>([]);
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
   const load = async () => {
     const { data } = await supabase
       .from("sponsorship_applications")
@@ -895,23 +897,68 @@ const AdminSponsorship = () => {
       ? await supabase.from("profiles").select("user_id, full_name, email").in("user_id", ids)
       : { data: [] as any[] };
     const map = Object.fromEntries((profs || []).map((p: any) => [p.user_id, p]));
-    setList((data || []).map((d: any) => ({ ...d, profiles: map[d.user_id] })));
+    const items = (data || []).map((d: any) => ({ ...d, profiles: map[d.user_id] }));
+    setList(items);
+
+    // Generate signed URLs for proof files (private bucket)
+    const urls: Record<string, string> = {};
+    for (const item of items) {
+      if (item.proof_file_url) {
+        // proof_file_url stores the bucket path
+        const { data: signed } = await supabase.storage
+          .from("accommodation-proofs")
+          .createSignedUrl(item.proof_file_url, 3600);
+        if (signed?.signedUrl) urls[item.id] = signed.signedUrl;
+      }
+    }
+    setSignedUrls(urls);
   };
   useEffect(() => { load(); }, []);
 
-  const decide = async (id: string, status: "approved" | "rejected") => {
-    const notes = window.prompt(`Notes for ${status}?`) || "";
+  const notifyUser = async (email: string, fullName: string, status: string, notes: string, amount: number) => {
+    try {
+      await supabase.functions.invoke("send-email", {
+        body: {
+          templateKey: "payment_success", // generic template; subject overridden by template body
+          to: email,
+          data: {
+            full_name: fullName || "Customer",
+            receipt_number: `SPN-${Date.now().toString().slice(-6)}`,
+            amount: Number(amount).toLocaleString(),
+            payment_type: `sponsorship ${status}`,
+            reference: notes || "—",
+            date: new Date().toLocaleString(),
+            balance_line: status === "approved"
+              ? "Your sponsorship has been approved. Our team will reach out with next steps."
+              : "Your sponsorship request was not approved at this time. See notes for details.",
+          },
+        },
+      });
+    } catch (e) {
+      console.error("notifyUser error:", e);
+    }
+  };
+
+  const decide = async (item: any, status: "approved" | "rejected") => {
+    const notes = window.prompt(`Notes to send the user (${status}):`) || "";
     const { error } = await supabase
       .from("sponsorship_applications")
-      .update({ status, admin_notes: notes }).eq("id", id);
+      .update({ status, admin_notes: notes }).eq("id", item.id);
     if (error) return toast.error(error.message);
-    toast.success(`Marked ${status}`);
+
+    // Email the user
+    const email = (item.profiles as any)?.email;
+    if (email) {
+      await notifyUser(email, (item.profiles as any)?.full_name, status, notes, item.requested_amount);
+    }
+    toast.success(`Marked ${status} & user notified`);
     load();
   };
 
   return (
     <div>
-      <h2 className="font-heading text-xl font-bold mb-4">Sponsorship Applications</h2>
+      <h2 className="font-heading text-xl font-bold mb-2">Sponsorship & Self-Sponsor Reviews</h2>
+      <p className="text-sm text-muted-foreground mb-4">Review accommodation funding requests. Self-sponsor uploads include proof of funds — click to view.</p>
       <div className="space-y-3">
         {list.map(s => (
           <div key={s.id} className="bg-card border border-border rounded-lg p-4">
@@ -919,16 +966,29 @@ const AdminSponsorship = () => {
               <div>
                 <p className="font-semibold text-sm">{(s.profiles as any)?.full_name || "—"} <span className="text-muted-foreground">({(s.profiles as any)?.email})</span></p>
                 <p className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleString()}</p>
+                <span className="inline-block text-[10px] mt-1 bg-muted px-2 py-0.5 rounded uppercase tracking-wide">
+                  {s.sponsor_mode === "self" ? "Self-sponsor" : "Agency sponsor"}
+                </span>
               </div>
               <span className={`text-xs px-2 py-0.5 rounded-full ${s.status === "approved" ? "bg-green-100 text-green-700" : s.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>{s.status}</span>
             </div>
             <p className="text-sm mb-1"><strong>Amount:</strong> {s.currency} {Number(s.requested_amount).toLocaleString()}</p>
             <p className="text-sm mb-2"><strong>Reason:</strong> {s.reason}</p>
+            {s.proof_file_url && (
+              <div className="mb-2">
+                {signedUrls[s.id] ? (
+                  <a href={signedUrls[s.id]} target="_blank" rel="noopener noreferrer"
+                     className="inline-flex items-center gap-1 text-xs text-primary underline">
+                    <Eye size={12} /> View proof of funds
+                  </a>
+                ) : <span className="text-xs text-muted-foreground italic">Loading proof…</span>}
+              </div>
+            )}
             {s.admin_notes && <p className="text-xs italic text-muted-foreground mb-2">Notes: {s.admin_notes}</p>}
             {(s.status === "pending" || s.status === "fee_pending") && (
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => decide(s.id, "approved")}><Check size={14} /> Approve</Button>
-                <Button size="sm" variant="outline" onClick={() => decide(s.id, "rejected")}><XCircle size={14} /> Reject</Button>
+                <Button size="sm" onClick={() => decide(s, "approved")}><Check size={14} /> Approve</Button>
+                <Button size="sm" variant="outline" onClick={() => decide(s, "rejected")}><XCircle size={14} /> Reject</Button>
               </div>
             )}
           </div>
