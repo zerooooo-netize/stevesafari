@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
+import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
@@ -18,6 +19,14 @@ import ServiceDetailPage from "./pages/ServiceDetailPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import TrustHubPage from "./pages/TrustHubPage";
 import PathChoice from "./pages/PathChoice";
+import ProfileStep from "./pages/onboarding/ProfileStep";
+import RegistrationPayStep from "./pages/onboarding/RegistrationPayStep";
+import JobsStep from "./pages/onboarding/JobsStep";
+import ServicesStep from "./pages/onboarding/ServicesStep";
+import DocumentsStep from "./pages/onboarding/DocumentsStep";
+import BatchStep from "./pages/onboarding/BatchStep";
+import SponsorshipStep from "./pages/onboarding/SponsorshipStep";
+import ReadyStep from "./pages/onboarding/ReadyStep";
 import AIChatbot from "./components/AIChatbot";
 import WhatsAppButton from "./components/WhatsAppButton";
 
@@ -33,7 +42,8 @@ const App = () => (
           <AuthProvider>
             <Routes>
               {/* Public */}
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/jobs" element={<JobsPage />} />
               <Route path="/jobs/:id" element={<JobDetailPage />} />
@@ -42,8 +52,18 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/trust" element={<TrustHubPage />} />
 
-              {/* Authenticated */}
+              {/* Authenticated — onboarding flow */}
               <Route path="/welcome" element={<ProtectedRoute><PathChoice /></ProtectedRoute>} />
+              <Route path="/onboarding/profile" element={<ProtectedRoute><ProfileStep /></ProtectedRoute>} />
+              <Route path="/onboarding/registration-pay" element={<ProtectedRoute><RegistrationPayStep /></ProtectedRoute>} />
+              <Route path="/onboarding/jobs" element={<ProtectedRoute><JobsStep /></ProtectedRoute>} />
+              <Route path="/onboarding/services" element={<ProtectedRoute><ServicesStep /></ProtectedRoute>} />
+              <Route path="/onboarding/documents" element={<ProtectedRoute><DocumentsStep /></ProtectedRoute>} />
+              <Route path="/onboarding/batch" element={<ProtectedRoute><BatchStep /></ProtectedRoute>} />
+              <Route path="/onboarding/sponsorship" element={<ProtectedRoute><SponsorshipStep /></ProtectedRoute>} />
+              <Route path="/onboarding/ready" element={<ProtectedRoute><ReadyStep /></ProtectedRoute>} />
+
+              {/* Dashboard (full hub) */}
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
               {/* Admin */}

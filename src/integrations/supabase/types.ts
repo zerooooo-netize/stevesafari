@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       applications: {
         Row: {
+          batch_ready: boolean
           checklist_completed: boolean
           created_at: string
           id: string
@@ -27,6 +28,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          batch_ready?: boolean
           checklist_completed?: boolean
           created_at?: string
           id?: string
@@ -38,6 +40,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          batch_ready?: boolean
           checklist_completed?: boolean
           created_at?: string
           id?: string
@@ -615,9 +618,11 @@ export type Database = {
           created_at: string
           currency: string | null
           id: string
+          proof_file_url: string | null
           reason: string
           requested_amount: number
           service_order_id: string | null
+          sponsor_mode: string
           status: string
           updated_at: string
           user_id: string
@@ -629,9 +634,11 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
+          proof_file_url?: string | null
           reason: string
           requested_amount?: number
           service_order_id?: string | null
+          sponsor_mode?: string
           status?: string
           updated_at?: string
           user_id: string
@@ -643,9 +650,11 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
+          proof_file_url?: string | null
           reason?: string
           requested_amount?: number
           service_order_id?: string | null
+          sponsor_mode?: string
           status?: string
           updated_at?: string
           user_id?: string
