@@ -41,8 +41,8 @@ const getPasswordStrength = (pwd: string): { score: number; label: string; color
 const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const refFromUrl = (searchParams.get("ref") || "").toUpperCase();
-  // After auth, take user to /welcome (path choice gate); /welcome itself forwards to the right place
-  const redirectTo = searchParams.get("redirect") || "/welcome";
+  // After auth, take user to "/" — Home auto-resumes them at their next onboarding step
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const [isLogin, setIsLogin] = useState(!refFromUrl);
   const [email, setEmail] = useState("");
@@ -129,9 +129,9 @@ const AuthPage = () => {
         setEmailSent(true);
         toast.success("Account created! Check your email to verify 📧");
         
-        // After a few seconds, redirect to login or dashboard (if email verification not required)
+        // After a few seconds, redirect to "/" smart resume
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/");
         }, 3000);
       }
     } catch (err: any) {
@@ -176,8 +176,8 @@ const AuthPage = () => {
               <Button variant="outline" className="w-full" onClick={handleResendVerification} disabled={resendDisabled}>
                 {resendDisabled ? "Wait 60s" : "Resend Email"}
               </Button>
-              <Button className="w-full" onClick={() => navigate("/dashboard")}>
-                Go to Dashboard <ArrowRight size={16} className="ml-2" />
+              <Button className="w-full" onClick={() => navigate("/")}>
+                Continue <ArrowRight size={16} className="ml-2" />
               </Button>
               <p className="text-xs text-muted-foreground">
                 Already verified? <button onClick={() => setIsLogin(true)} className="text-safari-gold hover:underline">Sign in</button>
