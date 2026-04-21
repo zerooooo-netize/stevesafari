@@ -24,6 +24,7 @@ import PreApplicationChecklist from "@/components/PreApplicationChecklist";
 import { downloadReceiptPDF } from "@/lib/receipt";
 import { useSettings } from "@/hooks/useSettings";
 import { withRetry } from "@/lib/dbRetry";
+import JourneyStatus from "@/components/JourneyStatus";
 
 // --- Reusable M-Pesa Payment Widget (Extended for registration & services) ---
 interface MpesaPaymentWidgetProps {
@@ -526,6 +527,9 @@ const Dashboard = () => {
               </Button>
             </div>
           )}
+
+          {/* Onboarding journey status — shows what's done and what's next */}
+          <JourneyStatus chosenPath={profile?.chosen_path} />
 
           {/* Game-like level progress */}
           <LevelProgress currentLevel={currentLevel} maxLevel={maxLevel} />
