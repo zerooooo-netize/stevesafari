@@ -24,6 +24,7 @@ import PreApplicationChecklist from "@/components/PreApplicationChecklist";
 import { downloadReceiptPDF } from "@/lib/receipt";
 import { useSettings } from "@/hooks/useSettings";
 import { withRetry } from "@/lib/dbRetry";
+import JourneyStatus from "@/components/JourneyStatus";
 
 // --- Reusable M-Pesa Payment Widget (Extended for registration & services) ---
 interface MpesaPaymentWidgetProps {
