@@ -527,6 +527,9 @@ const Dashboard = () => {
             </div>
           )}
 
+          {/* Onboarding journey status — shows what's done and what's next */}
+          <JourneyStatus chosenPath={profile?.chosen_path} />
+
           {/* Game-like level progress */}
           <LevelProgress currentLevel={currentLevel} maxLevel={maxLevel} />
 
