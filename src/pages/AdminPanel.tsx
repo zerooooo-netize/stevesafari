@@ -502,10 +502,12 @@ const AdminSettings = () => {
 
   type SettingGroup = { title: string; icon: string; description: string; keys: string[] };
   const groups: SettingGroup[] = [
-    { title: "Fees & Pricing", icon: "💰", description: "Application fees and deposit configuration", keys: ["registration_fee", "deposit_amount", "allow_deposits"] },
-    { title: "Kopo Kopo (M-Pesa)", icon: "📱", description: "M-Pesa STK Push payment credentials. Enter your Kopo Kopo API details to accept M-Pesa.", keys: ["kopokopo_client_id", "kopokopo_client_secret", "kopokopo_till_number", "kopokopo_environment"] },
+    { title: "Site Branding", icon: "🎨", description: "Site name, logo URL, and tagline. Uploaded logos go to a public bucket — paste the URL here.", keys: ["site_name", "site_logo_url", "site_tagline"] },
+    { title: "Fees & Pricing", icon: "💰", description: "Registration, accommodation, sponsorship and deposit configuration", keys: ["registration_fee", "accommodation_fee", "sponsorship_fee", "deposit_amount", "allow_deposits", "max_active_applications"] },
+    { title: "Kopo Kopo (M-Pesa)", icon: "📱", description: "M-Pesa STK Push credentials. Set environment to 'live' for production payments.", keys: ["kopokopo_client_id", "kopokopo_client_secret", "kopokopo_till_number", "kopokopo_environment"] },
+    { title: "Referrals", icon: "🎁", description: "Referral bonus configuration", keys: ["referral_enabled", "referral_bonus_mode", "referral_bonus_amount", "referral_bonus_percent", "referral_signup_discount"] },
     { title: "Email / SMTP", icon: "📧", description: "Email sending configuration for notifications", keys: ["smtp_host", "smtp_port", "smtp_user", "smtp_password", "sender_email"] },
-    { title: "Company Info", icon: "🏢", description: "Company contact and branding", keys: ["company_name", "company_phone", "whatsapp_number"] },
+    { title: "Company Info", icon: "🏢", description: "Company contact info shown on the site", keys: ["company_name", "company_phone", "whatsapp_number", "business_email", "business_phone"] },
   ];
 
   const groupedSettings = groups.map(g => ({
