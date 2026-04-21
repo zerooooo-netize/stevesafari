@@ -57,8 +57,8 @@ export const useNextStep = () => {
 
       if (!isJobsPath) {
         // Services-only path
-        const { data: orders } = await withRetry(() => supabase
-          .from("service_orders").select("id, status").eq("user_id", user.id));
+        const { data: orders } = await withRetry(async () => await supabase
+          .from("service_orders").select("id, status").eq("user_id", user.id)) as any;
         if (!orders || orders.length === 0) { setStep("services"); return; }
         const allDone = orders.every((o: any) => o.status === "completed");
         setStep(allDone ? "ready" : "documents");
@@ -70,15 +70,15 @@ export const useNextStep = () => {
       if (!profile?.registration_fee_paid) { setStep("registration-pay"); return; }
 
       // 4. Active applications
-      const { data: apps } = await withRetry(() => supabase
+      const { data: apps } = await withRetry(async () => await supabase
         .from("applications")
         .select("id, status, batch_ready, checklist_completed")
-        .eq("user_id", user.id));
+        .eq("user_id", user.id)) as any;
       if (!apps || apps.length === 0) { setStep("jobs"); return; }
 
       // 5. Documents — at least one doc uploaded
-      const { data: docs } = await withRetry(() => supabase
-        .from("documents").select("id").eq("user_id", user.id).limit(1));
+      const { data: docs } = await withRetry(async () => await supabase
+        .from("documents").select("id").eq("user_id", user.id).limit(1)) as any;
       if (!docs || docs.length === 0) { setStep("documents"); return; }
 
       // 6. Batch assigned?
@@ -86,8 +86,8 @@ export const useNextStep = () => {
       if (!anyBatchReady) { setStep("batch"); return; }
 
       // 7. Sponsorship decision made?
-      const { data: sponsorships } = await withRetry(() => supabase
-        .from("sponsorship_applications").select("id, status, sponsor_mode").eq("user_id", user.id));
+      const { data: sponsorships } = await withRetry(async () => await supabase
+        .from("sponsorship_applications").select("id, status, sponsor_mode").eq("user_id", user.id)) as any;
       const hasSponsorship = sponsorships && sponsorships.length > 0;
       if (!hasSponsorship) { setStep("sponsorship"); return; }
 
