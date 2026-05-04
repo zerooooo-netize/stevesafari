@@ -345,7 +345,7 @@ const AdminSettings = () =>{
 
  {/* Ungrouped settings */}
  {ungrouped.length >0 && (
- <div className="bg-card border border-border rounded-xl p-5 sm:p-6 mb-6 shadow-card"><h3 className="font-heading font-semibold mb-4">️ Other Settings</h3><div className="space-y-4">{ungrouped.map(s => (
+ <div className="bg-card border border-border rounded-xl p-5 sm:p-6 mb-6 shadow-card"><h3 className="font-heading font-semibold mb-4"> Other Settings</h3><div className="space-y-4">{ungrouped.map(s => (
  <div key={s.key} className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-3"><div className="flex-1 w-full"><Label className="text-xs font-medium text-muted-foreground mb-1 block">{s.description || s.key}</Label><Input type={s.is_secret ? "password": "text"} value={editValues[s.key] || ""} onChange={e => setEditValues({ ...editValues, [s.key]: e.target.value })} className="text-sm"/></div><div className="flex gap-2 shrink-0"><Button size="sm" onClick={() => saveSetting(s.key)} disabled={saving[s.key]}>{saving[s.key] ? " Saving...": "Save"}</Button><Button size="sm" variant="ghost" onClick={() => deleteSetting(s.id, s.key)}><Trash2 size={14} /></Button></div></div>))}
  </div></div>)}
 
