@@ -18,10 +18,11 @@ const RegistrationPayStep = () => {
     if (profile?.registration_fee_paid) navigate("/onboarding/jobs", { replace: true });
   }, [profile, navigate]);
 
-  const fullFee = num("registration_fee", 5000);
-  const depositPct = num("registration_deposit_percent", 10);
-  const depositFee = Math.max(1, Math.round((fullFee * depositPct) / 100));
+  const fullFee = num("registration_fee", 0);
+  const depositPct = num("registration_deposit_percent", 0);
+  const depositFee = depositPct > 0 ? Math.max(1, Math.round((fullFee * depositPct) / 100)) : 0;
   const amount = mode === "full" ? fullFee : depositFee;
+  const notConfigured = fullFee <= 0;
 
   const onSuccess = async () => {
     await refreshProfile();
