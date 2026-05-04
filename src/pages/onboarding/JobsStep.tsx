@@ -13,7 +13,7 @@ const JobsStep = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { num } = useSettings(["max_active_applications"]);
-  const max = num("max_active_applications", 3);
+  const max = num("max_active_applications", 3); // admin-configurable safety cap
 
   const [jobs, setJobs] = useState<any[]>([]);
   const [myApps, setMyApps] = useState<any[]>([]);

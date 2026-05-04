@@ -18,7 +18,7 @@ const statusColors: Record<string, string> = {
 
 const SponsorshipCard = ({ userId }: Props) => {
   const [enabled, setEnabled] = useState(true);
-  const [fee, setFee] = useState("500");
+  const [fee, setFee] = useState("0");
   const [reason, setReason] = useState("");
   const [amount, setAmount] = useState("");
   const [list, setList] = useState<any[]>([]);
@@ -31,7 +31,7 @@ const SponsorshipCard = ({ userId }: Props) => {
     ]);
     const map = Object.fromEntries((settings || []).map((s: any) => [s.key, s.value]));
     setEnabled(map.sponsorship_enabled !== "false");
-    setFee(map.sponsorship_fee || "500");
+    setFee(map.sponsorship_fee || "0");
     setList(apps || []);
   };
 

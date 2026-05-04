@@ -20,7 +20,7 @@ const SponsorshipStep = () => {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
-  const fee = num("accommodation_fee", 15000);
+  const fee = num("accommodation_fee", 0);
   const selfProofEnabled = bool("sponsorship_self_proof_enabled", true);
 
   // If user has already submitted a sponsorship app, mark done
@@ -85,20 +85,22 @@ const SponsorshipStep = () => {
       subtitle="Choose how you'll cover accommodation when you arrive."
     >
       <div className="space-y-4">
-        {/* Option 1 — Pay agency */}
-        <button
-          type="button"
-          onClick={() => setMode("self_pay")}
-          className={`w-full text-left p-4 rounded-xl border-2 transition ${mode === "self_pay" ? "border-primary bg-primary/5" : "border-border"}`}
-        >
-          <div className="flex items-center gap-3">
-            <Home className="text-primary" />
-            <div className="flex-1">
-              <p className="font-semibold">Pay accommodation fee via agency</p>
-              <p className="text-xs text-muted-foreground">KES {fee.toLocaleString()} — we secure your housing</p>
+        {/* Option 1 — Pay agency (only if fee configured) */}
+        {fee > 0 && (
+          <button
+            type="button"
+            onClick={() => setMode("self_pay")}
+            className={`w-full text-left p-4 rounded-xl border-2 transition ${mode === "self_pay" ? "border-primary bg-primary/5" : "border-border"}`}
+          >
+            <div className="flex items-center gap-3">
+              <Home className="text-primary" />
+              <div className="flex-1">
+                <p className="font-semibold">Pay accommodation fee via agency</p>
+                <p className="text-xs text-muted-foreground">KES {fee.toLocaleString()} — we secure your housing</p>
+              </div>
             </div>
-          </div>
-        </button>
+          </button>
+        )}
 
         {/* Option 2 — Self-fund with proof */}
         {selfProofEnabled && (

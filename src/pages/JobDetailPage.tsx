@@ -104,8 +104,8 @@ const JobDetailPage = () =>{
  const [existingApp, setExistingApp] = useState<any>(null);
  const [showRegistrationPrompt, setShowRegistrationPrompt] = useState(false);
  const { num: settingNum } = useSettings(["registration_fee", "max_active_applications"]);
- const REG_FEE = settingNum("registration_fee", 500);
- const MAX_APPS = settingNum("max_active_applications", 3);
+ const REG_FEE = settingNum("registration_fee", 0);
+ const MAX_APPS = settingNum("max_active_applications", 0);
 
  useSEO({
  title: job ? `${job.title} — ${job.country} | Steve Safari`: "Job Detail | Steve Safari",
@@ -158,7 +158,7 @@ const JobDetailPage = () =>{
  .select("id", { count: "exact", head: true })
  .eq("user_id", user.id)
  .not("status", "in", "(rejected,completed)");
- if ((count || 0) >= MAX_APPS) {
+ if (MAX_APPS > 0 && (count || 0) >= MAX_APPS) {
  toast.error(`You can have at most ${MAX_APPS} active applications. Complete or cancel one first.`);
  return;
  }
