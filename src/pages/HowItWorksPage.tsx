@@ -4,232 +4,73 @@ import Footer from "@/components/Footer";
 import TrustBar from "@/components/TrustBar";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/lib/seo";
-import { Clock, CheckCircle2, Shield, AlertTriangle } from "lucide-react";
+import { ShieldCheck, Clock, FileText, CreditCard, Plane, AlertCircle, CheckCircle2 } from "lucide-react";
 
 const STAGES = [
-  {
-    number: 1,
-    title: "Create your account and choose your path",
-    time: "About 5 minutes",
-    details:
-      "Sign up for free. Tell us whether you need a job abroad or help with documents only.",
-  },
-  {
-    number: 2,
-    title: "Upload your documents",
-    time: "1–3 days",
-    details:
-      "We’ll list exactly what you need: CV, ID, passport copy, certificates. You can upload them any time.",
-  },
-  {
-    number: 3,
-    title: "Pay your application fee",
-    time: "Instant with M‑Pesa",
-    details:
-      "Pay the full amount or a deposit (if available). You get a receipt immediately after payment.",
-  },
-  {
-    number: 4,
-    title: "We verify and process your application",
-    time: "2–4 weeks",
-    details:
-      "Our team checks everything and prepares your job application package.",
-  },
-  {
-    number: 5,
-    title: "Travel batch assignment",
-    time: "Depends on destination",
-    details:
-      "Once verified and fully paid, we assign you to a travel group and guide you through departure steps.",
-  },
+ { icon: FileText, title: "1. Register & Choose Path", time: "5 minutes", desc: "Create your free account and pick whether you' re applying for jobs abroad or just need document services."},
+ { icon: FileText, title: "2. Submit Documents", time: "1–3 days", desc: "Upload your CV, ID, passport copy and any certificates. We' ll tell you exactly what' s missing."},
+ { icon: CreditCard, title: "3. Pay Application Fee", time: "Instant via M-Pesa", desc: "Pay the full fee or secure your slot with a deposit (where allowed). Receipt sent immediately."},
+ { icon: ShieldCheck, title: "4. Verification & Processing", time: "2–4 weeks", desc: "Our team reviews your documents and prepares your job application package."},
+ { icon: Plane, title: "5. Travel Batch Assignment", time: "Varies by destination", desc: "Once verified and fully paid, you' re assigned to a travel batch with departure prep."},
 ];
 
-const HowItWorksPage = () => {
-  useSEO({
-    title: "How It Works — Steve Safari Agency",
-    description:
-      "Full transparency on every step, fee, and timeline. See exactly how we help Kenyans secure jobs abroad — no hidden costs.",
-  });
+const HowItWorksPage = () =>{
+ useSEO({
+ title: "How It Works — Steve Safari Agency",
+ description:
+ "Full transparency on every step, every fee, and every timeline. See exactly how we help Kenyans secure jobs abroad — no hidden costs.",
+ });
 
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [services, setServices] = useState<any[]>([]);
-  const [settings, setSettings] = useState<Record<string, string>>({});
+ const [jobs, setJobs] = useState<any[]>([]);
+ const [services, setServices] = useState<any[]>([]);
+ const [settings, setSettings] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    Promise.all([
-      supabase
-        .from("jobs")
-        .select(
-          "title, country, application_fee, currency, deposit_enabled, deposit_type, deposit_value"
-        )
-        .eq("is_active", true),
-      supabase
-        .from("services")
-        .select("name, price, currency, description")
-        .eq("is_active", true),
-      supabase
-        .from("settings")
-        .select("key,value")
-        .in("key", ["business_name", "business_phone", "business_email", "sponsorship_fee"]),
-    ]).then(([j, s, st]) => {
-      setJobs(j.data || []);
-      setServices(s.data || []);
-      const map: Record<string, string> = {};
-      (st.data || []).forEach((r: any) => (map[r.key] = r.value));
-      setSettings(map);
-    });
-  }, []);
+ useEffect(() =>{
+ Promise.all([
+ supabase.from("jobs").select(" title, country, application_fee, currency, deposit_enabled, deposit_type, deposit_value").eq("is_active", true),
+ supabase.from("services").select(" name, price, currency, description").eq("is_active", true),
+ supabase.from("settings").select(" key,value").in("key", ["business_name", "business_phone", "business_email", "sponsorship_fee"]),
+ ]).then(([j, s, st]) =>{
+ setJobs(j.data || []);
+ setServices(s.data || []);
+ const map: Record<string, string>= {};
+ (st.data || []).forEach((r: any) => (map[r.key] = r.value));
+ setSettings(map);
+ });
+ }, []);
 
-  return (
-    <div className="min-h-screen bg-white">
-      <TrustBar />
-      <Navbar />
-      <main className="pt-20 pb-16 max-w-4xl mx-auto px-4">
-        {/* Page header – simple, no badges */}
-        <header className="mb-12 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-            How our process works
-          </h1>
-          <p className="mt-3 text-gray-500 max-w-lg mx-auto">
-            Five clear steps. All fees listed. No surprises.
-          </p>
-        </header>
-
-        {/* Steps – each as a simple numbered card */}
-        <section aria-labelledby="steps-heading">
-          <h2 id="steps-heading" className="sr-only">
-            Application steps
-          </h2>
-          <ol className="space-y-5">
-            {STAGES.map((step) => (
-              <li
-                key={step.number}
-                className="flex gap-4 bg-gray-50 rounded-lg p-5 border border-gray-100"
-              >
-                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-lg">
-                  {step.number}
-                </span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{step.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{step.details}</p>
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 mt-2">
-                    <Clock size={12} /> {step.time}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* Fees – live data, simplified layout */}
-        <section className="mt-16" aria-labelledby="fees-heading">
-          <h2 id="fees-heading" className="text-2xl font-bold text-gray-900 mb-6">
-            All fees
-          </h2>
-
-          {/* Job fees */}
-          <div className="mb-8">
-            <h3 className="font-semibold text-gray-700 mb-3">Job application fees</h3>
-            {jobs.length === 0 ? (
-              <p className="text-sm text-gray-400">No active jobs at the moment.</p>
-            ) : (
-              <ul className="divide-y divide-gray-100 border border-gray-100 rounded-lg">
-                {jobs.map((job, idx) => {
-                  const deposit =
-                    job.deposit_enabled && job.deposit_type === "fixed"
-                      ? `Deposit: KES ${Number(job.deposit_value).toLocaleString()}`
-                      : job.deposit_enabled && job.deposit_type === "percentage"
-                      ? `Deposit: ${job.deposit_value}% (KES ${Math.round(
-                          (Number(job.application_fee) * Number(job.deposit_value)) / 100
-                        ).toLocaleString()})`
-                      : null;
-                  return (
-                    <li
-                      key={idx}
-                      className="flex items-center justify-between p-4 bg-white"
-                    >
-                      <div>
-                        <p className="font-medium text-gray-900">{job.title}</p>
-                        <p className="text-sm text-gray-500">{job.country}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-blue-700">
-                          KES {Number(job.application_fee).toLocaleString()}
-                        </p>
-                        {deposit && (
-                          <p className="text-xs text-gray-500 mt-0.5">{deposit}</p>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-
-          {/* Service fees */}
-          <div className="mb-8">
-            <h3 className="font-semibold text-gray-700 mb-3">Document service fees</h3>
-            {services.length === 0 ? (
-              <p className="text-sm text-gray-400">No services listed.</p>
-            ) : (
-              <ul className="divide-y divide-gray-100 border border-gray-100 rounded-lg">
-                {services.map((svc, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-center justify-between p-4 bg-white"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900">{svc.name}</p>
-                      {svc.description && (
-                        <p className="text-sm text-gray-500 line-clamp-1">
-                          {svc.description}
-                        </p>
-                      )}
-                    </div>
-                    <p className="font-bold text-blue-700">
-                      {svc.currency} {Number(svc.price).toLocaleString()}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* Sponsorship fee */}
-          {settings.sponsorship_fee && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm">
-              <p className="font-semibold text-gray-900">Sponsorship application fee</p>
-              <p className="text-gray-600 mt-1">
-                If you cannot afford the full process, you can apply for sponsorship.
-                The application fee is KES{" "}
-                {Number(settings.sponsorship_fee).toLocaleString()}.
-              </p>
-            </div>
-          )}
-        </section>
-
-        {/* Safety notice – plain language */}
-        <section className="mt-16">
-          <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-5 flex gap-3">
-            <Shield className="text-yellow-700 flex-shrink-0 mt-0.5" size={20} />
-            <div>
-              <h2 className="font-semibold text-yellow-900 mb-2">Your safety matters</h2>
-              <ul className="text-sm text-yellow-800 space-y-1">
-                <li>We never ask you to pay outside this platform.</li>
-                <li>All payments are tracked and you get a receipt instantly.</li>
-                <li>
-                  If you need help, call {settings.business_phone || "our office"} or email{" "}
-                  {settings.business_email || "our team"}.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
+ return (
+ <div className="min-h-screen bg-background"><TrustBar /><Navbar /><main className="pt-20 pb-16">{/* Hero */}
+ <section className="container py-10 text-center"><span className="text-sm font-medium text-safari-gold uppercase tracking-wider">Full Transparency</span><h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground mt-2 mb-4">How Our Process Works
+ </h1><p className="text-muted-foreground max-w-2xl mx-auto">Every stage, every fee, every timeline — laid out clearly. No hidden costs, no surprises.
+ </p><div className="flex flex-wrap justify-center gap-3 mt-6"><span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full"><CheckCircle2 size={14} />All fees listed upfront
+ </span><span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full"><CheckCircle2 size={14} />Receipt for every payment
+ </span><span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full"><CheckCircle2 size={14} />M-Pesa secured via Kopo Kopo
+ </span></div></section>{/* Stages */}
+ <section className="container max-w-3xl"><h2 className="font-heading text-2xl font-bold mb-6">The 5 Stages</h2><div className="space-y-4">{STAGES.map((s, i) => (
+ <div key={i} className="bg-card border border-border rounded-xl p-5 flex gap-4 shadow-card"><div className="w-10 h-10 rounded-full bg-safari-gold/15 text-safari-gold flex items-center justify-center shrink-0"><s.icon size={20} /></div><div className="flex-1"><div className="flex items-start justify-between gap-2 flex-wrap"><h3 className="font-heading font-semibold text-foreground">{s.title}</h3><span className="text-xs inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full text-muted-foreground"><Clock size={11} />{s.time}
+ </span></div><p className="text-sm text-muted-foreground mt-2">{s.desc}</p></div></div>))}
+ </div></section>{/* Fees */}
+ <section className="container max-w-3xl mt-12"><h2 className="font-heading text-2xl font-bold mb-2">All Fees, Right Here</h2><p className="text-sm text-muted-foreground mb-6">Live data from our system. Updated by admin in real-time.
+ </p><div className="bg-card border border-border rounded-xl overflow-hidden shadow-card"><div className="bg-muted/50 p-4 border-b border-border"><h3 className="font-heading font-semibold text-sm">Job Application Fees</h3></div><div className="divide-y divide-border">{jobs.length === 0 && (
+ <p className="p-4 text-sm text-muted-foreground text-center">No active jobs at the moment.</p>)}
+ {jobs.map((j, i) =>{
+ const dep = j.deposit_enabled
+ ? j.deposit_type === "fixed"? `KES ${Number(j.deposit_value).toLocaleString()}`: `${j.deposit_value}% (KES ${Math.round((Number(j.application_fee) * Number(j.deposit_value)) / 100).toLocaleString()})`: null;
+ return (
+ <div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{j.title}</p><p className="text-xs text-muted-foreground">{j.country}</p></div><div className="text-right"><p className="font-bold text-safari-gold text-sm">KES {Number(j.application_fee).toLocaleString()}</p>{dep && <p className="text-[11px] text-muted-foreground">Deposit: {dep}</p>}
+ </div></div>);
+ })}
+ </div></div><div className="bg-card border border-border rounded-xl overflow-hidden shadow-card mt-5"><div className="bg-muted/50 p-4 border-b border-border"><h3 className="font-heading font-semibold text-sm">Document Service Fees</h3></div><div className="divide-y divide-border">{services.length === 0 && (
+ <p className="p-4 text-sm text-muted-foreground text-center">No services listed.</p>)}
+ {services.map((s, i) => (
+ <div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{s.name}</p>{s.description && <p className="text-xs text-muted-foreground line-clamp-1">{s.description}</p>}
+ </div><p className="font-bold text-safari-gold text-sm">{s.currency} {Number(s.price).toLocaleString()}</p></div>))}
+ </div></div>{settings.sponsorship_fee && (
+ <div className="bg-muted/40 border border-border rounded-xl p-4 mt-5 text-sm"><p className="font-semibold mb-1">Sponsorship Application Fee</p><p className="text-muted-foreground text-xs">Can' t afford the full process? Apply for sponsorship for KES {Number(settings.sponsorship_fee).toLocaleString()}. Admin reviews each request.
+ </p></div>)}
+ </section>{/* Anti-scam */}
+ <section className="container max-w-3xl mt-12"><div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5"><div className="flex items-start gap-3"><AlertCircle className="text-yellow-700 shrink-0 mt-0.5" size={20} /><div className="text-sm"><p className="font-semibold text-yellow-900 mb-2">Important — your safety</p><ul className="list-disc list-inside text-yellow-900 space-y-1 text-xs"><li>We <strong>never</strong>ask for payments outside this platform.</li><li>All transactions are recorded and traceable.</li><li>You receive an official receipt instantly after every payment.</li><li>Need help? Call {settings.business_phone || "us"} or email {settings.business_email || "us"}.</li></ul></div></div></div></section></main><Footer /></div>);
 };
 
 export default HowItWorksPage;
