@@ -31,7 +31,7 @@ const SponsorshipCard = ({ userId }: Props) => {
     ]);
     const map = Object.fromEntries((settings || []).map((s: any) => [s.key, s.value]));
     setEnabled(map.sponsorship_enabled !== "false");
-    setFee(map.sponsorship_fee || "500");
+    setFee(map.sponsorship_fee || "0");
     setList(apps || []);
   };
 
