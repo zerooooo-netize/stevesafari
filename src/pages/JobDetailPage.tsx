@@ -158,7 +158,7 @@ const JobDetailPage = () =>{
  .select("id", { count: "exact", head: true })
  .eq("user_id", user.id)
  .not("status", "in", "(rejected,completed)");
- if ((count || 0) >= MAX_APPS) {
+ if (MAX_APPS > 0 && (count || 0) >= MAX_APPS) {
  toast.error(`You can have at most ${MAX_APPS} active applications. Complete or cancel one first.`);
  return;
  }
