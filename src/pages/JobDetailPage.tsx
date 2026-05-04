@@ -104,8 +104,8 @@ const JobDetailPage = () =>{
  const [existingApp, setExistingApp] = useState<any>(null);
  const [showRegistrationPrompt, setShowRegistrationPrompt] = useState(false);
  const { num: settingNum } = useSettings(["registration_fee", "max_active_applications"]);
- const REG_FEE = settingNum("registration_fee", 500);
- const MAX_APPS = settingNum("max_active_applications", 3);
+ const REG_FEE = settingNum("registration_fee", 0);
+ const MAX_APPS = settingNum("max_active_applications", 0);
 
  useSEO({
  title: job ? `${job.title} — ${job.country} | Steve Safari`: "Job Detail | Steve Safari",
