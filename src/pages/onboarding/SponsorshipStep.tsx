@@ -20,7 +20,7 @@ const SponsorshipStep = () => {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
-  const fee = num("accommodation_fee", 15000);
+  const fee = num("accommodation_fee", 0);
   const selfProofEnabled = bool("sponsorship_self_proof_enabled", true);
 
   // If user has already submitted a sponsorship app, mark done
