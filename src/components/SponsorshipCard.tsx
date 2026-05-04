@@ -18,7 +18,7 @@ const statusColors: Record<string, string> = {
 
 const SponsorshipCard = ({ userId }: Props) => {
   const [enabled, setEnabled] = useState(true);
-  const [fee, setFee] = useState("500");
+  const [fee, setFee] = useState("0");
   const [reason, setReason] = useState("");
   const [amount, setAmount] = useState("");
   const [list, setList] = useState<any[]>([]);
