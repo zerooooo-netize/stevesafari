@@ -29,7 +29,7 @@ class ErrorBoundary extends Component<Props, State> {
             <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
             <h1 className="font-heading text-2xl font-bold text-foreground mb-2">Something went wrong</h1>
             <p className="text-sm text-muted-foreground mb-6">
-              We hit an unexpected error. Please refresh — your data is safe.
+              We hit an unexpected error. Please refresh - your data is safe.
             </p>
             <Button onClick={() => window.location.reload()}>Reload page</Button>
           </div>

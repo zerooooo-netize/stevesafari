@@ -99,7 +99,7 @@ const DiscountCodeInput = ({ userId, baseAmount, applyTo, onChange }: Props) => 
         : Math.min(Math.round((baseAmount * Number(c.discount_value)) / 100), baseAmount);
     setApplied({ code: c.code, amount: discountAmt, source: "manual" });
     setCode("");
-    toast.success(`✅ ${c.code} applied — KES ${discountAmt.toLocaleString()} off`);
+    toast.success(`✅ ${c.code} applied - KES ${discountAmt.toLocaleString()} off`);
   };
 
   const remove = () => {
@@ -112,7 +112,7 @@ const DiscountCodeInput = ({ userId, baseAmount, applyTo, onChange }: Props) => 
       <div className="flex items-center justify-between bg-green-50 border border-green-200 text-green-800 rounded-lg px-3 py-2 text-sm">
         <span className="flex items-center gap-2">
           <Tag size={14} />
-          <strong>{applied.code}</strong> — KES {Math.min(applied.amount, baseAmount).toLocaleString()} off
+          <strong>{applied.code}</strong> - KES {Math.min(applied.amount, baseAmount).toLocaleString()} off
         </span>
         {applied.source === "manual" && (
           <button onClick={remove} className="text-green-700 hover:text-green-900" aria-label="Remove discount">

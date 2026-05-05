@@ -52,7 +52,7 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/trust" element={<TrustHubPage />} />
 
-              {/* Authenticated — onboarding flow */}
+              {/* Authenticated - onboarding flow */}
               <Route path="/welcome" element={<ProtectedRoute><PathChoice /></ProtectedRoute>} />
               <Route path="/onboarding/profile" element={<ProtectedRoute><ProfileStep /></ProtectedRoute>} />
               <Route path="/onboarding/registration-pay" element={<ProtectedRoute><RegistrationPayStep /></ProtectedRoute>} />

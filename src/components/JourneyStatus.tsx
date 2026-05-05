@@ -25,7 +25,7 @@ const STEP_LIBRARY: Record<Exclude<OnboardingStep, "loading">, StepDef> = {
   documents:          { key: "documents",          label: "Upload documents",       nextAction: "Upload the required documents",      Icon: FileText },
   batch:              { key: "batch",              label: "Wait for travel batch",  nextAction: "Sit tight while admin assigns you a batch", Icon: Plane },
   sponsorship:        { key: "sponsorship",        label: "Sponsorship decision",   nextAction: "Choose how you'll fund accommodation", Icon: HandCoins },
-  ready:              { key: "ready",              label: "Ready to fly!",          nextAction: "All done — final briefing coming",  Icon: PartyPopper },
+  ready:              { key: "ready",              label: "Ready to fly!",          nextAction: "All done - final briefing coming",  Icon: PartyPopper },
 };
 
 const DEFAULT_JOBS = ["path","profile","registration-pay","jobs","documents","batch","sponsorship","ready"];

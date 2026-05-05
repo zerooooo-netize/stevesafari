@@ -11,7 +11,7 @@ import { useSEO } from "@/lib/seo";
 
 const Index = () => {
   useSEO({
-    title: "Steve Safari Agency — Verified Jobs Abroad for Kenyans",
+    title: "Steve Safari Agency - Verified Jobs Abroad for Kenyans",
     description:
       "Verified recruitment + document services for Kenyans applying to Canada and beyond. Transparent fees, real receipts, M-Pesa payments.",
     canonical: "https://work-leap-kenya.lovable.app/",

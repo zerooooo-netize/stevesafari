@@ -60,7 +60,7 @@ const DocumentsStep = () => {
       user_id: user.id, service_id: serviceId, status: "pending",
     });
     if (error) { toast.error(error.message); return; }
-    toast.success("Service ordered — pay from your dashboard");
+    toast.success("Service ordered - pay from your dashboard");
   };
 
   const next = () => navigate(isJobs ? "/onboarding/batch" : "/onboarding/ready");
@@ -104,7 +104,7 @@ const DocumentsStep = () => {
             {docs.map(d => (
               <div key={d.id} className="flex items-center gap-2 text-sm p-2 bg-muted/40 rounded">
                 <FileText size={14} className="text-primary" />
-                <span className="flex-1 truncate">{d.document_type} — {d.file_name}</span>
+                <span className="flex-1 truncate">{d.document_type} - {d.file_name}</span>
                 <CheckCircle2 size={14} className="text-green-600" />
               </div>
             ))}

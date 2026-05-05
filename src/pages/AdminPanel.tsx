@@ -215,7 +215,7 @@ const AdminUsers = () =>{
  const roles = (u.user_roles as any[]) || [];
  const isAdmin = roles.some((r: any) => r.role === "admin");
  return (
- <div key={u.id} className="bg-card border border-border rounded-lg p-4 flex justify-between items-center"><div><h4 className="font-semibold">{u.full_name || "—"}</h4><p className="text-sm text-muted-foreground">{u.email} • {u.phone || " No phone"}</p></div><div className="flex items-center gap-2">{isAdmin && <span className="text-xs bg-safari-gold/20 text-safari-gold px-2 py-0.5 rounded-full">Admin</span>}
+ <div key={u.id} className="bg-card border border-border rounded-lg p-4 flex justify-between items-center"><div><h4 className="font-semibold">{u.full_name || "-"}</h4><p className="text-sm text-muted-foreground">{u.email} • {u.phone || " No phone"}</p></div><div className="flex items-center gap-2">{isAdmin && <span className="text-xs bg-safari-gold/20 text-safari-gold px-2 py-0.5 rounded-full">Admin</span>}
  <Button variant="outline" size="sm" onClick={() => toggleAdmin(u.user_id, isAdmin)}>{isAdmin ? " Remove Admin": "Make Admin"}
  </Button></div></div>);
  })}
@@ -236,7 +236,7 @@ const AdminPayments = () =>{
 
  return (
  <div><h2 className="font-heading text-xl font-bold mb-4">Payments ({payments.length})</h2><div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="border-b border-border text-left text-muted-foreground"><th className="py-2">User</th><th>Amount</th><th>Type</th><th>Method</th><th>Status</th></tr></thead><tbody>{payments.map(p => (
- <tr key={p.id} className="border-b border-border"><td className="py-2">{(p.profiles as any)?.full_name || "—"}</td><td className="font-medium">{p.currency} {Number(p.amount).toLocaleString()}</td><td className="capitalize">{p.payment_type?.replace("_", "")}</td><td>{p.payment_method}</td><td><select value={p.status} onChange={e => updateStatus(p.id, e.target.value)} className="text-xs border border-border rounded px-1 py-0.5 bg-background">{["pending", "completed", "failed", "refunded"].map(s =><option key={s} value={s}>{s}</option>)}
+ <tr key={p.id} className="border-b border-border"><td className="py-2">{(p.profiles as any)?.full_name || "-"}</td><td className="font-medium">{p.currency} {Number(p.amount).toLocaleString()}</td><td className="capitalize">{p.payment_type?.replace("_", "")}</td><td>{p.payment_method}</td><td><select value={p.status} onChange={e => updateStatus(p.id, e.target.value)} className="text-xs border border-border rounded px-1 py-0.5 bg-background">{["pending", "completed", "failed", "refunded"].map(s =><option key={s} value={s}>{s}</option>)}
  </select></td></tr>))}
  </tbody></table></div></div>);
 };
@@ -313,7 +313,7 @@ const AdminSettings = () =>{
 
  type SettingGroup = { title: string; icon: string; description: string; keys: string[] };
  const groups: SettingGroup[] = [
- { title: "Site Branding", icon: "", description: "Site name, logo URL, and tagline. Uploaded logos go to a public bucket — paste the URL here.", keys: ["site_name", "site_logo_url", "site_tagline"] },
+ { title: "Site Branding", icon: "", description: "Site name, logo URL, and tagline. Uploaded logos go to a public bucket - paste the URL here.", keys: ["site_name", "site_logo_url", "site_tagline"] },
  { title: "Fees & Pricing", icon: "", description: "Registration, accommodation, sponsorship and deposit configuration", keys: ["registration_fee", "accommodation_fee", "sponsorship_fee", "deposit_amount", "allow_deposits", "max_active_applications"] },
  { title: "Kopo Kopo (M-Pesa)", icon: "", description: "M-Pesa STK Push credentials. Set environment to 'live' for production payments.", keys: ["kopokopo_client_id", "kopokopo_client_secret", "kopokopo_till_number", "kopokopo_environment"] },
  { title: "Referrals", icon: "", description: "Referral bonus configuration", keys: ["referral_enabled", "referral_bonus_mode", "referral_bonus_amount", "referral_bonus_percent", "referral_signup_discount"] },
@@ -516,7 +516,7 @@ const AdminReferrals = () =>{
 
  return (
  <div className="space-y-3"><h2 className="font-heading text-xl font-bold">Referrals</h2><div className="bg-card border border-border rounded-lg overflow-x-auto"><table className="w-full text-sm"><thead className="bg-muted text-left text-xs"><tr><th className="p-3">Referrer</th><th className="p-3">Referred</th><th className="p-3">Code</th><th className="p-3">Status</th><th className="p-3">Reward</th><th className="p-3">Date</th><th className="p-3"></th></tr></thead><tbody>{referrals.map(r => (
- <tr key={r.id} className="border-t border-border"><td className="p-3">{r.referrer?.full_name || "—"}<br /><span className="text-xs text-muted-foreground">{r.referrer?.email}</span></td><td className="p-3">{r.referred?.full_name || "—"}<br /><span className="text-xs text-muted-foreground">{r.referred?.email}</span></td><td className="p-3 font-mono text-xs">{r.referral_code}</td><td className="p-3"><span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "rewarded"? " bg-green-100 text-green-700": " bg-yellow-100 text-yellow-700"}`}>{r.status}</span></td><td className="p-3">{r.reward_currency} {Number(r.reward_amount).toLocaleString()} {r.reward_paid ? "": ""}</td><td className="p-3 text-xs">{new Date(r.created_at).toLocaleDateString()}</td><td className="p-3"><Button size="sm" variant="outline" onClick={() => togglePaid(r)}>{r.reward_paid ? " Mark Unpaid": "Mark Paid"}
+ <tr key={r.id} className="border-t border-border"><td className="p-3">{r.referrer?.full_name || "-"}<br /><span className="text-xs text-muted-foreground">{r.referrer?.email}</span></td><td className="p-3">{r.referred?.full_name || "-"}<br /><span className="text-xs text-muted-foreground">{r.referred?.email}</span></td><td className="p-3 font-mono text-xs">{r.referral_code}</td><td className="p-3"><span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "rewarded"? " bg-green-100 text-green-700": " bg-yellow-100 text-yellow-700"}`}>{r.status}</span></td><td className="p-3">{r.reward_currency} {Number(r.reward_amount).toLocaleString()} {r.reward_paid ? "": ""}</td><td className="p-3 text-xs">{new Date(r.created_at).toLocaleDateString()}</td><td className="p-3"><Button size="sm" variant="outline" onClick={() => togglePaid(r)}>{r.reward_paid ? " Mark Unpaid": "Mark Paid"}
  </Button></td></tr>))}
  {referrals.length === 0 && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">No referrals yet.</td></tr>}
  </tbody></table></div></div>);
@@ -566,7 +566,7 @@ const AdminSponsorship = () =>{
  receipt_number: `SPN-${Date.now().toString().slice(-6)}`,
  amount: Number(amount).toLocaleString(),
  payment_type: `sponsorship ${status}`,
- reference: notes || "—",
+ reference: notes || "-",
  date: new Date().toLocaleString(),
  balance_line: status === "approved"? " Your sponsorship has been approved. Our team will reach out with next steps.": "Your sponsorship request was not approved at this time. See notes for details.",
  },
@@ -594,8 +594,8 @@ const AdminSponsorship = () =>{
  };
 
  return (
- <div><h2 className="font-heading text-xl font-bold mb-2">Sponsorship & Self-Sponsor Reviews</h2><p className="text-sm text-muted-foreground mb-4">Review accommodation funding requests. Self-sponsor uploads include proof of funds — click to view.</p><div className="space-y-3">{list.map(s => (
- <div key={s.id} className="bg-card border border-border rounded-lg p-4"><div className="flex items-start justify-between gap-2 mb-2"><div><p className="font-semibold text-sm">{(s.profiles as any)?.full_name || "—"} <span className="text-muted-foreground">({(s.profiles as any)?.email})</span></p><p className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleString()}</p><span className="inline-block text-[10px] mt-1 bg-muted px-2 py-0.5 rounded uppercase tracking-wide">{s.sponsor_mode === "self"? "Self-sponsor": "Agency sponsor"}
+ <div><h2 className="font-heading text-xl font-bold mb-2">Sponsorship & Self-Sponsor Reviews</h2><p className="text-sm text-muted-foreground mb-4">Review accommodation funding requests. Self-sponsor uploads include proof of funds - click to view.</p><div className="space-y-3">{list.map(s => (
+ <div key={s.id} className="bg-card border border-border rounded-lg p-4"><div className="flex items-start justify-between gap-2 mb-2"><div><p className="font-semibold text-sm">{(s.profiles as any)?.full_name || "-"} <span className="text-muted-foreground">({(s.profiles as any)?.email})</span></p><p className="text-xs text-muted-foreground">{new Date(s.created_at).toLocaleString()}</p><span className="inline-block text-[10px] mt-1 bg-muted px-2 py-0.5 rounded uppercase tracking-wide">{s.sponsor_mode === "self"? "Self-sponsor": "Agency sponsor"}
  </span></div><span className={`text-xs px-2 py-0.5 rounded-full ${s.status === "approved"? " bg-green-100 text-green-700": s.status === "rejected"? " bg-red-100 text-red-700": " bg-yellow-100 text-yellow-700"}`}>{s.status}</span></div><p className="text-sm mb-1"><strong>Amount:</strong>{s.currency} {Number(s.requested_amount).toLocaleString()}</p><p className="text-sm mb-2"><strong>Reason:</strong>{s.reason}</p>{s.proof_file_url && (
  <div className="mb-2">{signedUrls[s.id] ? (
  <a href={signedUrls[s.id]} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary underline"><Eye size={12} />View proof of funds

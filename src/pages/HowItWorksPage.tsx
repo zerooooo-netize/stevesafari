@@ -16,9 +16,9 @@ const STAGES = [
 
 const HowItWorksPage = () =>{
  useSEO({
- title: "How It Works — Steve Safari Agency",
+ title: "How It Works - Steve Safari Agency",
  description:
- "Full transparency on every step, every fee, and every timeline. See exactly how we help Kenyans secure jobs abroad — no hidden costs.",
+ "Full transparency on every step, every fee, and every timeline. See exactly how we help Kenyans secure jobs abroad - no hidden costs.",
  });
 
  const [jobs, setJobs] = useState<any[]>([]);
@@ -42,7 +42,7 @@ const HowItWorksPage = () =>{
  return (
  <div className="min-h-screen bg-background"><TrustBar /><Navbar /><main className="pt-20 pb-16">{/* Hero */}
  <section className="container py-10 text-center"><span className="text-sm font-medium text-safari-gold uppercase tracking-wider">Full Transparency</span><h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground mt-2 mb-4">How Our Process Works
- </h1><p className="text-muted-foreground max-w-2xl mx-auto">Every stage, every fee, every timeline — laid out clearly. No hidden costs, no surprises.
+ </h1><p className="text-muted-foreground max-w-2xl mx-auto">Every stage, every fee, every timeline - laid out clearly. No hidden costs, no surprises.
  </p><div className="flex flex-wrap justify-center gap-3 mt-6"><span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full"><CheckCircle2 size={14} />All fees listed upfront
  </span><span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full"><CheckCircle2 size={14} />Receipt for every payment
  </span><span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full"><CheckCircle2 size={14} />M-Pesa secured via Kopo Kopo
@@ -70,7 +70,7 @@ const HowItWorksPage = () =>{
  <div className="bg-muted/40 border border-border rounded-xl p-4 mt-5 text-sm"><p className="font-semibold mb-1">Sponsorship Application Fee</p><p className="text-muted-foreground text-xs">Can' t afford the full process? Apply for sponsorship for KES {Number(settings.sponsorship_fee).toLocaleString()}. Admin reviews each request.
  </p></div>)}
  </section>{/* Anti-scam */}
- <section className="container max-w-3xl mt-12"><div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5"><div className="flex items-start gap-3"><AlertCircle className="text-yellow-700 shrink-0 mt-0.5" size={20} /><div className="text-sm"><p className="font-semibold text-yellow-900 mb-2">Important — your safety</p><ul className="list-disc list-inside text-yellow-900 space-y-1 text-xs"><li>We <strong>never</strong>ask for payments outside this platform.</li><li>All transactions are recorded and traceable.</li><li>You receive an official receipt instantly after every payment.</li><li>Need help? Call {settings.business_phone || "us"} or email {settings.business_email || "us"}.</li></ul></div></div></div></section></main><Footer /></div>);
+ <section className="container max-w-3xl mt-12"><div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5"><div className="flex items-start gap-3"><AlertCircle className="text-yellow-700 shrink-0 mt-0.5" size={20} /><div className="text-sm"><p className="font-semibold text-yellow-900 mb-2">Important - your safety</p><ul className="list-disc list-inside text-yellow-900 space-y-1 text-xs"><li>We <strong>never</strong>ask for payments outside this platform.</li><li>All transactions are recorded and traceable.</li><li>You receive an official receipt instantly after every payment.</li><li>Need help? Call {settings.business_phone || "us"} or email {settings.business_email || "us"}.</li></ul></div></div></div></section></main><Footer /></div>);
 };
 
 export default HowItWorksPage;

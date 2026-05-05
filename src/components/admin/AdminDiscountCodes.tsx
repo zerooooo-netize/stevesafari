@@ -194,7 +194,7 @@ const AdminDiscountCodes = () => {
                   {c.max_uses ? ` / ${c.max_uses}` : ""}
                 </td>
                 <td className="p-3 text-center text-xs">
-                  {c.expires_at ? new Date(c.expires_at).toLocaleDateString() : "—"}
+                  {c.expires_at ? new Date(c.expires_at).toLocaleDateString() : "-"}
                 </td>
                 <td className="p-3 text-center">
                   <span

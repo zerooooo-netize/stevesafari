@@ -45,7 +45,7 @@ const HowItWorks = () => {
             How It Works
           </h2>
           <p className="text-muted-foreground mt-3 max-w-md mx-auto">
-            From registration to departure — we guide you every step of the way.
+            From registration to departure - we guide you every step of the way.
           </p>
         </motion.div>
 

@@ -55,7 +55,7 @@ const SponsorshipStep = () => {
     const { data: { publicUrl } } = supabase.storage.from("accommodation-proofs").getPublicUrl(path);
     const { error } = await supabase.from("sponsorship_applications").insert({
       user_id: user.id,
-      reason: "Self-funded — proof uploaded for review",
+      reason: "Self-funded - proof uploaded for review",
       requested_amount: 0,
       sponsor_mode: "self",
       status: "pending_review",
@@ -72,7 +72,7 @@ const SponsorshipStep = () => {
   if (done) return (
     <StepLayout stepNumber={6} totalSteps={7} title="Sponsorship recorded">
       <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2 text-green-900">
-        <CheckCircle2 /> Recorded — heading to the final step…
+        <CheckCircle2 /> Recorded - heading to the final step…
       </div>
     </StepLayout>
   );
@@ -85,7 +85,7 @@ const SponsorshipStep = () => {
       subtitle="Choose how you'll cover accommodation when you arrive."
     >
       <div className="space-y-4">
-        {/* Option 1 — Pay agency (only if fee configured) */}
+        {/* Option 1 - Pay agency (only if fee configured) */}
         {fee > 0 && (
           <button
             type="button"
@@ -96,13 +96,13 @@ const SponsorshipStep = () => {
               <Home className="text-primary" />
               <div className="flex-1">
                 <p className="font-semibold">Pay accommodation fee via agency</p>
-                <p className="text-xs text-muted-foreground">KES {fee.toLocaleString()} — we secure your housing</p>
+                <p className="text-xs text-muted-foreground">KES {fee.toLocaleString()} - we secure your housing</p>
               </div>
             </div>
           </button>
         )}
 
-        {/* Option 2 — Self-fund with proof */}
+        {/* Option 2 - Self-fund with proof */}
         {selfProofEnabled && (
           <button
             type="button"

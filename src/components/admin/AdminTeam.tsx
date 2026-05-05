@@ -78,7 +78,7 @@ const AdminTeam = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-heading text-xl font-bold">Team Members</h2>
-          <p className="text-xs text-muted-foreground">Real humans behind your platform — shown on the homepage.</p>
+          <p className="text-xs text-muted-foreground">Real humans behind your platform - shown on the homepage.</p>
         </div>
         <Button size="sm" onClick={() => setEditing({ ...empty })}>
           <Plus size={16} /> Add Member

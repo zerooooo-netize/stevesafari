@@ -53,7 +53,7 @@ const PathChoice = () =>{
  onClick={() => choose("jobs")}
  disabled={loading !== null}
  className="group text-left bg-card border-2 border-border rounded-2xl p-6 hover:border-safari-gold hover:shadow-elegant transition-all disabled:opacity-50"><div className="w-14 h-14 rounded-xl bg-safari-green/10 text-safari-green grid place-items-center mb-4 group-hover:scale-110 transition-transform"><Briefcase size={28} /></div><h2 className="font-heading font-bold text-lg mb-2 text-foreground">Apply for Jobs Abroad
- </h2><p className="text-sm text-muted-foreground mb-4">Start your journey to secure a job and travel abroad — Canada and other countries.
+ </h2><p className="text-sm text-muted-foreground mb-4">Start your journey to secure a job and travel abroad - Canada and other countries.
  </p><div className="flex items-center gap-1 text-safari-gold font-medium text-sm">{loading === "jobs"? " Setting up...": "Get Started"}
  <ArrowRight size={16} /></div></button>{/* Services path */}
  <button
@@ -62,7 +62,7 @@ const PathChoice = () =>{
  className="group text-left bg-card border-2 border-border rounded-2xl p-6 hover:border-safari-gold hover:shadow-elegant transition-all disabled:opacity-50"><div className="w-14 h-14 rounded-xl bg-safari-gold/10 text-safari-gold grid place-items-center mb-4 group-hover:scale-110 transition-transform"><FileText size={28} /></div><h2 className="font-heading font-bold text-lg mb-2 text-foreground">Improve My Documents
  </h2><p className="text-sm text-muted-foreground mb-4">Get professional help with your CV, cover letter, passport, visa and more.
  </p><div className="flex items-center gap-1 text-safari-gold font-medium text-sm">{loading === "services"? " Setting up...": "Get Started"}
- <ArrowRight size={16} /></div></button></div><p className="text-center text-xs text-muted-foreground mt-6">Don' t worry — you can always switch later from your dashboard.
+ <ArrowRight size={16} /></div></button></div><p className="text-center text-xs text-muted-foreground mt-6">Don' t worry - you can always switch later from your dashboard.
  </p></div></main></div>);
 };
 

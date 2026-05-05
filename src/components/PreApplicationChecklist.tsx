@@ -96,7 +96,7 @@ const PreApplicationChecklist = ({ userId, applicationId, jobFee, onReady }: Pro
 
       {appStatus === "documents_submitted" || appStatus === "verified" || appStatus === "batch_assigned" || appStatus === "completed" ? (
         <div className="text-xs bg-green-50 text-green-800 rounded-md p-2 flex items-center gap-2">
-          <CheckCircle2 size={14} /> Submitted — admin is processing your application.
+          <CheckCircle2 size={14} /> Submitted - admin is processing your application.
         </div>
       ) : (
         <Button onClick={submit} disabled={!allMet || submitting} className="w-full text-sm">

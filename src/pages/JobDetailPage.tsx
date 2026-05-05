@@ -108,7 +108,7 @@ const JobDetailPage = () =>{
  const MAX_APPS = settingNum("max_active_applications", 0);
 
  useSEO({
- title: job ? `${job.title} — ${job.country} | Steve Safari`: "Job Detail | Steve Safari",
+ title: job ? `${job.title} - ${job.country} | Steve Safari`: "Job Detail | Steve Safari",
  description: job?.description?.slice(0, 155) || " Apply for verified job opportunities abroad through Steve Safari Agency.",
  });
 
