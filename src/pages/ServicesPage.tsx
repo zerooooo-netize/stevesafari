@@ -120,7 +120,7 @@ const ServicesPage = () =>{
  navigate(`/auth? redirect=/services/${service.id}`);
  return;
  }
- // Single source of truth — always order via the detail page (full/half payment + checkout)
+ // Single source of truth - always order via the detail page (full/half payment + checkout)
  navigate(`/services/${service.id}`);
  };
 

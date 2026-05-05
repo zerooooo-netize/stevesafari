@@ -8,7 +8,7 @@ import { Loader2, ShoppingBag, Plus, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { withRetry } from "@/lib/dbRetry";
 
-/** Services-path step 2 — pick at least one service to order. */
+/** Services-path step 2 - pick at least one service to order. */
 const ServicesStep = () => {
   const { user } = useAuth();
   const navigate = useNavigate();

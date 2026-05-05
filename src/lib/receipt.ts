@@ -77,7 +77,7 @@ export function downloadReceiptPDF(d: ReceiptData) {
   doc.setFontSize(10);
   const rows = [
     ["Receipt Number", d.receipt_number],
-    ["M-Pesa Reference", d.reference || "—"],
+    ["M-Pesa Reference", d.reference || "-"],
     ["Payment Method", "M-Pesa (Kopo Kopo)"],
     ["Date & Time", d.date],
   ];

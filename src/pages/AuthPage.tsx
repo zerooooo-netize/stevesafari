@@ -41,7 +41,7 @@ const getPasswordStrength = (pwd: string): { score: number; label: string; color
 const AuthPage = () =>{
  const [searchParams] = useSearchParams();
  const refFromUrl = (searchParams.get("ref") || "").toUpperCase();
- // After auth, take user to "/"— Home auto-resumes them at their next onboarding step
+ // After auth, take user to "/"- Home auto-resumes them at their next onboarding step
  const redirectTo = searchParams.get("redirect") || "/";
 
  const [isLogin, setIsLogin] = useState(!refFromUrl);

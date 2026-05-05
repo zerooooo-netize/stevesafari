@@ -76,7 +76,7 @@ export const useNextStep = () => {
         .eq("user_id", user.id)) as any;
       if (!apps || apps.length === 0) { setStep("jobs"); return; }
 
-      // 5. Documents — at least one doc uploaded
+      // 5. Documents - at least one doc uploaded
       const { data: docs } = await withRetry(async () => await supabase
         .from("documents").select("id").eq("user_id", user.id).limit(1)) as any;
       if (!docs || docs.length === 0) { setStep("documents"); return; }
