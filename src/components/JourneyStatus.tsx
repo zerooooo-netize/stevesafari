@@ -63,46 +63,57 @@ const JourneyStatus = ({ chosenPath }: Props) => {
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 mb-6 shadow-card overflow-hidden">
+    <div className="relative bg-card border border-border rounded-2xl p-3.5 sm:p-6 mb-4 sm:mb-6 shadow-card overflow-hidden">
+      {/* Decorative gradient blob - Canva style */}
+      <div className="pointer-events-none absolute -top-12 -right-12 w-40 h-40 rounded-full bg-gradient-to-br from-safari-gold/20 to-primary/10 blur-2xl" />
+
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1">
-            <Sparkles size={12} className="text-safari-gold" />
-            <span>{isJobs ? "Jobs Journey" : "Services Journey"}</span>
+      <div className="relative flex items-start justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-safari-gold mb-1">
+            <Sparkles size={11} />
+            <span className="truncate">{isJobs ? "Jobs Journey" : "Services Journey"}</span>
           </div>
-          <h3 className="font-heading font-bold text-lg sm:text-xl text-foreground leading-tight">
+          <h3 className="font-heading font-bold text-base sm:text-xl text-foreground leading-snug break-words">
             {step === "ready" ? "You're all set!" : currentStep ? `Next: ${currentStep.label}` : "Your Journey"}
           </h3>
           {currentStep && step !== "ready" && (
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1">{currentStep.nextAction}</p>
+            <p className="text-[11px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-1 leading-snug">
+              {currentStep.nextAction}
+            </p>
           )}
         </div>
         {currentStep && step !== "ready" && (
-          <Button size="sm" onClick={() => navigate(stepRoute(step))} className="gap-1 shrink-0">
-            Continue <ArrowRight size={14} />
+          <Button
+            size="sm"
+            onClick={() => navigate(stepRoute(step))}
+            className="gap-1 shrink-0 h-8 px-2.5 text-[11px] sm:h-9 sm:px-3 sm:text-sm rounded-full"
+          >
+            <span className="hidden xs:inline">Continue</span>
+            <span className="xs:hidden">Go</span>
+            <ArrowRight size={13} />
           </Button>
         )}
       </div>
 
       {/* Progress bar */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1.5">
-          <span>{completedCount} of {visible.length} complete</span>
-          <span>{pct}%</span>
+      <div className="relative mb-3 sm:mb-4">
+        <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground mb-1">
+          <span>{completedCount}/{visible.length} complete</span>
+          <span className="font-semibold text-foreground">{pct}%</span>
         </div>
-        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-primary to-safari-gold transition-all duration-500"
+            className="h-full bg-gradient-to-r from-primary via-safari-gold-light to-safari-gold transition-all duration-500 rounded-full"
             style={{ width: `${pct}%` }}
           />
         </div>
       </div>
 
-      {error && <p className="text-xs text-destructive mb-2">{error}</p>}
+      {error && <p className="text-[11px] text-destructive mb-2">{error}</p>}
 
       {/* Step list */}
-      <ol className="space-y-1.5">
+      <ol className="relative space-y-1">
         {visible.map((s, i) => {
           const done = currentIdx === -1 ? true : i < currentIdx || step === "ready";
           const active = currentIdx === i && step !== "ready";
@@ -110,36 +121,33 @@ const JourneyStatus = ({ chosenPath }: Props) => {
           return (
             <li
               key={s.key}
-              className={`flex items-center gap-3 rounded-lg px-2.5 py-2 transition-colors ${
-                active ? "bg-primary/5 border border-primary/20" : ""
+              className={`flex items-center gap-2.5 sm:gap-3 rounded-xl px-2 sm:px-2.5 py-1.5 sm:py-2 transition-colors ${
+                active ? "bg-primary/5 ring-1 ring-primary/20" : ""
               }`}
             >
-              <div className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center ${
+              <div className={`shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center ${
                 done ? "bg-green-100 text-green-700"
-                : active ? "bg-primary text-primary-foreground"
+                : active ? "bg-gradient-to-br from-primary to-safari-gold text-primary-foreground shadow-sm"
                 : "bg-muted text-muted-foreground"
               }`}>
-                {done ? <CheckCircle2 size={16} /> : <Icon size={14} />}
+                {done ? <CheckCircle2 size={14} /> : <Icon size={12} />}
               </div>
               <div className="min-w-0 flex-1">
-                <p className={`text-sm leading-tight ${
+                <p className={`text-[12px] sm:text-sm leading-tight truncate ${
                   active ? "font-semibold text-foreground"
                   : done ? "text-muted-foreground"
                   : "text-foreground/70"
                 }`}>
                   {s.label}
                 </p>
-                {active && (
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{s.nextAction}</p>
-                )}
               </div>
               {active && (
-                <span className="text-[10px] font-semibold bg-primary text-primary-foreground px-2 py-0.5 rounded-full shrink-0">
+                <span className="text-[9px] sm:text-[10px] font-bold bg-primary text-primary-foreground px-1.5 sm:px-2 py-0.5 rounded-full shrink-0 tracking-wide">
                   NEXT
                 </span>
               )}
               {done && (
-                <span className="text-[10px] font-medium text-green-700 shrink-0">Done</span>
+                <span className="text-[9px] sm:text-[10px] font-semibold text-green-700 shrink-0">Done</span>
               )}
             </li>
           );
