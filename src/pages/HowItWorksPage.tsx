@@ -40,7 +40,7 @@ const HowItWorksPage = () =>{
  }, []);
 
  return (
-<div className="min-h-screen bg-background"><TrustBar /><Navbar /><main className="pt-20 pb-16">{/* Hero */}
+<div className="min-h-screen bg-background"><TrustBar /><Navbar /><main className="pt-20 section-y page-x">{/* Hero */}
 <section className="container py-10 text-center"><span className="text-sm font-medium text-safari-gold uppercase tracking-wider">Full Transparency</span><h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground mt-2 mb-4">How Our Process Works
 </h1><p className="text-muted-foreground max-w-2xl mx-auto">Every stage, every fee, every timeline - laid out clearly. No hidden costs, no surprises.
 </p><div className="flex flex-wrap justify-center gap-3 mt-6"><span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full"><CheckCircle2 size={14} />All fees listed upfront

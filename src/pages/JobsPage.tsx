@@ -53,7 +53,7 @@ const JobsPage = () =>{
 <Input
  value={search}
  onChange={(e) =>setSearch(e.target.value)}
- placeholder=" Search jobs by title, country, city..."
+ placeholder="Search jobs by title, country, city..."
  className="pl-10 h-12 text-sm rounded-full"
  />
 </div>

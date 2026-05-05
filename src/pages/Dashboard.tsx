@@ -347,7 +347,7 @@ const Dashboard = () =>{
  // Services-only users skip this entirely.
  if (needsRegistration) {
  return (
-<div className="min-h-screen bg-background"><Navbar /><main className="pt-20 pb-12 px-4"><div className="max-w-2xl mx-auto"><div className="text-center mb-6"><h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">Welcome to Steve Safari!</h1><p className="text-muted-foreground">Complete your one‑time registration to unlock job applications.</p></div><LevelProgress currentLevel={1} maxLevel={maxLevel} /><div className="bg-card border border-border rounded-2xl p-6 shadow-lg"><div className="flex items-center gap-3 mb-4"><div className="w-12 h-12 rounded-full bg-safari-gold/10 flex items-center justify-center"><Trophy size={24} className="text-safari-gold"/></div><div><h2 className="font-heading font-semibold text-lg">Step 1: Registration Fee</h2><p className="text-sm text-muted-foreground">One-time payment to join our agency.</p></div></div>{settingsLoading ? (
+<div className="min-h-screen bg-background"><Navbar /><main className="pt-20 section-y-sm page-x"><div className="max-w-2xl mx-auto"><div className="text-center mb-6"><h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">Welcome to Steve Safari!</h1><p className="text-muted-foreground">Complete your one‑time registration to unlock job applications.</p></div><LevelProgress currentLevel={1} maxLevel={maxLevel} /><div className="bg-card border border-border rounded-2xl p-6 shadow-lg"><div className="flex items-center gap-3 mb-4"><div className="w-12 h-12 rounded-full bg-safari-gold/10 flex items-center justify-center"><Trophy size={24} className="text-safari-gold"/></div><div><h2 className="font-heading font-semibold text-lg">Step 1: Registration Fee</h2><p className="text-sm text-muted-foreground">One-time payment to join our agency.</p></div></div>{settingsLoading ? (
 <div className="text-center py-6 text-sm text-muted-foreground"><Loader2 className="inline animate-spin mr-1" size={14} />Loading fee…</div>) : REGISTRATION_FEE<= 0 ? (
 <div className="bg-destructive/10 text-destructive rounded p-3 text-sm">Registration fee is not configured. Please contact support.
 </div>) : !showRegistrationPayment ? (
@@ -367,7 +367,7 @@ const Dashboard = () =>{
 
  // Registration paid - show full dashboard
  return (
-<div className="min-h-screen bg-background"><Navbar /><main className="pt-20 pb-12 px-4"><div className="max-w-4xl mx-auto">{/* Welcome header */}
+<div className="min-h-screen bg-background"><Navbar /><main className="pt-20 section-y-sm page-x"><div className="max-w-4xl mx-auto">{/* Welcome header */}
 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3"><div><h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">Welcome, {profile?.full_name || "Explorer"}!
  {currentLevel === maxLevel &&<Award size={20} className="text-safari-gold"/>}
 </h1><p className="text-muted-foreground text-xs sm:text-sm">{user?.email}</p></div><div className="flex gap-2 w-full sm:w-auto">{isAdmin && (
