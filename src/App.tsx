@@ -32,52 +32,52 @@ import WhatsAppButton from "./components/WhatsAppButton";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-              {/* Public */}
-              <Route path="/" element={<Home />} />
-              <Route path="/home" element={<Index />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/jobs" element={<JobsPage />} />
-              <Route path="/jobs/:id" element={<JobDetailPage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/services/:id" element={<ServiceDetailPage />} />
-              <Route path="/how-it-works" element={<HowItWorksPage />} />
-              <Route path="/trust" element={<TrustHubPage />} />
+const App = () =>(
+<ErrorBoundary>
+<QueryClientProvider client={queryClient}>
+<TooltipProvider>
+<Toaster />
+<Sonner />
+<BrowserRouter>
+<AuthProvider>
+<Routes>
+ {/* Public */}
+<Route path="/" element={<Home />} />
+<Route path="/home" element={<Index />} />
+<Route path="/auth" element={<AuthPage />} />
+<Route path="/jobs" element={<JobsPage />} />
+<Route path="/jobs/:id" element={<JobDetailPage />} />
+<Route path="/services" element={<ServicesPage />} />
+<Route path="/services/:id" element={<ServiceDetailPage />} />
+<Route path="/how-it-works" element={<HowItWorksPage />} />
+<Route path="/trust" element={<TrustHubPage />} />
 
-              {/* Authenticated - onboarding flow */}
-              <Route path="/welcome" element={<ProtectedRoute><PathChoice /></ProtectedRoute>} />
-              <Route path="/onboarding/profile" element={<ProtectedRoute><ProfileStep /></ProtectedRoute>} />
-              <Route path="/onboarding/registration-pay" element={<ProtectedRoute><RegistrationPayStep /></ProtectedRoute>} />
-              <Route path="/onboarding/jobs" element={<ProtectedRoute><JobsStep /></ProtectedRoute>} />
-              <Route path="/onboarding/services" element={<ProtectedRoute><ServicesStep /></ProtectedRoute>} />
-              <Route path="/onboarding/documents" element={<ProtectedRoute><DocumentsStep /></ProtectedRoute>} />
-              <Route path="/onboarding/batch" element={<ProtectedRoute><BatchStep /></ProtectedRoute>} />
-              <Route path="/onboarding/sponsorship" element={<ProtectedRoute><SponsorshipStep /></ProtectedRoute>} />
-              <Route path="/onboarding/ready" element={<ProtectedRoute><ReadyStep /></ProtectedRoute>} />
+ {/* Authenticated - onboarding flow */}
+<Route path="/welcome" element={<ProtectedRoute><PathChoice /></ProtectedRoute>} />
+<Route path="/onboarding/profile" element={<ProtectedRoute><ProfileStep /></ProtectedRoute>} />
+<Route path="/onboarding/registration-pay" element={<ProtectedRoute><RegistrationPayStep /></ProtectedRoute>} />
+<Route path="/onboarding/jobs" element={<ProtectedRoute><JobsStep /></ProtectedRoute>} />
+<Route path="/onboarding/services" element={<ProtectedRoute><ServicesStep /></ProtectedRoute>} />
+<Route path="/onboarding/documents" element={<ProtectedRoute><DocumentsStep /></ProtectedRoute>} />
+<Route path="/onboarding/batch" element={<ProtectedRoute><BatchStep /></ProtectedRoute>} />
+<Route path="/onboarding/sponsorship" element={<ProtectedRoute><SponsorshipStep /></ProtectedRoute>} />
+<Route path="/onboarding/ready" element={<ProtectedRoute><ReadyStep /></ProtectedRoute>} />
 
-              {/* Dashboard (full hub) */}
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+ {/* Dashboard (full hub) */}
+<Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
-              {/* Admin */}
-              <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+ {/* Admin */}
+<Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <AIChatbot />
-            <WhatsAppButton />
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+<Route path="*" element={<NotFound />} />
+</Routes>
+<AIChatbot />
+<WhatsAppButton />
+</AuthProvider>
+</BrowserRouter>
+</TooltipProvider>
+</QueryClientProvider>
+</ErrorBoundary>
 );
 
 export default App;

@@ -7,90 +7,90 @@ import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 import { Shield, Info } from "lucide-react";
 
-const RegistrationPayStep = () => {
-  const { user, profile, refreshProfile } = useAuth();
-  const navigate = useNavigate();
-  const { num, loading: sLoading } = useSettings(["registration_fee", "registration_deposit_percent"]);
-  const [mode, setMode] = useState<"full" | "deposit">("full");
+const RegistrationPayStep = () =>{
+ const { user, profile, refreshProfile } = useAuth();
+ const navigate = useNavigate();
+ const { num, loading: sLoading } = useSettings(["registration_fee", "registration_deposit_percent"]);
+ const [mode, setMode] = useState<"full" | "deposit">("full");
 
-  useEffect(() => {
-    // If already paid, skip
-    if (profile?.registration_fee_paid) navigate("/onboarding/jobs", { replace: true });
-  }, [profile, navigate]);
+ useEffect(() =>{
+ // If already paid, skip
+ if (profile?.registration_fee_paid) navigate("/onboarding/jobs", { replace: true });
+ }, [profile, navigate]);
 
-  const fullFee = num("registration_fee", 0);
-  const depositPct = num("registration_deposit_percent", 0);
-  const depositFee = depositPct > 0 ? Math.max(1, Math.round((fullFee * depositPct) / 100)) : 0;
-  const amount = mode === "full" ? fullFee : depositFee;
-  const notConfigured = fullFee <= 0;
+ const fullFee = num("registration_fee", 0);
+ const depositPct = num("registration_deposit_percent", 0);
+ const depositFee = depositPct >0 ? Math.max(1, Math.round((fullFee * depositPct) / 100)) : 0;
+ const amount = mode === "full" ? fullFee : depositFee;
+ const notConfigured = fullFee<= 0;
 
-  const onSuccess = async () => {
-    await refreshProfile();
-    navigate("/onboarding/jobs");
-  };
+ const onSuccess = async () =>{
+ await refreshProfile();
+ navigate("/onboarding/jobs");
+ };
 
-  if (sLoading) return <StepLayout stepNumber={2} totalSteps={7} title="Loading…">…</StepLayout>;
+ if (sLoading) return<StepLayout stepNumber={2} totalSteps={7} title="Loading…">…</StepLayout>;
 
-  return (
-    <StepLayout
-      stepNumber={2}
-      totalSteps={7}
-      title="Pay your one-time registration fee"
-      subtitle="This unlocks job applications. Pay in full or reserve your slot with a small deposit."
-    >
-      <div className="space-y-4">
-        {notConfigured ? (
-          <div className="bg-yellow-50 border border-yellow-200 text-yellow-900 rounded-lg p-4 text-sm">
-            The registration fee has not been configured yet. Please check back shortly or contact support.
-          </div>
-        ) : (
-          <>
-            <div className={`grid gap-3 ${depositFee > 0 ? "grid-cols-2" : "grid-cols-1"}`}>
-              <button
-                type="button"
-                onClick={() => setMode("full")}
-                className={`p-4 rounded-lg border-2 text-left transition ${mode === "full" ? "border-primary bg-primary/5" : "border-border"}`}
-              >
-                <div className="text-xs text-muted-foreground">Pay in full</div>
-                <div className="font-bold text-lg">KES {fullFee.toLocaleString()}</div>
-                <div className="text-[11px] text-muted-foreground mt-1">Recommended</div>
-              </button>
-              {depositFee > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setMode("deposit")}
-                  className={`p-4 rounded-lg border-2 text-left transition ${mode === "deposit" ? "border-primary bg-primary/5" : "border-border"}`}
-                >
-                  <div className="text-xs text-muted-foreground">Reserve slot ({depositPct}%)</div>
-                  <div className="font-bold text-lg">KES {depositFee.toLocaleString()}</div>
-                  <div className="text-[11px] text-muted-foreground mt-1">Pay rest later</div>
-                </button>
-              )}
-            </div>
+ return (
+<StepLayout
+ stepNumber={2}
+ totalSteps={7}
+ title="Pay your one-time registration fee"
+ subtitle="This unlocks job applications. Pay in full or reserve your slot with a small deposit."
+ >
+<div className="space-y-4">
+ {notConfigured ? (
+<div className="bg-yellow-50 border border-yellow-200 text-yellow-900 rounded-lg p-4 text-sm">
+ The registration fee has not been configured yet. Please check back shortly or contact support.
+</div>
+ ) : (
+<>
+<div className={`grid gap-3 ${depositFee >0 ? "grid-cols-2" : "grid-cols-1"}`}>
+<button
+ type="button"
+ onClick={() =>setMode("full")}
+ className={`p-4 rounded-lg border-2 text-left transition ${mode === "full" ? "border-primary bg-primary/5" : "border-border"}`}
+ >
+<div className="text-xs text-muted-foreground">Pay in full</div>
+<div className="font-bold text-lg">KES {fullFee.toLocaleString()}</div>
+<div className="text-[11px] text-muted-foreground mt-1">Recommended</div>
+</button>
+ {depositFee >0 && (
+<button
+ type="button"
+ onClick={() =>setMode("deposit")}
+ className={`p-4 rounded-lg border-2 text-left transition ${mode === "deposit" ? "border-primary bg-primary/5" : "border-border"}`}
+ >
+<div className="text-xs text-muted-foreground">Reserve slot ({depositPct}%)</div>
+<div className="font-bold text-lg">KES {depositFee.toLocaleString()}</div>
+<div className="text-[11px] text-muted-foreground mt-1">Pay rest later</div>
+</button>
+ )}
+</div>
 
-            <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 rounded-lg p-3">
-              <Info size={14} className="mt-0.5 shrink-0" />
-              <p>The fee is non-refundable. You'll be able to apply for jobs after payment.</p>
-            </div>
+<div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 rounded-lg p-3">
+<Info size={14} className="mt-0.5 shrink-0" />
+<p>The fee is non-refundable. You'll be able to apply for jobs after payment.</p>
+</div>
 
-            {user && (
-              <MpesaPay
-                userId={user.id}
-                amount={amount}
-                paymentType="registration_fee"
-                description={mode === "full" ? "Agency registration fee (full)" : `Agency registration deposit (${depositPct}%)`}
-                onSuccess={onSuccess}
-              />
-            )}
+ {user && (
+<MpesaPay
+ userId={user.id}
+ amount={amount}
+ paymentType="registration_fee"
+ description={mode === "full" ? "Agency registration fee (full)" : `Agency registration deposit (${depositPct}%)`}
+ onSuccess={onSuccess}
+ />
+ )}
 
-            <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
-              <Shield size={12} /> Secured by Kopo Kopo M-Pesa
-            </div>
-          </>
-        )}
-      </div>
-    </StepLayout>
-  );
+<div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+<Shield size={12} />Secured by Kopo Kopo M-Pesa
+</div>
+</>
+ )}
+</div>
+</StepLayout>
+ );
 };
 
 export default RegistrationPayStep;
