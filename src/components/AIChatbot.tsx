@@ -140,15 +140,19 @@ const AIChatbot = () =>{
 <p className="text-muted-foreground text-xs">I can help you with jobs in Canada, document services, payments, and more. Tap a button below or type your question!</p>
 </div>
 <div className="grid grid-cols-2 gap-2">
- {quickActions.map((qa) =>(
+ {quickActions.map((qa) =>{
+ const Icon = qa.icon;
+ return (
 <button
  key={qa.label}
  onClick={() =>send(qa.message)}
- className="text-left text-xs p-2.5 rounded-lg border border-border bg-background hover:bg-muted transition-colors font-medium"
+ className="flex items-center gap-2 text-left text-xs p-2.5 rounded-lg border border-border bg-background hover:bg-muted transition-colors font-medium"
  >
- {qa.label}
+<Icon size={14} className="text-safari-gold shrink-0" />
+<span className="truncate">{qa.label}</span>
 </button>
- ))}
+ );
+ })}
 </div>
 </div>
  )}
