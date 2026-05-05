@@ -40,11 +40,11 @@ const JobsPage = () =>{
  return (
 <div className="min-h-screen bg-background">
 <Navbar />
-<main className="pt-20 pb-12 px-4">
+<main className="pt-20 section-y-sm page-x">
 <div className="max-w-6xl mx-auto">
-<div className="text-center mb-8">
-<h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Available Jobs</h1>
-<p className="text-muted-foreground mt-2 text-sm sm:text-base">Find your dream job in Canada. Tap "Apply Now" to get started!</p>
+<div className="text-center mb-6 sm:mb-10">
+<h1 className="font-heading font-bold text-foreground">Available Jobs</h1>
+<p className="text-muted-foreground mt-2 text-body max-w-md mx-auto">Find your dream job in Canada. Tap "Apply Now" to get started.</p>
 </div>
 
  {/* Search */}
