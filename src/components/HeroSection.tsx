@@ -3,7 +3,7 @@ import { ArrowRight, MapPin, Briefcase } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import heroBanner from "@/assets/hero-banner.jpg";
+import heroBanner from "@/assets/bg-canada.jpg";
 
 const HeroSection = () => {
   const { user } = useAuth();
