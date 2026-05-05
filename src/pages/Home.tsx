@@ -7,10 +7,10 @@ import Resume from "./Resume";
  * - Guests → marketing homepage (Index)
  * - Logged-in users → Resume (auto-redirects to next step)
  */
-const Home = () => {
-  const { user, isLoading } = useAuth();
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-pulse text-muted-foreground">Loading…</div></div>;
-  return user ? <Resume /> : <Index />;
+const Home = () =>{
+ const { user, isLoading } = useAuth();
+ if (isLoading) return<div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-pulse text-muted-foreground">Loading…</div></div>;
+ return user ?<Resume />:<Index />;
 };
 
 export default Home;
