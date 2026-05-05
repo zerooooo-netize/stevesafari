@@ -89,8 +89,8 @@ const JourneyStatus = ({ chosenPath }: Props) => {
             onClick={() => navigate(stepRoute(step))}
             className="gap-1 shrink-0 h-8 px-2.5 text-[11px] sm:h-9 sm:px-3 sm:text-sm rounded-full"
           >
-            <span className="hidden xs:inline">Continue</span>
-            <span className="xs:hidden">Go</span>
+            <span className="hidden sm:inline">Continue</span>
+            <span className="sm:hidden">Go</span>
             <ArrowRight size={13} />
           </Button>
         )}
