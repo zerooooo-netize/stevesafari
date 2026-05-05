@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Briefcase, FileText, CreditCard, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 
@@ -8,10 +8,10 @@ type Msg = { role: "user" | "assistant"; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const quickActions = [
- { label: " Find Jobs", message: "What jobs are available in Canada right now?" },
- { label: " Document Help", message: "What document services do you offer and how much do they cost?" },
- { label: " How to Pay", message: "How do I pay for the application fee via M-Pesa?" },
- { label: " Application Steps", message: "What are the steps to apply for a job through Steve Safari?" },
+ { label: "Find Jobs", icon: Briefcase, message: "What jobs are available in Canada right now?" },
+ { label: "Document Help", icon: FileText, message: "What document services do you offer and how much do they cost?" },
+ { label: "How to Pay", icon: CreditCard, message: "How do I pay for the application fee via M-Pesa?" },
+ { label: "Application Steps", icon: ListChecks, message: "What are the steps to apply for a job through Steve Safari?" },
 ];
 
 const AIChatbot = () =>{
