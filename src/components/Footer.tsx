@@ -1,8 +1,26 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const Footer = () => {
+  const [whatsapp, setWhatsapp] = useState<string>("");
+
+  useEffect(() => {
+    supabase
+      .from("settings")
+      .select("value")
+      .eq("key", "whatsapp_number")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setWhatsapp(data.value);
+      });
+  }, []);
+
+  const phoneDigits = whatsapp.replace(/[^\d]/g, "");
+  const email = "dereknash@usa.com";
+
   return (
     <footer className="bg-primary text-primary-foreground py-14">
       <div className="container">
@@ -46,14 +64,16 @@ const Footer = () => {
           <div>
             <h4 className="font-heading font-semibold mb-4">Contact Us</h4>
             <div className="flex flex-col gap-3 text-sm text-primary-foreground/70">
-              <div className="flex items-center gap-2">
-                <Phone size={14} className="text-safari-gold" />
-                <span>+254 700 000 000</span>
-              </div>
-              <div className="flex items-center gap-2">
+              {whatsapp && (
+                <a href={`tel:+${phoneDigits}`} className="flex items-center gap-2 hover:text-safari-gold transition-colors">
+                  <Phone size={14} className="text-safari-gold" />
+                  <span>{whatsapp}</span>
+                </a>
+              )}
+              <a href={`mailto:${email}`} className="flex items-center gap-2 hover:text-safari-gold transition-colors">
                 <Mail size={14} className="text-safari-gold" />
-                <span>info@stevesafari.co.ke</span>
-              </div>
+                <span>{email}</span>
+              </a>
               <div className="flex items-center gap-2">
                 <MapPin size={14} className="text-safari-gold" />
                 <span>Nairobi, Kenya</span>
