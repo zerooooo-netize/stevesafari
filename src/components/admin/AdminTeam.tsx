@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus, Trash2, Pencil, Save } from "lucide-react";
 
 const empty = {
  full_name: "",
@@ -119,7 +119,7 @@ const AdminTeam = () =>{
 </div>
 </div>
 <div className="flex gap-2">
-<Button onClick={save}>Save</Button>
+<Button onClick={save}><Save size={14} />Save</Button>
 <Button variant="outline" onClick={() =>setEditing(null)}>Cancel</Button>
 </div>
 </div>

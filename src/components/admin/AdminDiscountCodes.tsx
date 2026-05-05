@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, Copy, Link as LinkIcon } from "lucide-react";
+import { Plus, Trash2, Pencil, Copy, Link as LinkIcon, Save } from "lucide-react";
 
 const empty = {
  code: "",
@@ -158,7 +158,7 @@ const AdminDiscountCodes = () =>{
 </label>
 </div>
 <div className="flex gap-2">
-<Button onClick={save}>Save</Button>
+<Button onClick={save}><Save size={14} />Save</Button>
 <Button variant="outline" onClick={() =>setEditing(null)}>
  Cancel
 </Button>
