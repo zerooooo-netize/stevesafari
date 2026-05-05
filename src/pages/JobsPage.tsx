@@ -76,7 +76,7 @@ const JobsPage = () =>{
  transition={{ duration: 0.4, delay: i * 0.05 }}
  >
 <div className="flex items-center justify-between mb-3">
-<span className="text-2xl">{job.country === "Canada" ? "" : ""}</span>
+<span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-safari-gold/15 text-safari-gold"><Globe2 size={12} />{job.country || "Global"}</span>
 <span className="text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground">{job.job_type}</span>
 </div>
 <h3 className="font-heading text-base sm:text-lg font-semibold text-foreground">{job.title}</h3>
