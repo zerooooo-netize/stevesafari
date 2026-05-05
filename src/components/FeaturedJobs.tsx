@@ -60,7 +60,9 @@ const FeaturedJobs = () =>{
  transition={{ duration: 0.4, delay: i * 0.1 }}
  >
 <div className="flex items-center justify-between mb-4">
-<span className="text-3xl">{job.flag}</span>
+<span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-safari-gold/15 text-safari-gold">
+<Globe2 size={12} />{job.country}
+</span>
 <span className="text-xs font-medium px-3 py-1 rounded-full bg-secondary text-secondary-foreground">
  {job.type}
 </span>
