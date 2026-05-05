@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { MapPin, DollarSign, Clock, Briefcase, Search } from "lucide-react";
+import { MapPin, DollarSign, Clock, Briefcase, Search, Globe2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
