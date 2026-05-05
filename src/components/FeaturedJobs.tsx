@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MapPin, DollarSign, Clock, ArrowRight } from "lucide-react";
+import { MapPin, DollarSign, Clock, ArrowRight, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const jobs = [
