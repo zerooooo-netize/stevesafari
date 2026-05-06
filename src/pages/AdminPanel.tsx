@@ -313,12 +313,16 @@ const AdminSettings = () =>{
 
  type SettingGroup = { title: string; icon: string; description: string; keys: string[] };
  const groups: SettingGroup[] = [
- { title: "Site Branding", icon: "", description: "Site name, logo URL, and tagline. Uploaded logos go to a public bucket - paste the URL here.", keys: ["site_name", "site_logo_url", "site_tagline"] },
+ { title: "Site Branding", icon: "", description: "Site name, logo URL, and tagline.", keys: ["site_name", "site_logo_url", "site_tagline"] },
+ { title: "Homepage Hero", icon: "", description: "Hero title, subtitle, badge, CTAs and stats shown on the landing page.", keys: ["hero_title", "hero_subtitle", "hero_badge", "hero_cta_primary", "hero_cta_secondary", "hero_stat_1_value", "hero_stat_1_label", "hero_stat_2_value", "hero_stat_2_label", "hero_stat_3_value", "hero_stat_3_label"] },
+ { title: "Footer & Contact", icon: "", description: "Footer tagline, address, contact email shown on every page.", keys: ["footer_tagline", "footer_address", "footer_email"] },
+ { title: "Social Links", icon: "", description: "Social URLs shown in the footer. Leave blank to hide.", keys: ["social_facebook", "social_instagram", "social_twitter", "social_linkedin"] },
  { title: "Fees & Pricing", icon: "", description: "Registration, accommodation, sponsorship and deposit configuration", keys: ["registration_fee", "accommodation_fee", "sponsorship_fee", "deposit_amount", "allow_deposits", "max_active_applications"] },
+ { title: "Onboarding Flow", icon: "", description: "Comma-separated step keys for each path. Reorder/remove to customize the flow.", keys: ["onboarding_steps_jobs", "onboarding_steps_services", "path_gate_enabled", "payment_gate_enabled"] },
  { title: "Kopo Kopo (M-Pesa)", icon: "", description: "M-Pesa STK Push credentials. Set environment to 'live' for production payments.", keys: ["kopokopo_client_id", "kopokopo_client_secret", "kopokopo_till_number", "kopokopo_environment"] },
- { title: "Referrals", icon: "", description: "Referral bonus configuration", keys: ["referral_enabled", "referral_bonus_mode", "referral_bonus_amount", "referral_bonus_percent", "referral_signup_discount"] },
- { title: "Email / SMTP", icon: "", description: "Email sending configuration for notifications", keys: ["smtp_host", "smtp_port", "smtp_user", "smtp_password", "sender_email"] },
- { title: "Company Info", icon: "", description: "Company contact info shown on the site", keys: ["company_name", "company_phone", "whatsapp_number", "business_email", "business_phone"] },
+ { title: "Referrals", icon: "", description: "Referral bonus configuration", keys: ["referral_enabled", "referral_bonus_mode", "referral_bonus_amount", "referral_bonus_percent", "referral_signup_discount", "referral_signup_discount_enabled"] },
+ { title: "Email / SMTP", icon: "", description: "Email sending configuration for notifications", keys: ["smtp_host", "smtp_port", "smtp_user", "smtp_password", "smtp_from_email", "smtp_from_name", "sender_email"] },
+ { title: "Company Info", icon: "", description: "Company contact info shown on the site", keys: ["company_name", "company_phone", "whatsapp_number", "business_email", "business_phone", "business_address", "business_name"] },
  ];
 
  const groupedSettings = groups.map(g =>({
