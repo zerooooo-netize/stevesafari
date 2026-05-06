@@ -36,7 +36,7 @@ const AdminPanel = () =>{
  ];
 
  return (
-<div className="min-h-screen bg-background"><header className="bg-primary text-primary-foreground py-3 px-4"><div className="container flex items-center justify-between"><div className="flex items-center gap-3"><Link to="/" className="font-heading font-bold text-lg">Steve<span className="text-safari-gold">Safari</span></Link><span className="text-xs bg-safari-gold/20 text-safari-gold px-2 py-0.5 rounded-full">Admin</span></div><div className="flex gap-2"><Button variant="ghost" size="sm" className="text-primary-foreground" onClick={() =>navigate("/dashboard")}>Dashboard</Button><Button variant="ghost" size="sm" className="text-primary-foreground" onClick={signOut}>Sign Out</Button></div></div></header><div className="container py-6">{/* Tab nav */}
+<div className="min-h-screen bg-background"><header className="bg-primary text-primary-foreground py-3 page-x"><div className="container flex items-center justify-between"><div className="flex items-center gap-3"><Link to="/" className="font-heading font-bold text-lg">Steve<span className="text-safari-gold">Safari</span></Link><span className="text-xs bg-safari-gold/20 text-safari-gold px-2 py-0.5 rounded-full">Admin</span></div><div className="flex gap-2"><Button variant="ghost" size="sm" className="text-primary-foreground" onClick={() =>navigate("/dashboard")}>Dashboard</Button><Button variant="ghost" size="sm" className="text-primary-foreground" onClick={signOut}>Sign Out</Button></div></div></header><div className="container section-y-sm page-x">{/* Tab nav */}
 <div className="flex gap-1 overflow-x-auto pb-4 mb-6 border-b border-border">{tabs.map((t) =>(
 <button
  key={t.key}
