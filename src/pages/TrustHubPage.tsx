@@ -47,7 +47,7 @@ const TrustHubPage = () =>{
 <Navbar />
 <main className="pt-20 section-y page-x">
  {/* Hero */}
-<section className="bg-[image:var(--gradient-hero)] py-12 sm:py-20 text-safari-cream">
+<section className="bg-[image:var(--gradient-hero)] section-y-sm sm:section-y text-safari-cream">
 <div className="container max-w-3xl text-center">
 <span className="inline-flex items-center gap-1 text-xs bg-safari-gold/20 text-safari-gold px-3 py-1 rounded-full font-medium mb-4">
 <ShieldCheck size={12} />100% Transparent
@@ -60,7 +60,7 @@ const TrustHubPage = () =>{
 </section>
 
  {/* Guarantees grid */}
-<section className="container max-w-5xl py-12">
+<section className="container max-w-5xl section-y-sm">
 <h2 className="font-heading text-2xl font-bold text-center mb-8">Our 6 Promises to You</h2>
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
  {guarantees.map((g, i) =>(
@@ -115,7 +115,7 @@ const TrustHubPage = () =>{
 </section>
 
  {/* Contact */}
-<section className="container max-w-3xl py-12">
+<section className="container max-w-3xl section-y-sm">
 <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card">
 <h2 className="font-heading text-2xl font-bold mb-4">Talk to a real human</h2>
 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">

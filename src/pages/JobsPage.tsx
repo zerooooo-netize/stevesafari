@@ -59,9 +59,9 @@ const JobsPage = () =>{
 </div>
 
  {loading ? (
-<div className="text-center text-muted-foreground py-12">Loading jobs...</div>
+<div className="text-center text-muted-foreground section-y-sm">Loading jobs...</div>
  ) : filtered.length === 0 ? (
-<div className="text-center text-muted-foreground py-12">
+<div className="text-center text-muted-foreground section-y-sm">
 <Briefcase size={48} className="mx-auto mb-3 opacity-30" />
 <p>{search ? "No jobs match your search." : "No jobs available right now. Check back soon!"}</p>
 </div>
