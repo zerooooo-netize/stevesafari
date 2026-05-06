@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Phone, Mail, MapPin, Globe } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useSettings } from "@/hooks/useSettings";
 
@@ -15,10 +15,10 @@ const Footer = () => {
   const phoneDigits = whatsapp.replace(/[^\d]/g, "");
   const email = str("footer_email", "dereknash@usa.com");
   const socials = [
-    { url: str("social_facebook", ""), Icon: Facebook, label: "Facebook" },
-    { url: str("social_instagram", ""), Icon: Instagram, label: "Instagram" },
-    { url: str("social_twitter", ""), Icon: Twitter, label: "Twitter" },
-    { url: str("social_linkedin", ""), Icon: Linkedin, label: "LinkedIn" },
+    { url: str("social_facebook", ""), label: "Facebook" },
+    { url: str("social_instagram", ""), label: "Instagram" },
+    { url: str("social_twitter", ""), label: "Twitter" },
+    { url: str("social_linkedin", ""), label: "LinkedIn" },
   ].filter(s => s.url);
 
   return (
@@ -37,10 +37,10 @@ const Footer = () => {
             </p>
             {socials.length > 0 && (
               <div className="flex gap-3 mt-4">
-                {socials.map(({ url, Icon, label }) => (
+                {socials.map(({ url, label }) => (
                   <a key={label} href={url} target="_blank" rel="noopener noreferrer" aria-label={label}
                     className="w-9 h-9 rounded-full bg-primary-foreground/10 hover:bg-safari-gold hover:text-primary flex items-center justify-center transition-colors">
-                    <Icon size={16} />
+                    <Globe size={16} />
                   </a>
                 ))}
               </div>
