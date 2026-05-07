@@ -76,7 +76,7 @@ const TrustHubPage = () =>{
 </section>
 
  {/* Process snapshot */}
-<section className="container max-w-3xl py-8">
+<section className="container max-w-3xl section-y-sm">
 <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card">
 <h2 className="font-heading text-2xl font-bold mb-2">How we work - at a glance</h2>
 <p className="text-sm text-muted-foreground mb-5">
@@ -89,7 +89,7 @@ const TrustHubPage = () =>{
 </section>
 
  {/* Anti-scam */}
-<section className="container max-w-3xl py-8">
+<section className="container max-w-3xl section-y-sm">
 <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
 <div className="flex items-start gap-3 mb-3">
 <AlertTriangle className="text-yellow-700 shrink-0 mt-0.5" size={22} />
@@ -105,12 +105,12 @@ const TrustHubPage = () =>{
 </section>
 
  {/* Team */}
-<section className="py-8">
+<section className="section-y-sm">
 <MeetTheTeam />
 </section>
 
  {/* Stories */}
-<section className="py-8">
+<section className="section-y-sm">
 <SuccessStories />
 </section>
 
