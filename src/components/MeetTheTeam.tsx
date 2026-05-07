@@ -26,13 +26,13 @@ const MeetTheTeam = () =>{
  if (!enabled || team.length === 0) return null;
 
  return (
-<section className="py-16 bg-muted/30">
-<div className="container">
-<div className="text-center mb-10">
-<span className="text-sm font-medium text-safari-gold uppercase tracking-wider">Real People</span>
-<h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-2">Meet Our Team</h2>
-<p className="text-muted-foreground mt-3 max-w-md mx-auto">
- The humans behind your journey. We're here to support you every step of the way.
+<section className="section-y-lg bg-background">
+<div className="container page-x">
+<div className="text-center mb-12 max-w-2xl mx-auto">
+<span className="inline-block text-xs font-semibold text-safari-gold uppercase tracking-[0.2em] bg-safari-gold/10 px-3 py-1 rounded-full">Real People</span>
+<h2 className="font-heading text-h1 font-bold text-foreground mt-4">Meet Our Team</h2>
+<p className="text-muted-foreground mt-4 text-base sm:text-lg leading-relaxed">
+ The humans behind your journey. We are here to support you every step of the way.
 </p>
 </div>
 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

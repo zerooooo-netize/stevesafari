@@ -31,21 +31,21 @@ const steps = [
 
 const HowItWorks = () =>{
  return (
-<section id="how-it-works" className="py-20 bg-background">
-<div className="container">
+<section id="how-it-works" className="section-y-lg bg-background">
+<div className="container page-x">
 <motion.div
- className="text-center mb-14"
+ className="text-center mb-14 max-w-2xl mx-auto"
  initial={{ opacity: 0, y: 20 }}
  whileInView={{ opacity: 1, y: 0 }}
  viewport={{ once: true }}
  transition={{ duration: 0.5 }}
  >
-<span className="text-sm font-medium text-safari-gold uppercase tracking-wider">Process</span>
-<h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-2">
+<span className="inline-block text-xs sm:text-sm font-semibold text-safari-gold uppercase tracking-[0.2em] bg-safari-gold/10 px-4 py-1.5 rounded-full">Process</span>
+<h2 className="font-heading text-h1 font-bold text-foreground mt-4">
  How It Works
 </h2>
-<p className="text-muted-foreground mt-3 max-w-md mx-auto">
- From registration to departure - we guide you every step of the way.
+<p className="text-muted-foreground mt-4 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+ From registration to departure, we guide you every step of the way.
 </p>
 </motion.div>
 
