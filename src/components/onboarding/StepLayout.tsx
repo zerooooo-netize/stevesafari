@@ -16,8 +16,8 @@ const StepLayout = ({ stepNumber, totalSteps, title, subtitle, children }: Props
  return (
 <div className="min-h-screen flex flex-col bg-background">
 <Navbar />
-<main className="flex-1 pt-20 pb-16">
-<div className="max-w-2xl mx-auto px-4">
+<main className="flex-1 pt-20 section-y-sm">
+<div className="max-w-2xl mx-auto page-x">
  {/* Progress */}
 <div className="mb-6">
 <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
@@ -29,8 +29,8 @@ const StepLayout = ({ stepNumber, totalSteps, title, subtitle, children }: Props
 </div>
 </div>
 
-<div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card">
-<h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">{title}</h1>
+<div className="bg-card border border-border rounded-2xl surface-pad-lg shadow-card">
+<h1 className="font-heading text-h2 mb-2">{title}</h1>
  {subtitle &&<p className="text-muted-foreground mb-6">{subtitle}</p>}
  {children}
 </div>
