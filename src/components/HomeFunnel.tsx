@@ -14,12 +14,12 @@ export const JobsPreview = () =>{
  }, []);
  if (jobs.length === 0) return null;
  return (
-<section className="py-16 bg-muted/30">
-<div className="container">
-<div className="flex items-end justify-between mb-8 flex-wrap gap-3">
+<section className="section-y-lg bg-muted/30">
+<div className="container page-x">
+<div className="flex items-end justify-between mb-10 flex-wrap gap-3">
 <div>
-<span className="text-xs font-medium text-safari-gold uppercase tracking-wider">Open Roles</span>
-<h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mt-1">Featured Jobs</h2>
+<span className="inline-block text-xs font-semibold text-safari-gold uppercase tracking-[0.2em] bg-safari-gold/10 px-3 py-1 rounded-full">Open Roles</span>
+<h2 className="font-heading text-h2 font-bold text-foreground mt-3">Featured Jobs</h2>
 </div>
 <Button variant="outline" size="sm" asChild><Link to="/jobs">View all<ArrowRight size={14} /></Link></Button>
 </div>
@@ -63,12 +63,12 @@ export const ServicesPreview = () =>{
  }, []);
  if (services.length === 0) return null;
  return (
-<section className="py-16">
-<div className="container">
-<div className="flex items-end justify-between mb-8 flex-wrap gap-3">
+<section className="section-y-lg">
+<div className="container page-x">
+<div className="flex items-end justify-between mb-10 flex-wrap gap-3">
 <div>
-<span className="text-xs font-medium text-safari-gold uppercase tracking-wider">Document Services</span>
-<h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mt-1">Get Your Papers Right</h2>
+<span className="inline-block text-xs font-semibold text-safari-gold uppercase tracking-[0.2em] bg-safari-gold/10 px-3 py-1 rounded-full">Document Services</span>
+<h2 className="font-heading text-h2 font-bold text-foreground mt-3">Get Your Papers Right</h2>
 </div>
 <Button variant="outline" size="sm" asChild><Link to="/services">All services<ArrowRight size={14} /></Link></Button>
 </div>

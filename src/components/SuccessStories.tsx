@@ -27,13 +27,14 @@ const SuccessStories = () =>{
  if (stories.length === 0) return null;
 
  return (
-<section className="py-16 bg-muted/30">
-<div className="container">
-<div className="text-center mb-12">
-<h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-3">
- Success<span className="text-safari-gold">Stories</span>
+<section className="section-y-lg bg-muted/30">
+<div className="container page-x">
+<div className="text-center mb-12 max-w-2xl mx-auto">
+<span className="inline-block text-xs font-semibold text-safari-gold uppercase tracking-[0.2em] bg-safari-gold/10 px-3 py-1 rounded-full">Testimonials</span>
+<h2 className="font-heading text-h1 font-bold text-foreground mt-4 mb-4">
+ Success<span className="text-safari-gold"> Stories</span>
 </h2>
-<p className="text-muted-foreground max-w-2xl mx-auto">
+<p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
  Real Kenyans, real journeys. Hear from those who made it abroad with Steve Safari.
 </p>
 </div>
