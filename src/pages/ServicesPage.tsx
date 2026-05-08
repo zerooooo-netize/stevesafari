@@ -166,17 +166,41 @@ const ServicesPage = () =>{
 </p></div>{loading ? (
 <div className="text-center section-y-sm text-muted-foreground">Loading...</div>) : services.length === 0 ? (
 <div className="text-center section-y-sm text-muted-foreground">No services available right now.</div>) : (
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">{services.map((service, i) =>{
- const Icon = iconMap[service.icon] || FileText;
- return (
-<motion.div
- key={service.id}
- className="bg-card rounded-xl border border-border p-4 sm:p-6 text-center shadow-card hover:shadow-elevated transition-all hover:-translate-y-1" initial={{ opacity: 0, y: 20 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ duration: 0.4, delay: i * 0.1 }}
- ><div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-safari-gold/10 text-safari-gold mb-4"><Icon size={24} /></div><h3 className="font-heading font-semibold text-foreground text-sm sm:text-base">{service.name}</h3><p className="text-xs sm:text-sm text-muted-foreground mt-2 mb-4">{service.description}</p><div className="font-heading font-bold text-safari-gold text-lg mb-4">{service.currency} {Number(service.price).toLocaleString()}
-</div><div className="flex gap-2"><Button variant="outline" size="sm" className="flex-1 h-10" asChild><Link to={`/services/${service.id}`}>Details</Link></Button><Button size="sm" className="flex-1 h-10" onClick={() =>handleOrderClick(service)}>Order<ArrowRight size={14} /></Button></div></motion.div>);
- })}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">{services.map((service, i) => {
+  const Icon = iconMap[service.icon] || FileText;
+  return (
+    <motion.div
+      key={service.id}
+      className="group relative bg-card rounded-2xl border border-border/70 overflow-hidden shadow-card hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 flex flex-col"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: i * 0.08 }}
+    >
+      <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-safari-gold/10 blur-2xl group-hover:bg-safari-gold/20 transition-colors" />
+      <div className="relative p-5 flex flex-col flex-1">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-safari-gold/30 to-safari-gold/10 text-safari-gold mb-4 shadow-sm">
+          <Icon size={22} />
+        </div>
+        <h3 className="font-heading font-bold text-foreground text-base leading-tight">{service.name}</h3>
+        <p className="text-caption text-muted-foreground mt-2 line-clamp-3 flex-1">{service.description}</p>
+
+        <div className="mt-4 rounded-xl bg-gradient-to-r from-safari-gold/15 to-safari-gold/5 px-3 py-2.5 flex items-center justify-between">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Price</span>
+          <span className="font-heading font-bold text-safari-gold text-sm sm:text-base">{format(Number(service.price), service.currency || "KES")}</span>
+        </div>
+
+        <div className="flex gap-2 mt-3">
+          <Button variant="outline" size="sm" className="flex-1 h-10 text-button" asChild>
+            <Link to={`/services/${service.id}`}>Details</Link>
+          </Button>
+          <Button size="sm" className="flex-1 h-10 text-button" onClick={() => handleOrderClick(service)}>
+            Order<ArrowRight size={14} className="ml-1" />
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+})}
 </div>)}
 
  {/* Order Modal */}
