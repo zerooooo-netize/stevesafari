@@ -89,12 +89,12 @@ const JobsPage = () =>{
   </div>
 
   <div className="p-4 sm:p-5">
-    <h3 className="font-heading text-base sm:text-lg font-bold text-foreground leading-tight">{job.title}</h3>
-    <div className="flex items-center gap-1 text-muted-foreground text-caption mt-1">
+    <h3 className="font-heading text-h3 font-bold text-foreground line-clamp-2 leading-snug">{job.title}</h3>
+    <div className="flex items-center gap-1 text-muted-foreground text-caption mt-1.5">
       <MapPin size={13} />{job.country}{job.city ? `, ${job.city}` : ""}
     </div>
 
-    {job.description && <p className="text-caption text-muted-foreground mt-3 line-clamp-2">{job.description}</p>}
+    {job.description && <p className="text-body text-muted-foreground mt-3 line-clamp-2">{job.description}</p>}
 
     <div className="grid grid-cols-2 gap-2 mt-4">
       {job.salary && (
