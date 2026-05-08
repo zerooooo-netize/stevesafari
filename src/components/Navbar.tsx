@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBranding } from "@/hooks/useBranding";
+import CurrencyToggle from "@/components/CurrencyToggle";
 
 const navLinks = [
  { label: "Home", href: "/" },
@@ -44,13 +45,17 @@ const Navbar = () =>{
 <Link key={link.label} to={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
  {link.label}
 </Link>
- ))}
+          ))}
+<CurrencyToggle />
 <Button size="sm" onClick={ctaClick}>{user ? "Dashboard" : "Get Started"}</Button>
 </div>
 
-<button className="md:hidden p-2 text-foreground" onClick={() =>setOpen(!open)} aria-label="Toggle menu">
- {open ?<X size={24} />:<Menu size={24} />}
+        <div className="md:hidden flex items-center gap-2">
+<CurrencyToggle />
+<button className="p-2 text-foreground" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+  {open ? <X size={24} /> : <Menu size={24} />}
 </button>
+</div>
 </div>
 
  {open && (

@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
@@ -40,6 +41,7 @@ const App = () =>(
 <Sonner />
 <BrowserRouter>
 <AuthProvider>
+<CurrencyProvider>
 <Routes>
  {/* Public */}
 <Route path="/" element={<Home />} />
@@ -73,6 +75,7 @@ const App = () =>(
 </Routes>
 <AIChatbot />
 <WhatsAppButton />
+</CurrencyProvider>
 </AuthProvider>
 </BrowserRouter>
 </TooltipProvider>
