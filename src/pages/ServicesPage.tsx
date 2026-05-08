@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { FileText, Stamp, Globe, FileCheck, ArrowRight, X, Shield, Loader2, CheckCircle2, Phone } from "lucide-react";
+import { FileText, Stamp, Globe, FileCheck, ArrowRight, X, Shield, Loader2, CheckCircle2, Phone, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 const iconMap: Record<string, any>= { "file-text": FileText, "file-check": FileCheck, "stamp": Stamp, "globe": Globe };
@@ -106,6 +107,7 @@ const ServicesPage = () =>{
  const [loading, setLoading] = useState(true);
  const [orderStep, setOrderStep] = useState<"details"| "payment">("details");
  const { user } = useAuth();
+ const { format } = useCurrency();
  const navigate = useNavigate();
 
  useEffect(() =>{ load(); }, []);
