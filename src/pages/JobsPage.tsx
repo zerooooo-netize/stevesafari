@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { MapPin, DollarSign, Clock, Briefcase, Search, Globe2 } from "lucide-react";
+import { MapPin, DollarSign, Clock, Briefcase, Search, Globe2, Sparkles, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
@@ -15,6 +16,7 @@ const JobsPage = () =>{
  const [loading, setLoading] = useState(true);
  const [search, setSearch] = useState("");
  const { user } = useAuth();
+ const { format } = useCurrency();
  const navigate = useNavigate();
 
  useEffect(() =>{ loadJobs(); }, []);
@@ -67,41 +69,68 @@ const JobsPage = () =>{
 </div>
  ) : (
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
- {filtered.map((job, i) =>(
+ {filtered.map((job, i) => (
 <motion.div
  key={job.id}
- className="bg-card rounded-xl border border-border p-4 sm:p-6 shadow-card hover:shadow-elevated transition-shadow"
+ className="group relative bg-card rounded-2xl border border-border/70 overflow-hidden shadow-card hover:shadow-elevated hover:-translate-y-1 transition-all duration-300"
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ duration: 0.4, delay: i * 0.05 }}
- >
-<div className="flex items-center justify-between mb-3">
-<span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-safari-gold/15 text-safari-gold"><Globe2 size={12} />{job.country || "Global"}</span>
-<span className="text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground">{job.job_type}</span>
-</div>
-<h3 className="font-heading text-base sm:text-lg font-semibold text-foreground">{job.title}</h3>
-<div className="flex items-center gap-1 text-muted-foreground text-xs sm:text-sm mt-1"><MapPin size={14} />{job.country}{job.city ? `, ${job.city}` : ""}</div>
+>
+  {/* Gradient accent header */}
+  <div className="h-20 bg-gradient-to-br from-primary/90 via-primary/70 to-safari-gold/60 relative overflow-hidden">
+    <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-safari-gold/30 blur-2xl" />
+    <div className="absolute inset-0 flex items-end justify-between p-3.5">
+      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-safari-cream/95 text-primary backdrop-blur">
+        <Globe2 size={12} />{job.country || "Global"}
+      </span>
+      <span className="text-[10px] font-medium px-2.5 py-1 rounded-full bg-foreground/20 text-safari-cream backdrop-blur">{job.job_type}</span>
+    </div>
+  </div>
 
- {job.description &&<p className="text-xs sm:text-sm text-muted-foreground mt-3 line-clamp-2">{job.description}</p>}
+  <div className="p-4 sm:p-5">
+    <h3 className="font-heading text-base sm:text-lg font-bold text-foreground leading-tight">{job.title}</h3>
+    <div className="flex items-center gap-1 text-muted-foreground text-caption mt-1">
+      <MapPin size={13} />{job.country}{job.city ? `, ${job.city}` : ""}
+    </div>
 
-<div className="flex flex-wrap items-center gap-3 mt-4 text-xs sm:text-sm">
- {job.salary &&<div className="flex items-center gap-1 text-safari-gold font-semibold"><DollarSign size={14} />{job.salary}</div>}
- {job.deadline &&<div className="flex items-center gap-1 text-muted-foreground"><Clock size={14} />{new Date(job.deadline).toLocaleDateString()}</div>}
- {job.slots_available >0 &&<div className="flex items-center gap-1 text-muted-foreground"><Briefcase size={14} />{job.slots_available} slots</div>}
-</div>
+    {job.description && <p className="text-caption text-muted-foreground mt-3 line-clamp-2">{job.description}</p>}
 
- {job.application_fee >0 && (
-<p className="text-xs text-muted-foreground mt-3">Application fee: KES {Number(job.application_fee).toLocaleString()}</p>
- )}
+    <div className="grid grid-cols-2 gap-2 mt-4">
+      {job.salary && (
+        <div className="rounded-xl bg-safari-gold/10 px-3 py-2">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Salary</p>
+          <p className="text-safari-gold font-bold text-xs sm:text-sm flex items-center gap-1"><DollarSign size={12} />{job.salary}</p>
+        </div>
+      )}
+      {job.deadline && (
+        <div className="rounded-xl bg-muted/50 px-3 py-2">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Deadline</p>
+          <p className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-1"><Clock size={12} />{new Date(job.deadline).toLocaleDateString()}</p>
+        </div>
+      )}
+    </div>
 
-<div className="flex gap-2 mt-4">
-<Button variant="outline" className="flex-1 h-11 text-sm" asChild>
-<Link to={`/jobs/${job.id}`}>View Details</Link>
-</Button>
-<Button className="flex-1 h-11 text-sm" onClick={() =>applyForJob(job.id)}>
- Apply
-</Button>
-</div>
+    {job.slots_available > 0 && (
+      <p className="text-[11px] text-muted-foreground mt-3 flex items-center gap-1"><Sparkles size={11} className="text-safari-gold" />{job.slots_available} slots remaining</p>
+    )}
+
+    {job.application_fee > 0 && (
+      <div className="mt-3 flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
+        <span className="text-[11px] text-muted-foreground">Application fee</span>
+        <span className="text-xs font-bold text-foreground">{format(Number(job.application_fee), "KES")}</span>
+      </div>
+    )}
+
+    <div className="flex gap-2 mt-4">
+      <Button variant="outline" className="flex-1 h-11 text-button" asChild>
+        <Link to={`/jobs/${job.id}`}>Details</Link>
+      </Button>
+      <Button className="flex-1 h-11 text-button group-hover:shadow-md" onClick={() => applyForJob(job.id)}>
+        Apply<ArrowRight size={14} className="ml-1" />
+      </Button>
+    </div>
+  </div>
 </motion.div>
  ))}
 </div>
