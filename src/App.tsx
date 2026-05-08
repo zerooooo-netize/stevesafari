@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
@@ -35,6 +36,7 @@ const queryClient = new QueryClient();
 
 const App = () =>(
 <ErrorBoundary>
+<ThemeProvider>
 <QueryClientProvider client={queryClient}>
 <TooltipProvider>
 <Toaster />
@@ -80,6 +82,7 @@ const App = () =>(
 </BrowserRouter>
 </TooltipProvider>
 </QueryClientProvider>
+</ThemeProvider>
 </ErrorBoundary>
 );
 

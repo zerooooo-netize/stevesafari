@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBranding } from "@/hooks/useBranding";
 import CurrencyToggle from "@/components/CurrencyToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
  { label: "Home", href: "/" },
@@ -47,10 +48,12 @@ const Navbar = () =>{
 </Link>
           ))}
 <CurrencyToggle />
+<ThemeToggle />
 <Button size="sm" onClick={ctaClick}>{user ? "Dashboard" : "Get Started"}</Button>
 </div>
 
-        <div className="md:hidden flex items-center gap-2">
+        <div className="md:hidden flex items-center gap-1.5">
+<ThemeToggle />
 <CurrencyToggle />
 <button className="p-2 text-foreground" onClick={() => setOpen(!open)} aria-label="Toggle menu">
   {open ? <X size={24} /> : <Menu size={24} />}
