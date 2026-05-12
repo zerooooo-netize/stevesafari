@@ -9,6 +9,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 /** Compact dynamic preview of latest jobs (max 3) and services (max 4), DB-driven, with CTAs to detail pages. */
 export const JobsPreview = () =>{
  const [jobs, setJobs] = useState<any[]>([]);
+ const { format } = useCurrency();
  useEffect(() =>{
  supabase.from("jobs").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3)
  .then(({ data }) =>setJobs(data || []));
