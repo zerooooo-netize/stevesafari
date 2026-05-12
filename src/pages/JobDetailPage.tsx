@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { useSettings } from "@/hooks/useSettings";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Reusable M-Pesa payment widget for the agency registration fee.
 // Amount is provided by the parent (loaded from settings table).
