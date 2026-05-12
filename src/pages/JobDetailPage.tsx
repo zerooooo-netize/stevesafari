@@ -207,7 +207,7 @@ const JobDetailPage = () =>{
  to="/jobs" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"><ArrowLeft size={14} />Back to All Jobs
 </Link>{/* Registration Fee Banner (if not paid) */}
  {user && !isRegistered && !showRegistrationPrompt && (
-<div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-3"><Lock className="text-amber-600 shrink-0 mt-0.5" size={18} /><div className="flex-1"><p className="font-medium text-sm">Complete registration to apply</p><p className="text-xs text-muted-foreground">A one‑time agency fee of KES {REG_FEE.toLocaleString()} is required before you can apply for jobs.
+<div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-3"><Lock className="text-amber-600 shrink-0 mt-0.5" size={18} /><div className="flex-1"><p className="font-medium text-sm">Complete registration to apply</p><p className="text-xs text-muted-foreground">A one‑time agency fee of {format(REG_FEE, "KES")} is required before you can apply for jobs.
 </p></div><Button size="sm" variant="outline" onClick={() =>setShowRegistrationPrompt(true)}>Pay Now
 </Button></div>)}
 
