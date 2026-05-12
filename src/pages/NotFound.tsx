@@ -34,7 +34,7 @@ const NotFound = () =>{
 </div>
 </div>
 
-<p className="text-xl sm:text-2xl font-heading font-medium text-foreground mb-3">
+<p className="text-h3 font-heading font-medium text-foreground mb-3">
  Oops! Looks like you've wandered off the safari trail.
 </p>
 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
