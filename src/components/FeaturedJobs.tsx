@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin, DollarSign, Clock, ArrowRight, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const jobs = [
  {
