@@ -4,30 +4,10 @@ import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 const services = [
- {
- icon: FileText,
- title: "CV Rewrite",
- description: "Professional CV tailored for international job markets and employer expectations.",
- price: "KES 2,500",
- },
- {
- icon: FileCheck,
- title: "Cover Letter",
- description: "Compelling cover letters customized for each job application.",
- price: "KES 1,500",
- },
- {
- icon: Stamp,
- title: "Passport Processing",
- description: "Fast-track passport application assistance and guidance.",
- price: "KES 5,000",
- },
- {
- icon: Globe,
- title: "Visa Assistance",
- description: "End-to-end visa application support for your destination country.",
- price: "KES 10,000",
- },
+ { icon: FileText,  title: "CV Rewrite",        description: "Professional CV tailored for international job markets and employer expectations.", price: 2500 },
+ { icon: FileCheck, title: "Cover Letter",      description: "Compelling cover letters customized for each job application.",                       price: 1500 },
+ { icon: Stamp,     title: "Passport Processing", description: "Fast-track passport application assistance and guidance.",                          price: 5000 },
+ { icon: Globe,     title: "Visa Assistance",   description: "End-to-end visa application support for your destination country.",                  price: 10000 },
 ];
 
 const ServicesSection = () =>{
