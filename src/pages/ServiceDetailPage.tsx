@@ -306,9 +306,9 @@ const ServiceDetailPage = () =>{
 </p>{file && (
 <p className="text-xs text-muted-foreground mt-1">{file.name}
 </p>)}
-<p className="text-xs font-medium mt-2 pt-2 border-t border-border">Total now: KES {(payMode === "half"? halfPrice : price).toLocaleString()}
+<p className="text-xs font-medium mt-2 pt-2 border-t border-border">Total now: {format(payMode === "half"? halfPrice : price, "KES")}
  {payMode === "half"&& (
-<span className="block text-[10px] text-muted-foreground font-normal">Balance KES {halfPrice.toLocaleString()} due before delivery</span>)}
+<span className="block text-[10px] text-muted-foreground font-normal">Balance {format(halfPrice, "KES")} due before delivery</span>)}
 </p></div><MpesaPaymentWidget
  userId={user!.id}
  serviceId={service.id}
