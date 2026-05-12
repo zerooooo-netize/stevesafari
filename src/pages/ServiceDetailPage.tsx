@@ -251,7 +251,7 @@ const ServiceDetailPage = () =>{
 </Link>{/* Service Header */}
 <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card mb-6"><div className="flex items-start gap-4"><div className="w-14 h-14 rounded-xl bg-safari-gold/15 text-safari-gold grid place-items-center shrink-0"><FileText size={26} /></div><div className="flex-1"><h1 className="font-heading text-2xl font-bold text-foreground">{service.name}
 </h1><p className="text-muted-foreground text-sm mt-1">Professional service handled by our experts.
-</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Price</p><p className="font-heading text-xl font-bold text-safari-gold">{service.currency || "KES"} {price.toLocaleString()}
+</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Price</p><p className="font-heading text-xl font-bold text-safari-gold">{format(price, (service.currency as any) || "KES")}
 </p></div></div>{service.description && (
 <p className="text-sm text-foreground/90 mt-5 pt-5 border-t border-border whitespace-pre-line leading-relaxed">{service.description}
 </p>)}
