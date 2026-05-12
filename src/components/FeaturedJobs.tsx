@@ -31,6 +31,7 @@ const jobs = [
 ];
 
 const FeaturedJobs = () =>{
+ const { formatSalary } = useCurrency();
  return (
 <section className="py-20 bg-background">
 <div className="container">
