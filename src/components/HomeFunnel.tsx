@@ -45,7 +45,7 @@ export const JobsPreview = () =>{
 <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
 <div>
 <p className="text-[10px] text-muted-foreground">Fee</p>
-<p className="font-bold text-safari-gold text-sm">KES {Number(j.application_fee || 0).toLocaleString()}</p>
+<p className="font-bold text-safari-gold text-sm">{format(Number(j.application_fee || 0), "KES")}</p>
 </div>
 <Button size="sm" variant="outline" asChild><Link to={`/jobs/${j.id}`}>View →</Link></Button>
 </div>
