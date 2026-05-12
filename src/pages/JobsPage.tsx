@@ -16,7 +16,7 @@ const JobsPage = () =>{
  const [loading, setLoading] = useState(true);
  const [search, setSearch] = useState("");
  const { user } = useAuth();
- const { format } = useCurrency();
+ const { format, formatSalary } = useCurrency();
  const navigate = useNavigate();
 
  useEffect(() =>{ loadJobs(); }, []);
