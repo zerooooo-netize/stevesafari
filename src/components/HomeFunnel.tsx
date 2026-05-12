@@ -91,7 +91,7 @@ export const ServicesPreview = () =>{
 <h3 className="font-heading font-semibold text-sm">{s.name}</h3>
 <p className="text-xs text-muted-foreground line-clamp-2 mt-1 flex-1">{s.description}</p>
 <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-<p className="font-bold text-safari-gold text-sm">{s.currency || "KES"} {Number(s.price).toLocaleString()}</p>
+<p className="font-bold text-safari-gold text-sm">{format(Number(s.price), (s.currency as any) || "KES")}</p>
 <Button size="sm" variant="outline" asChild><Link to={`/services/${s.id}`}>Order →</Link></Button>
 </div>
 </motion.div>
