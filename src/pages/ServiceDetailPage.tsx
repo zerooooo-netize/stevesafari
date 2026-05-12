@@ -269,11 +269,11 @@ const ServiceDetailPage = () =>{
  type="button" onClick={() =>setPayMode("full")}
  className={`text-left rounded-xl p-4 border transition-colors ${
  payMode === "full"? " border-safari-gold bg-safari-gold/5 ring-2 ring-safari-gold/40": " border-border hover:border-safari-gold/50"}`}
- ><p className="text-xs text-muted-foreground">Full payment</p><p className="font-heading text-xl font-bold mt-1">KES {price.toLocaleString()}</p><p className="text-[11px] text-green-700 mt-1">Get final file immediately on delivery</p></button><button
+  ><p className="text-xs text-muted-foreground">Full payment</p><p className="font-heading text-xl font-bold mt-1">{format(price, "KES")}</p><p className="text-[11px] text-green-700 dark:text-green-400 mt-1">Get final file immediately on delivery</p></button><button
  type="button" onClick={() =>setPayMode("half")}
  className={`text-left rounded-xl p-4 border transition-colors ${
  payMode === "half"? " border-safari-gold bg-safari-gold/5 ring-2 ring-safari-gold/40": " border-border hover:border-safari-gold/50"}`}
- ><p className="text-xs text-muted-foreground">Half payment</p><p className="font-heading text-xl font-bold mt-1">KES {halfPrice.toLocaleString()}</p><p className="text-[11px] text-muted-foreground mt-1">Final file unlocked after balance paid</p></button></div><div className="flex items-start gap-2 mt-3 text-xs bg-muted/50 rounded p-2"><Clock size={12} className="text-muted-foreground mt-0.5 shrink-0"/><p className="text-muted-foreground">Final document is locked until 100% payment is completed.
+ ><p className="text-xs text-muted-foreground">Half payment</p><p className="font-heading text-xl font-bold mt-1">{format(halfPrice, "KES")}</p><p className="text-[11px] text-muted-foreground mt-1">Final file unlocked after balance paid</p></button></div><div className="flex items-start gap-2 mt-3 text-xs bg-muted/50 rounded p-2"><Clock size={12} className="text-muted-foreground mt-0.5 shrink-0"/><p className="text-muted-foreground">Final document is locked until 100% payment is completed.
 </p></div></section>{/* Order Flow */}
  {!showOrder ? (
 <div className="bg-card border border-border rounded-2xl p-6 shadow-elevated"><Button size="lg" className="w-full" onClick={handleStart}>{user ? " Start Order": "Sign In to Order"}
