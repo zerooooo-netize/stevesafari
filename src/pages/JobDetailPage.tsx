@@ -257,13 +257,13 @@ const JobDetailPage = () =>{
 </h2><div className="relative"><div className="absolute left-4 top-0 bottom-0 w-0.5 bg-muted"/><ol className="space-y-5 relative">{[
  {
  title: "Complete Registration",
- desc: `Pay one‑time agency fee (KES ${REG_FEE.toLocaleString()}) to unlock job applications.`,
+ desc: `Pay one‑time agency fee (${format(REG_FEE, "KES")}) to unlock job applications.`,
  icon: Lock,
  status: isRegistered ? "completed": "pending",
  },
  {
  title: "Apply for This Job",
- desc: `Start your application – fee KES ${fee.toLocaleString()}${depositEnabled ? `(or KES ${depositAmount} deposit)`: ""}.`,
+ desc: `Start your application – fee ${format(fee, "KES")}${depositEnabled ? ` (or ${format(depositAmount, "KES")} deposit)`: ""}.`,
  icon: Briefcase,
  status: hasApplied ? "completed": isRegistered ? "available": "locked",
  },
