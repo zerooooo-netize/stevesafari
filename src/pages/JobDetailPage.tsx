@@ -232,15 +232,15 @@ const JobDetailPage = () =>{
 <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card mb-6"><div className="flex flex-wrap items-start justify-between gap-3 mb-3"><div><span className="inline-flex items-center gap-1 text-xs bg-safari-gold/15 text-safari-gold px-2.5 py-1 rounded-full font-medium"><Briefcase size={12} />{job.job_type || "Full-Time"}
 </span><h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mt-3">{job.title}
 </h1><p className="text-muted-foreground mt-1 flex items-center gap-1 text-sm"><MapPin size={14} />{job.city ? `${job.city}, `: ""}{job.country}
-</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Application Fee</p><p className="font-heading text-2xl font-bold text-safari-gold">KES {fee.toLocaleString()}
+</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Application Fee</p><p className="font-heading text-2xl font-bold text-safari-gold">{format(fee, "KES")}
 </p>{depositEnabled && depositAmount >0 && (
-<p className="text-[11px] text-muted-foreground mt-0.5">or KES {depositAmount.toLocaleString()} deposit
+<p className="text-[11px] text-muted-foreground mt-0.5">or {format(depositAmount, "KES")} deposit
 </p>)}
 </div></div>{/* Quick Info Grid */}
-<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-border"><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Salary</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5"><DollarSign size={13} className="text-safari-gold"/>{job.salary || "Negotiable"}
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-border"><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Salary</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5 line-clamp-1"><DollarSign size={13} className="text-safari-gold shrink-0"/>{job.salary ? formatSalary(job.salary) : "Negotiable"}
 </p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Slots</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5"><Users size={13} className="text-safari-gold"/>{job.slots_available || "Open"}
 </p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Deadline</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5"><Clock size={13} className="text-safari-gold"/>{job.deadline ? new Date(job.deadline).toLocaleDateString() : "Open"}
-</p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Currency</p><p className="font-medium text-sm mt-0.5">{job.currency || "CAD"}</p></div></div></div>{/* Description */}
+</p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Display</p><p className="font-medium text-sm mt-0.5">Live</p></div></div></div>{/* Description */}
  {job.description && (
 <section className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card mb-6"><h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2"><FileText size={18} className="text-safari-gold"/>About this role
 </h2><p className="text-sm text-foreground/90 whitespace-pre-line leading-relaxed">{job.description}
