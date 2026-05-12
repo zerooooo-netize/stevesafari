@@ -59,6 +59,7 @@ export const JobsPreview = () =>{
 
 export const ServicesPreview = () =>{
  const [services, setServices] = useState<any[]>([]);
+ const { format } = useCurrency();
  useEffect(() =>{
  supabase.from("services").select("*").eq("is_active", true).order("created_at").limit(4)
  .then(({ data }) =>setServices(data || []));
