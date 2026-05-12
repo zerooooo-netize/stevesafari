@@ -98,6 +98,7 @@ const MpesaRegWidget = ({
 const JobDetailPage = () =>{
  const { id } = useParams<{ id: string }>();
  const { user, profile, refreshProfile } = useAuth();
+ const { format, formatSalary } = useCurrency();
  const navigate = useNavigate();
  const [job, setJob] = useState<any>(null);
  const [loading, setLoading] = useState(true);
