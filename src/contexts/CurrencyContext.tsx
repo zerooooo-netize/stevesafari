@@ -13,6 +13,8 @@ interface CurrencyCtx {
   convert: (amount: number, from?: Currency) => number;
   /** Format a value (with optional source currency) into a localized display string. */
   format: (amount: number, from?: Currency) => string;
+  /** Re-render numeric tokens inside a free-text salary/price string in active currency. */
+  formatSalary: (input?: string | null) => string;
   rate: number;
 }
 
