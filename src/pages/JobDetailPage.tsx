@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { useSettings } from "@/hooks/useSettings";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Reusable M-Pesa payment widget for the agency registration fee.
 // Amount is provided by the parent (loaded from settings table).
@@ -97,6 +98,7 @@ const MpesaRegWidget = ({
 const JobDetailPage = () =>{
  const { id } = useParams<{ id: string }>();
  const { user, profile, refreshProfile } = useAuth();
+ const { format, formatSalary } = useCurrency();
  const navigate = useNavigate();
  const [job, setJob] = useState<any>(null);
  const [loading, setLoading] = useState(true);
@@ -205,14 +207,14 @@ const JobDetailPage = () =>{
  to="/jobs" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"><ArrowLeft size={14} />Back to All Jobs
 </Link>{/* Registration Fee Banner (if not paid) */}
  {user && !isRegistered && !showRegistrationPrompt && (
-<div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-3"><Lock className="text-amber-600 shrink-0 mt-0.5" size={18} /><div className="flex-1"><p className="font-medium text-sm">Complete registration to apply</p><p className="text-xs text-muted-foreground">A one‑time agency fee of KES {REG_FEE.toLocaleString()} is required before you can apply for jobs.
+<div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-3"><Lock className="text-amber-600 shrink-0 mt-0.5" size={18} /><div className="flex-1"><p className="font-medium text-sm">Complete registration to apply</p><p className="text-xs text-muted-foreground">A one‑time agency fee of {format(REG_FEE, "KES")} is required before you can apply for jobs.
 </p></div><Button size="sm" variant="outline" onClick={() =>setShowRegistrationPrompt(true)}>Pay Now
 </Button></div>)}
 
  {/* Registration Payment Modal (inline) */}
  {showRegistrationPrompt && (
 <div className="mb-6 bg-card border border-safari-gold/30 rounded-xl p-5 shadow-lg"><h3 className="font-heading font-semibold text-lg mb-2 flex items-center gap-2"><Sparkles className="text-safari-gold" size={20} />Unlock Your Journey
-</h3><p className="text-sm text-muted-foreground mb-4">Pay the KES {REG_FEE.toLocaleString()} registration fee to apply for this job and access all agency services.
+</h3><p className="text-sm text-muted-foreground mb-4">Pay the {format(REG_FEE, "KES")} registration fee to apply for this job and access all agency services.
 </p><MpesaRegWidget
  userId={user!.id}
  amount={REG_FEE}
@@ -230,15 +232,15 @@ const JobDetailPage = () =>{
 <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card mb-6"><div className="flex flex-wrap items-start justify-between gap-3 mb-3"><div><span className="inline-flex items-center gap-1 text-xs bg-safari-gold/15 text-safari-gold px-2.5 py-1 rounded-full font-medium"><Briefcase size={12} />{job.job_type || "Full-Time"}
 </span><h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mt-3">{job.title}
 </h1><p className="text-muted-foreground mt-1 flex items-center gap-1 text-sm"><MapPin size={14} />{job.city ? `${job.city}, `: ""}{job.country}
-</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Application Fee</p><p className="font-heading text-2xl font-bold text-safari-gold">KES {fee.toLocaleString()}
+</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Application Fee</p><p className="font-heading text-2xl font-bold text-safari-gold">{format(fee, "KES")}
 </p>{depositEnabled && depositAmount >0 && (
-<p className="text-[11px] text-muted-foreground mt-0.5">or KES {depositAmount.toLocaleString()} deposit
+<p className="text-[11px] text-muted-foreground mt-0.5">or {format(depositAmount, "KES")} deposit
 </p>)}
 </div></div>{/* Quick Info Grid */}
-<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-border"><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Salary</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5"><DollarSign size={13} className="text-safari-gold"/>{job.salary || "Negotiable"}
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-border"><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Salary</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5 line-clamp-1"><DollarSign size={13} className="text-safari-gold shrink-0"/>{job.salary ? formatSalary(job.salary) : "Negotiable"}
 </p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Slots</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5"><Users size={13} className="text-safari-gold"/>{job.slots_available || "Open"}
 </p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Deadline</p><p className="font-medium text-sm flex items-center gap-1 mt-0.5"><Clock size={13} className="text-safari-gold"/>{job.deadline ? new Date(job.deadline).toLocaleDateString() : "Open"}
-</p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Currency</p><p className="font-medium text-sm mt-0.5">{job.currency || "CAD"}</p></div></div></div>{/* Description */}
+</p></div><div><p className="text-[11px] text-muted-foreground uppercase tracking-wide">Display</p><p className="font-medium text-sm mt-0.5">Live</p></div></div></div>{/* Description */}
  {job.description && (
 <section className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card mb-6"><h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2"><FileText size={18} className="text-safari-gold"/>About this role
 </h2><p className="text-sm text-foreground/90 whitespace-pre-line leading-relaxed">{job.description}
@@ -255,13 +257,13 @@ const JobDetailPage = () =>{
 </h2><div className="relative"><div className="absolute left-4 top-0 bottom-0 w-0.5 bg-muted"/><ol className="space-y-5 relative">{[
  {
  title: "Complete Registration",
- desc: `Pay one‑time agency fee (KES ${REG_FEE.toLocaleString()}) to unlock job applications.`,
+ desc: `Pay one‑time agency fee (${format(REG_FEE, "KES")}) to unlock job applications.`,
  icon: Lock,
  status: isRegistered ? "completed": "pending",
  },
  {
  title: "Apply for This Job",
- desc: `Start your application – fee KES ${fee.toLocaleString()}${depositEnabled ? `(or KES ${depositAmount} deposit)`: ""}.`,
+ desc: `Start your application – fee ${format(fee, "KES")}${depositEnabled ? ` (or ${format(depositAmount, "KES")} deposit)`: ""}.`,
  icon: Briefcase,
  status: hasApplied ? "completed": isRegistered ? "available": "locked",
  },
@@ -302,8 +304,8 @@ const JobDetailPage = () =>{
  ? " Application in Progress": isRegistered
  ? " Ready to Apply? ": "Complete Registration First"}
 </p><p className="text-xs text-muted-foreground">{hasApplied
- ? `Status: ${existingApp.status.replace("_", "")}`: isRegistered
- ? `Start with KES ${(depositEnabled ? depositAmount : fee).toLocaleString()}`: `One‑time KES ${REG_FEE.toLocaleString()} registration fee`}
+  ? `Status: ${existingApp.status.replace("_", "")}`: isRegistered
+ ? `Start with ${format(depositEnabled ? depositAmount : fee, "KES")}`: `One‑time ${format(REG_FEE, "KES")} registration fee`}
 </p></div><Button
  size="lg" onClick={handleApply}
  disabled={applying || (!isRegistered && !showRegistrationPrompt)}

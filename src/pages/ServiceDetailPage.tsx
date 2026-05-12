@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useSEO } from "@/lib/seo";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import {
  ArrowLeft, FileText, Clock, ShieldCheck, CheckCircle2, AlertCircle,
  Loader2, Upload, Shield, Phone, X,
@@ -141,6 +142,7 @@ const MpesaPaymentWidget = ({
 const ServiceDetailPage = () =>{
  const { id } = useParams<{ id: string }>();
  const { user } = useAuth();
+ const { format } = useCurrency();
  const navigate = useNavigate();
  const [service, setService] = useState<any>(null);
  const [loading, setLoading] = useState(true);
@@ -249,7 +251,7 @@ const ServiceDetailPage = () =>{
 </Link>{/* Service Header */}
 <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-card mb-6"><div className="flex items-start gap-4"><div className="w-14 h-14 rounded-xl bg-safari-gold/15 text-safari-gold grid place-items-center shrink-0"><FileText size={26} /></div><div className="flex-1"><h1 className="font-heading text-2xl font-bold text-foreground">{service.name}
 </h1><p className="text-muted-foreground text-sm mt-1">Professional service handled by our experts.
-</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Price</p><p className="font-heading text-xl font-bold text-safari-gold">{service.currency || "KES"} {price.toLocaleString()}
+</p></div><div className="text-right"><p className="text-xs text-muted-foreground">Price</p><p className="font-heading text-xl font-bold text-safari-gold">{format(price, (service.currency as any) || "KES")}
 </p></div></div>{service.description && (
 <p className="text-sm text-foreground/90 mt-5 pt-5 border-t border-border whitespace-pre-line leading-relaxed">{service.description}
 </p>)}
@@ -267,11 +269,11 @@ const ServiceDetailPage = () =>{
  type="button" onClick={() =>setPayMode("full")}
  className={`text-left rounded-xl p-4 border transition-colors ${
  payMode === "full"? " border-safari-gold bg-safari-gold/5 ring-2 ring-safari-gold/40": " border-border hover:border-safari-gold/50"}`}
- ><p className="text-xs text-muted-foreground">Full payment</p><p className="font-heading text-xl font-bold mt-1">KES {price.toLocaleString()}</p><p className="text-[11px] text-green-700 mt-1">Get final file immediately on delivery</p></button><button
+  ><p className="text-xs text-muted-foreground">Full payment</p><p className="font-heading text-xl font-bold mt-1">{format(price, "KES")}</p><p className="text-[11px] text-green-700 dark:text-green-400 mt-1">Get final file immediately on delivery</p></button><button
  type="button" onClick={() =>setPayMode("half")}
  className={`text-left rounded-xl p-4 border transition-colors ${
  payMode === "half"? " border-safari-gold bg-safari-gold/5 ring-2 ring-safari-gold/40": " border-border hover:border-safari-gold/50"}`}
- ><p className="text-xs text-muted-foreground">Half payment</p><p className="font-heading text-xl font-bold mt-1">KES {halfPrice.toLocaleString()}</p><p className="text-[11px] text-muted-foreground mt-1">Final file unlocked after balance paid</p></button></div><div className="flex items-start gap-2 mt-3 text-xs bg-muted/50 rounded p-2"><Clock size={12} className="text-muted-foreground mt-0.5 shrink-0"/><p className="text-muted-foreground">Final document is locked until 100% payment is completed.
+ ><p className="text-xs text-muted-foreground">Half payment</p><p className="font-heading text-xl font-bold mt-1">{format(halfPrice, "KES")}</p><p className="text-[11px] text-muted-foreground mt-1">Final file unlocked after balance paid</p></button></div><div className="flex items-start gap-2 mt-3 text-xs bg-muted/50 rounded p-2"><Clock size={12} className="text-muted-foreground mt-0.5 shrink-0"/><p className="text-muted-foreground">Final document is locked until 100% payment is completed.
 </p></div></section>{/* Order Flow */}
  {!showOrder ? (
 <div className="bg-card border border-border rounded-2xl p-6 shadow-elevated"><Button size="lg" className="w-full" onClick={handleStart}>{user ? " Start Order": "Sign In to Order"}
@@ -304,9 +306,9 @@ const ServiceDetailPage = () =>{
 </p>{file && (
 <p className="text-xs text-muted-foreground mt-1">{file.name}
 </p>)}
-<p className="text-xs font-medium mt-2 pt-2 border-t border-border">Total now: KES {(payMode === "half"? halfPrice : price).toLocaleString()}
+<p className="text-xs font-medium mt-2 pt-2 border-t border-border">Total now: {format(payMode === "half"? halfPrice : price, "KES")}
  {payMode === "half"&& (
-<span className="block text-[10px] text-muted-foreground font-normal">Balance KES {halfPrice.toLocaleString()} due before delivery</span>)}
+<span className="block text-[10px] text-muted-foreground font-normal">Balance {format(halfPrice, "KES")} due before delivery</span>)}
 </p></div><MpesaPaymentWidget
  userId={user!.id}
  serviceId={service.id}

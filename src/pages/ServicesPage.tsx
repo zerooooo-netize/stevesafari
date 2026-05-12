@@ -205,7 +205,7 @@ const ServicesPage = () =>{
 
  {/* Order Modal */}
  {selectedService && (
-<div className="fixed inset-0 bg-foreground/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"><div className="bg-card rounded-t-2xl sm:rounded-2xl border border-border p-5 sm:p-6 w-full sm:max-w-md shadow-elevated max-h-[90vh] overflow-y-auto"><div className="flex justify-between items-start mb-3"><h3 className="font-heading font-semibold text-lg">Order: {selectedService.name}</h3><button onClick={() =>setSelectedService(null)} className="p-1 hover:bg-muted rounded"><X size={20} /></button></div><p className="text-sm text-muted-foreground mb-4">Price:<span className="font-semibold text-safari-gold">{selectedService.currency} {Number(selectedService.price).toLocaleString()}</span></p>{orderStep === "details"? (
+<div className="fixed inset-0 bg-foreground/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"><div className="bg-card rounded-t-2xl sm:rounded-2xl border border-border p-5 sm:p-6 w-full sm:max-w-md shadow-elevated max-h-[90vh] overflow-y-auto"><div className="flex justify-between items-start mb-3"><h3 className="font-heading font-semibold text-lg">Order: {selectedService.name}</h3><button onClick={() =>setSelectedService(null)} className="p-1 hover:bg-muted rounded"><X size={20} /></button></div><p className="text-sm text-muted-foreground mb-4">Price: <span className="font-semibold text-safari-gold">{format(Number(selectedService.price), (selectedService.currency as any) || "KES")}</span></p>{orderStep === "details"? (
 <><Label className="text-xs">What do you need? (Details)</Label><Textarea
  value={details}
  onChange={e =>setDetails(e.target.value)}

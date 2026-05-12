@@ -1,35 +1,17 @@
 import { motion } from "framer-motion";
 import { FileText, Stamp, Globe, FileCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const services = [
- {
- icon: FileText,
- title: "CV Rewrite",
- description: "Professional CV tailored for international job markets and employer expectations.",
- price: "KES 2,500",
- },
- {
- icon: FileCheck,
- title: "Cover Letter",
- description: "Compelling cover letters customized for each job application.",
- price: "KES 1,500",
- },
- {
- icon: Stamp,
- title: "Passport Processing",
- description: "Fast-track passport application assistance and guidance.",
- price: "KES 5,000",
- },
- {
- icon: Globe,
- title: "Visa Assistance",
- description: "End-to-end visa application support for your destination country.",
- price: "KES 10,000",
- },
+ { icon: FileText,  title: "CV Rewrite",        description: "Professional CV tailored for international job markets and employer expectations.", price: 2500 },
+ { icon: FileCheck, title: "Cover Letter",      description: "Compelling cover letters customized for each job application.",                       price: 1500 },
+ { icon: Stamp,     title: "Passport Processing", description: "Fast-track passport application assistance and guidance.",                          price: 5000 },
+ { icon: Globe,     title: "Visa Assistance",   description: "End-to-end visa application support for your destination country.",                  price: 10000 },
 ];
 
 const ServicesSection = () =>{
+ const { format } = useCurrency();
  return (
 <section className="py-20 bg-muted">
 <div className="container">
@@ -64,7 +46,7 @@ const ServicesSection = () =>{
 </div>
 <h3 className="font-heading font-semibold text-foreground">{service.title}</h3>
 <p className="text-sm text-muted-foreground mt-2 mb-4">{service.description}</p>
-<div className="font-heading font-bold text-safari-gold text-lg">{service.price}</div>
+<div className="font-heading font-bold text-safari-gold text-lg">{format(service.price, "KES")}</div>
 <Button variant="outline" size="sm" className="mt-4 w-full">
  Order Now<ArrowRight size={14} />
 </Button>

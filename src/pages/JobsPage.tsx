@@ -16,7 +16,7 @@ const JobsPage = () =>{
  const [loading, setLoading] = useState(true);
  const [search, setSearch] = useState("");
  const { user } = useAuth();
- const { format } = useCurrency();
+ const { format, formatSalary } = useCurrency();
  const navigate = useNavigate();
 
  useEffect(() =>{ loadJobs(); }, []);
@@ -100,7 +100,7 @@ const JobsPage = () =>{
       {job.salary && (
         <div className="rounded-xl bg-safari-gold/10 px-3 py-2">
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Salary</p>
-          <p className="text-safari-gold font-bold text-xs sm:text-sm flex items-center gap-1"><DollarSign size={12} />{job.salary}</p>
+          <p className="text-safari-gold font-bold text-xs sm:text-sm flex items-center gap-1 line-clamp-1"><DollarSign size={12} className="shrink-0" />{formatSalary(job.salary)}</p>
         </div>
       )}
       {job.deadline && (

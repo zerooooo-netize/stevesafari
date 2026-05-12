@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Briefcase, FileText, MapPin, DollarSign } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 /** Compact dynamic preview of latest jobs (max 3) and services (max 4), DB-driven, with CTAs to detail pages. */
 export const JobsPreview = () =>{
  const [jobs, setJobs] = useState<any[]>([]);
+ const { format } = useCurrency();
  useEffect(() =>{
  supabase.from("jobs").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3)
  .then(({ data }) =>setJobs(data || []));
@@ -43,7 +45,7 @@ export const JobsPreview = () =>{
 <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
 <div>
 <p className="text-[10px] text-muted-foreground">Fee</p>
-<p className="font-bold text-safari-gold text-sm">KES {Number(j.application_fee || 0).toLocaleString()}</p>
+<p className="font-bold text-safari-gold text-sm">{format(Number(j.application_fee || 0), "KES")}</p>
 </div>
 <Button size="sm" variant="outline" asChild><Link to={`/jobs/${j.id}`}>View →</Link></Button>
 </div>
@@ -57,6 +59,7 @@ export const JobsPreview = () =>{
 
 export const ServicesPreview = () =>{
  const [services, setServices] = useState<any[]>([]);
+ const { format } = useCurrency();
  useEffect(() =>{
  supabase.from("services").select("*").eq("is_active", true).order("created_at").limit(4)
  .then(({ data }) =>setServices(data || []));
@@ -88,7 +91,7 @@ export const ServicesPreview = () =>{
 <h3 className="font-heading font-semibold text-sm">{s.name}</h3>
 <p className="text-xs text-muted-foreground line-clamp-2 mt-1 flex-1">{s.description}</p>
 <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-<p className="font-bold text-safari-gold text-sm">{s.currency || "KES"} {Number(s.price).toLocaleString()}</p>
+<p className="font-bold text-safari-gold text-sm">{format(Number(s.price), (s.currency as any) || "KES")}</p>
 <Button size="sm" variant="outline" asChild><Link to={`/services/${s.id}`}>Order →</Link></Button>
 </div>
 </motion.div>

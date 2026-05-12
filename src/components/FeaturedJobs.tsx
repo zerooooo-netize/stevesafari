@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin, DollarSign, Clock, ArrowRight, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const jobs = [
  {
@@ -30,6 +31,7 @@ const jobs = [
 ];
 
 const FeaturedJobs = () =>{
+ const { formatSalary } = useCurrency();
  return (
 <section className="py-20 bg-background">
 <div className="container">
@@ -72,8 +74,8 @@ const FeaturedJobs = () =>{
 <MapPin size={14} />{job.country}
 </div>
 <div className="flex items-center gap-4 mt-4 text-sm">
-<div className="flex items-center gap-1 text-safari-gold font-semibold">
-<DollarSign size={14} />{job.salary}
+<div className="flex items-center gap-1 text-safari-gold font-semibold line-clamp-1">
+<DollarSign size={14} className="shrink-0" />{formatSalary(job.salary)}
 </div>
 <div className="flex items-center gap-1 text-muted-foreground">
 <Clock size={14} />{job.deadline}
