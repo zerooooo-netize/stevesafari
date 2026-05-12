@@ -17,7 +17,7 @@ const NotFound = () =>{
  return (
 <div className="min-h-screen bg-background flex flex-col">
 <Navbar />
-<main className="flex-1 flex items-center justify-center p-4">
+<main className="flex-1 flex items-center justify-center page-x section-y">
 <div className="max-w-2xl w-full text-center">
  {/* Logo */}
 <Link to="/" className="inline-block mb-8">
