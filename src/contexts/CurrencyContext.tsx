@@ -47,8 +47,37 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     return `KES ${Math.round(value).toLocaleString()}`;
   };
 
+  /** Parse a free-text salary string (e.g. "CAD 3,200/mo", "$30/hr", "KES 50,000")
+   *  and re-render every numeric token in the active currency. */
+  const formatSalary = (input?: string | null): string => {
+    if (!input) return "";
+    const str = String(input);
+    // Detect source currency from string
+    const upper = str.toUpperCase();
+    let from: Currency = "KES";
+    if (/\bCAD\b|C\$|\$|\bUSD\b/.test(upper)) from = "CAD";
+    else if (/\bKES\b|KSH|KSHS/.test(upper)) from = "KES";
+
+    // Replace numeric tokens (with optional commas/decimals) inline
+    const replaced = str.replace(/[\d,]+(?:\.\d+)?/g, (m) => {
+      const n = parseFloat(m.replace(/,/g, ""));
+      if (!isFinite(n)) return m;
+      const v = convert(n, from);
+      return currency === "CAD"
+        ? v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+        : Math.round(v).toLocaleString();
+    });
+    // Strip old currency tokens, then prefix with active currency
+    const cleaned = replaced
+      .replace(/\b(CAD|USD|KES|KSH|KSHS)\b/gi, "")
+      .replace(/C\$|\$/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    return `${currency} ${cleaned}`;
+  };
+
   return (
-    <Ctx.Provider value={{ currency, setCurrency, toggle, convert, format, rate: KES_PER_CAD }}>
+    <Ctx.Provider value={{ currency, setCurrency, toggle, convert, format, formatSalary, rate: KES_PER_CAD }}>
       {children}
     </Ctx.Provider>
   );
