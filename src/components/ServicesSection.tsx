@@ -11,6 +11,7 @@ const services = [
 ];
 
 const ServicesSection = () =>{
+ const { format } = useCurrency();
  return (
 <section className="py-20 bg-muted">
 <div className="container">
