@@ -46,7 +46,7 @@ const ServicesSection = () =>{
 </div>
 <h3 className="font-heading font-semibold text-foreground">{service.title}</h3>
 <p className="text-sm text-muted-foreground mt-2 mb-4">{service.description}</p>
-<div className="font-heading font-bold text-safari-gold text-lg">{service.price}</div>
+<div className="font-heading font-bold text-safari-gold text-lg">{format(service.price, "KES")}</div>
 <Button variant="outline" size="sm" className="mt-4 w-full">
  Order Now<ArrowRight size={14} />
 </Button>
