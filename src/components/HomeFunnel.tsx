@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Briefcase, FileText, MapPin, DollarSign } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 /** Compact dynamic preview of latest jobs (max 3) and services (max 4), DB-driven, with CTAs to detail pages. */
 export const JobsPreview = () =>{
