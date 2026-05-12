@@ -304,8 +304,8 @@ const JobDetailPage = () =>{
  ? " Application in Progress": isRegistered
  ? " Ready to Apply? ": "Complete Registration First"}
 </p><p className="text-xs text-muted-foreground">{hasApplied
- ? `Status: ${existingApp.status.replace("_", "")}`: isRegistered
- ? `Start with KES ${(depositEnabled ? depositAmount : fee).toLocaleString()}`: `One‑time KES ${REG_FEE.toLocaleString()} registration fee`}
+  ? `Status: ${existingApp.status.replace("_", "")}`: isRegistered
+ ? `Start with ${format(depositEnabled ? depositAmount : fee, "KES")}`: `One‑time ${format(REG_FEE, "KES")} registration fee`}
 </p></div><Button
  size="lg" onClick={handleApply}
  disabled={applying || (!isRegistered && !showRegistrationPrompt)}
