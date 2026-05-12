@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { FileText, Stamp, Globe, FileCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const services = [
  {
