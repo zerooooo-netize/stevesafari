@@ -214,7 +214,7 @@ const JobDetailPage = () =>{
  {/* Registration Payment Modal (inline) */}
  {showRegistrationPrompt && (
 <div className="mb-6 bg-card border border-safari-gold/30 rounded-xl p-5 shadow-lg"><h3 className="font-heading font-semibold text-lg mb-2 flex items-center gap-2"><Sparkles className="text-safari-gold" size={20} />Unlock Your Journey
-</h3><p className="text-sm text-muted-foreground mb-4">Pay the KES {REG_FEE.toLocaleString()} registration fee to apply for this job and access all agency services.
+</h3><p className="text-sm text-muted-foreground mb-4">Pay the {format(REG_FEE, "KES")} registration fee to apply for this job and access all agency services.
 </p><MpesaRegWidget
  userId={user!.id}
  amount={REG_FEE}
