@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useSEO } from "@/lib/seo";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import {
  ArrowLeft, FileText, Clock, ShieldCheck, CheckCircle2, AlertCircle,
  Loader2, Upload, Shield, Phone, X,
