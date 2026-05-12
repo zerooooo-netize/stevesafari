@@ -142,6 +142,7 @@ const MpesaPaymentWidget = ({
 const ServiceDetailPage = () =>{
  const { id } = useParams<{ id: string }>();
  const { user } = useAuth();
+ const { format } = useCurrency();
  const navigate = useNavigate();
  const [service, setService] = useState<any>(null);
  const [loading, setLoading] = useState(true);
