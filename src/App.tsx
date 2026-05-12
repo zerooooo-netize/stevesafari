@@ -12,6 +12,8 @@ import Index from "./pages/Index";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import JobsPage from "./pages/JobsPage";
@@ -49,6 +51,8 @@ const App = () =>(
 <Route path="/" element={<Home />} />
 <Route path="/home" element={<Index />} />
 <Route path="/auth" element={<AuthPage />} />
+<Route path="/forgot-password" element={<ForgotPasswordPage />} />
+<Route path="/reset-password" element={<ResetPasswordPage />} />
 <Route path="/jobs" element={<JobsPage />} />
 <Route path="/jobs/:id" element={<JobDetailPage />} />
 <Route path="/services" element={<ServicesPage />} />

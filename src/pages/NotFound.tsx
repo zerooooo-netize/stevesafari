@@ -17,7 +17,7 @@ const NotFound = () =>{
  return (
 <div className="min-h-screen bg-background flex flex-col">
 <Navbar />
-<main className="flex-1 flex items-center justify-center p-4">
+<main className="flex-1 flex items-center justify-center page-x section-y">
 <div className="max-w-2xl w-full text-center">
  {/* Logo */}
 <Link to="/" className="inline-block mb-8">
@@ -26,7 +26,7 @@ const NotFound = () =>{
 
  {/* 404 Illustration / Message */}
 <div className="mb-6">
-<h1 className="font-heading text-7xl sm:text-8xl font-bold text-safari-gold mb-2">404</h1>
+<h1 className="font-heading text-display text-safari-gold mb-2">404</h1>
 <div className="flex items-center justify-center gap-2 text-muted-foreground">
 <span className="w-12 h-px bg-border"></span>
 <span className="text-sm uppercase tracking-wider">Page Not Found</span>
@@ -34,7 +34,7 @@ const NotFound = () =>{
 </div>
 </div>
 
-<p className="text-xl sm:text-2xl font-heading font-medium text-foreground mb-3">
+<p className="text-h3 font-heading font-medium text-foreground mb-3">
  Oops! Looks like you've wandered off the safari trail.
 </p>
 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
