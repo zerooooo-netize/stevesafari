@@ -58,6 +58,8 @@ export default {
           "gold-light": "hsl(var(--safari-gold-light))",
           warm: "hsl(var(--safari-warm))",
           cream: "hsl(var(--safari-cream))",
+          red: "hsl(var(--safari-red))",
+          "red-light": "hsl(var(--safari-red-light))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
