@@ -16,7 +16,7 @@ const StepLayout = ({ stepNumber, totalSteps, title, subtitle, children }: Props
  return (
 <div className="min-h-screen flex flex-col bg-background">
 <Navbar />
-<main className="flex-1 pt-20 section-y-sm">
+<main className="flex-1 pt-24 sm:pt-28 section-y-sm">
 <div className="max-w-2xl mx-auto page-x">
  {/* Progress */}
 <div className="mb-6">

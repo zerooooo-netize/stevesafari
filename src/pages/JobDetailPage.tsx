@@ -202,7 +202,7 @@ const JobDetailPage = () =>{
  const hasApplied = !!existingApp;
 
  return (
-<div className="min-h-screen bg-background"><TrustBar /><Navbar /><main className="pt-20 section-y page-x"><div className="container max-w-4xl">{/* Breadcrumb */}
+<div className="min-h-screen bg-background"><TrustBar /><Navbar /><main className="pt-24 sm:pt-28 section-y page-x"><div className="container max-w-4xl">{/* Breadcrumb */}
 <Link
  to="/jobs" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"><ArrowLeft size={14} />Back to All Jobs
 </Link>{/* Registration Fee Banner (if not paid) */}
