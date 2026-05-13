@@ -20,7 +20,7 @@ const Index = () =>{
 <div className="min-h-screen">
 <TrustBar />
 <Navbar />
-<main className="pt-16">
+<main className="pt-24 sm:pt-28">
  {/* Funnel: Hero → How It Works → Trust (stories + team) → Jobs preview → Services preview → Final CTA */}
 <HeroSection />
 <HowItWorks />
