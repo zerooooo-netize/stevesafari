@@ -162,7 +162,7 @@ const ServicesPage = () =>{
  };
 
  return (
-<div className="min-h-screen bg-background"><Navbar /><main className="pt-20 section-y-sm page-x"><div className="max-w-6xl mx-auto"><div className="text-center mb-8 sm:mb-12"><h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Document Services</h1><p className="text-muted-foreground mt-2 text-sm sm:text-base">Professional document preparation. Pay securely via M-Pesa.
+<div className="min-h-screen bg-background"><Navbar /><main className="pt-24 sm:pt-28 section-y-sm page-x"><div className="max-w-6xl mx-auto"><div className="text-center mb-8 sm:mb-12"><h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Document Services</h1><p className="text-muted-foreground mt-2 text-sm sm:text-base">Professional document preparation. Pay securely via M-Pesa.
 </p></div>{loading ? (
 <div className="text-center section-y-sm text-muted-foreground">Loading...</div>) : services.length === 0 ? (
 <div className="text-center section-y-sm text-muted-foreground">No services available right now.</div>) : (

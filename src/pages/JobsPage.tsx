@@ -42,7 +42,7 @@ const JobsPage = () =>{
  return (
 <div className="min-h-screen bg-background">
 <Navbar />
-<main className="pt-20 section-y-sm page-x">
+<main className="pt-24 sm:pt-28 section-y-sm page-x">
 <div className="max-w-6xl mx-auto">
 <div className="text-center mb-6 sm:mb-10">
 <h1 className="font-heading font-bold text-foreground">Available Jobs</h1>

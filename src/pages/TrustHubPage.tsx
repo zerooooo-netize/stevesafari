@@ -45,7 +45,7 @@ const TrustHubPage = () =>{
 <div className="min-h-screen bg-background">
 <TrustBar />
 <Navbar />
-<main className="pt-20 section-y page-x">
+<main className="pt-24 sm:pt-28 section-y page-x">
  {/* Hero */}
 <section className="bg-[image:var(--gradient-hero)] section-y-sm sm:section-y text-safari-cream">
 <div className="container max-w-3xl text-center">
