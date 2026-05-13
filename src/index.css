@@ -45,13 +45,15 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Custom tokens */
-    --safari-green: 150 30% 22%;
-    --safari-green-light: 150 25% 35%;
-    --safari-gold: 42 65% 52%;
-    --safari-gold-light: 42 55% 70%;
+    /* Custom tokens — tuned to match logo greens & golds */
+    --safari-green: 145 80% 22%;
+    --safari-green-light: 145 70% 35%;
+    --safari-gold: 44 90% 48%;
+    --safari-gold-light: 44 80% 65%;
     --safari-warm: 30 40% 96%;
     --safari-cream: 40 30% 95%;
+    --safari-red: 350 75% 45%;
+    --safari-red-light: 350 70% 55%;
 
     --font-heading: 'Outfit', sans-serif;
     --font-body: 'Figtree', sans-serif;

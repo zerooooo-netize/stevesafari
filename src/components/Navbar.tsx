@@ -33,11 +33,11 @@ const Navbar = () =>{
 
  return (
 <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
-<div className="container flex items-center justify-between h-20">
-<Link to="/" className="flex items-center gap-3">
-<img src={logoUrl} alt={name} className="h-14 w-14 sm:h-16 sm:w-16 object-contain" />
-<span className="font-heading font-bold text-xl sm:text-2xl text-foreground leading-tight">
- {lead}{accent &&<><span className="text-safari-gold">{accent}</span></>}
+<div className="container flex items-center justify-between h-24 sm:h-28">
+<Link to="/" className="flex items-center gap-3 sm:gap-4">
+<img src={logoUrl} alt={name} className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain" />
+<span className="font-heading font-bold text-2xl sm:text-3xl md:text-4xl text-foreground leading-tight">
+  {lead}{accent &&<><span className="text-safari-gold">{accent}</span></>}
 </span>
 </Link>
 
