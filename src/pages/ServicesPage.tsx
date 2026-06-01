@@ -19,6 +19,7 @@ const iconMap: Record<string, any>= { "file-text": FileText, "file-check": FileC
 // M-Pesa Payment Widget for services
 const MpesaPaymentWidget = ({ userId, serviceId, amount, onPaymentComplete }: { userId: string; serviceId: string; amount: number; onPaymentComplete: (receiptNumber?: string) =>void }) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [sending, setSending] = useState(false);
  const [pollId, setPollId] = useState<string | null>(null);
  const [payStatus, setPayStatus] = useState<string | null>(null);
