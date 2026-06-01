@@ -106,7 +106,7 @@ const SponsorshipCard = ({ userId }: Props) =>{
  {list.map(s =>(
 <div key={s.id} className="flex items-center justify-between bg-muted/40 rounded p-2 text-xs">
 <div className="min-w-0 flex-1">
-<p className="font-medium">KES {Number(s.requested_amount).toLocaleString()}</p>
+<p className="font-medium">{format(Number(s.requested_amount), "KES")}</p>
 <p className="text-muted-foreground truncate">{s.reason}</p>
  {s.admin_notes &&<p className="text-muted-foreground italic mt-1">Admin: {s.admin_notes}</p>}
 </div>
