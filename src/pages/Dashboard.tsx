@@ -185,8 +185,8 @@ const MpesaPaymentWidget = ({
  onChange={setDiscount}
  />)}
  {discount.discountAmount >0 && (
-<div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">Original: KES {(parseFloat(amount) || 0).toLocaleString()} • Discount: −KES {discount.discountAmount.toLocaleString()} •<strong>You pay: KES {discount.finalAmount.toLocaleString()}</strong></div>)}
-<div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5"><Shield size={12} className="text-safari-gold mt-0.5 shrink-0"/><span>Securely processed via M-Pesa. Official receipt provided.</span></div><Button onClick={initiate} disabled={sending} className="w-full text-sm">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay KES ${(discount.finalAmount >0 ? discount.finalAmount : parseFloat(amount) || 0).toLocaleString()} with M-Pesa`}
+<div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">Original: {format(parseFloat(amount) || 0, "KES")} • Discount: −{format(discount.discountAmount, "KES")} •<strong>You pay: {format(discount.finalAmount, "KES")}</strong></div>)}
+<div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5"><Shield size={12} className="text-safari-gold mt-0.5 shrink-0"/><span>Securely processed via M-Pesa. Official receipt provided.</span></div><Button onClick={initiate} disabled={sending} className="w-full text-sm">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay ${format((discount.finalAmount >0 ? discount.finalAmount : parseFloat(amount) || 0), "KES")} with M-Pesa`}
 </Button>{payStatus === "failed"&&<p className="text-xs text-destructive text-center">Payment failed. Try again.</p>}
  {payStatus === "timeout"&&<p className="text-xs text-yellow-600 text-center">Payment not confirmed. Check history.</p>}
 </div>)}
