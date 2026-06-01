@@ -72,7 +72,7 @@ const PreApplicationChecklist = ({ userId, applicationId, jobFee, onReady }: Pro
  const items = [
  { ok: profileOk, label: "Profile complete (name, phone, ID number)", action: "Go to Profile tab" },
  { ok: docsOk, label: "At least 1 document uploaded", action: "Upload from Documents tab" },
- { ok: paymentOk, label: `Payment received (KES ${jobFee.toLocaleString()})`, action: "Pay via M-Pesa above" },
+ { ok: paymentOk, label: `Payment received (${format(jobFee, "KES")})`, action: "Pay via M-Pesa above" },
  ];
 
  return (
