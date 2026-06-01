@@ -64,7 +64,7 @@ const RegistrationPayStep = () =>{
  className={`p-4 rounded-lg border-2 text-left transition ${mode === "deposit" ? "border-primary bg-primary/5" : "border-border"}`}
  >
 <div className="text-xs text-muted-foreground">Reserve slot ({depositPct}%)</div>
-<div className="font-bold text-lg">KES {depositFee.toLocaleString()}</div>
+<div className="font-bold text-lg">{format(depositFee, "KES")}</div>
 <div className="text-[11px] text-muted-foreground mt-1">Pay rest later</div>
 </button>
  )}
