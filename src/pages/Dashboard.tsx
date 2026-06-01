@@ -472,7 +472,7 @@ const Dashboard = () =>{
 </div><input type="file" className="hidden" onChange={uploadDocument} disabled={uploading} accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"/></label></div></div>{/* After upload, offer dynamic services from DB (no hardcoded amounts) */}
  {uploadedDocForService && !selectedServiceForPayment && activeServices.length >0 && (
 <div className="mb-4 p-4 border border-safari-gold/30 bg-safari-gold/5 rounded-xl"><p className="text-sm font-medium mb-2">Document uploaded! Need professional processing?</p><div className="space-y-2">{activeServices.map((s) =>(
-<Button key={s.id} variant="outline" size="sm" className="w-full justify-start" onClick={() =>setSelectedServiceForPayment(s)}><FileText size={14} className="mr-2"/>{s.name} ({s.currency || "KES"} {Number(s.price).toLocaleString()})
+<Button key={s.id} variant="outline" size="sm" className="w-full justify-start" onClick={() =>setSelectedServiceForPayment(s)}><FileText size={14} className="mr-2"/>{s.name} ({format(Number(s.price), (s.currency as any) || "KES")})
 </Button>))}
 <Button variant="ghost" size="sm" className="w-full" onClick={() =>setUploadedDocForService(null)}>Skip for now
 </Button></div></div>)}
