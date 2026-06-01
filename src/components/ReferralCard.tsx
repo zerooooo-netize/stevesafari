@@ -135,7 +135,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
 <Wallet size={16} className="text-safari-gold" />
 <span className="text-sm font-semibold text-foreground">My Wallet</span>
 </div>
-<span className="text-sm font-bold text-safari-gold">KES {available.toLocaleString()}</span>
+<span className="text-sm font-bold text-safari-gold">{format(available, "KES")}</span>
 </div>
 <p className="text-[11px] text-muted-foreground mb-3">
  Use referral earnings to pay for documents, services or balances.
