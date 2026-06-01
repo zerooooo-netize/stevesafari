@@ -97,7 +97,7 @@ const MpesaPay = ({ userId, amount, paymentType, description, applicationId, ser
  return (
 <div className="space-y-3">
 <div className="bg-muted/50 rounded-lg p-3 text-sm">
-<div className="flex justify-between"><span>Amount</span><strong>KES {amount.toLocaleString()}</strong></div>
+<div className="flex justify-between"><span>Amount</span><strong>{format(amount, "KES")}</strong></div>
 <div className="text-xs text-muted-foreground mt-1">{description}</div>
 </div>
 <div>
