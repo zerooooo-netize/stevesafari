@@ -98,7 +98,7 @@ const SponsorshipStep = () =>{
 <Home className="text-primary" />
 <div className="flex-1">
 <p className="font-semibold">Pay accommodation fee via agency</p>
-<p className="text-xs text-muted-foreground">KES {fee.toLocaleString()} - we secure your housing</p>
+<p className="text-xs text-muted-foreground">{format(fee, "KES")} - we secure your housing</p>
 </div>
 </div>
 </button>
