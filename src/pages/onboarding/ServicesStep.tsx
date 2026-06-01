@@ -61,7 +61,7 @@ const ServicesStep = () =>{
 <div className="min-w-0">
 <p className="font-semibold">{s.name}</p>
  {s.description &&<p className="text-xs text-muted-foreground line-clamp-2">{s.description}</p>}
-<p className="text-sm font-medium text-primary mt-1">KES {Number(s.price).toLocaleString()}</p>
+<p className="text-sm font-medium text-primary mt-1">{format(Number(s.price), (s.currency as any) || "KES")}</p>
 </div>
 </div>
  {ordered ? (
