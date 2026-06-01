@@ -169,8 +169,8 @@ const MpesaPaymentWidget = ({
 </select></div>)}
 
  {selectedApp && depositEnabled && depositAmount >0 && (
-<div className="sm:col-span-2 flex gap-2"><button type="button" onClick={() =>setMode("full")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "full"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Pay Full (KES {fullFee.toLocaleString()})
-</button><button type="button" onClick={() =>setMode("deposit")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "deposit"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Deposit Only (KES {depositAmount.toLocaleString()})
+<div className="sm:col-span-2 flex gap-2"><button type="button" onClick={() =>setMode("full")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "full"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Pay Full ({format(fullFee, "KES")})
+</button><button type="button" onClick={() =>setMode("deposit")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "deposit"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Deposit Only ({format(depositAmount, "KES")})
 </button></div>)}
 
 <div><Label className="text-xs">Phone Number *</Label><Input value={phone} onChange={e =>setPhone(e.target.value)} placeholder="+254712345678" className="text-sm"/></div>{!fixedAmount && (
