@@ -12,6 +12,7 @@ interface Props {
 }
 
 const ReferralCard = ({ userId, referralCode }: Props) =>{
+ const { format } = useCurrency();
  const [referrals, setReferrals] = useState<any[]>([]);
  const [redemptions, setRedemptions] = useState<any[]>([]);
  const [bonusAmount, setBonusAmount] = useState<string>("0");
