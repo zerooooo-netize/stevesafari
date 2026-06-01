@@ -16,6 +16,7 @@ const STAGES = [
 ];
 
 const HowItWorksPage = () =>{
+ const { format } = useCurrency();
  useSEO({
  title: "How It Works - Steve Safari Agency",
  description:
