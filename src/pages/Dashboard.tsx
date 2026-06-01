@@ -223,6 +223,7 @@ const LevelProgress = ({ currentLevel, maxLevel = 5 }: { currentLevel: number; m
 // --- Main Dashboard Component ---
 const Dashboard = () =>{
  const { user, profile, isAdmin, signOut, refreshProfile } = useAuth();
+ const { format } = useCurrency();
  const navigate = useNavigate();
  const [applications, setApplications] = useState<any[]>([]);
  const [serviceOrders, setServiceOrders] = useState<any[]>([]);
