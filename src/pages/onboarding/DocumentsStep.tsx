@@ -14,6 +14,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 const COMMON_DOCS = ["Passport", "National ID", "CV / Resume", "Educational Certificates", "Police Clearance"];
 
 const DocumentsStep = () =>{
+ const { format } = useCurrency();
  const { user, profile } = useAuth();
  const navigate = useNavigate();
  const [docs, setDocs] = useState<any[]>([]);
