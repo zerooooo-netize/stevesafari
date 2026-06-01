@@ -23,6 +23,7 @@ interface Props {
  */
 const MpesaPay = ({ userId, amount, paymentType, description, applicationId, serviceOrderId, onSuccess }: Props) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [busy, setBusy] = useState(false);
  const [status, setStatus] = useState<"idle" | "sent" | "polling" | "completed" | "failed">("idle");
  const [errorMsg, setErrorMsg] = useState<string | null>(null);
