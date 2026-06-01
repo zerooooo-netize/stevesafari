@@ -5,6 +5,7 @@ import TrustBar from "@/components/TrustBar";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/lib/seo";
 import { ShieldCheck, Clock, FileText, CreditCard, Plane, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const STAGES = [
  { icon: FileText, title: "1. Register & Choose Path", time: "5 minutes", desc: "Create your free account and pick whether you' re applying for jobs abroad or just need document services."},
