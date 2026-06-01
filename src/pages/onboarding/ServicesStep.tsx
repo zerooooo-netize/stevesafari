@@ -11,6 +11,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 
 /** Services-path step 2 - pick at least one service to order. */
 const ServicesStep = () =>{
+ const { format } = useCurrency();
  const { user } = useAuth();
  const navigate = useNavigate();
  const [services, setServices] = useState<any[]>([]);
