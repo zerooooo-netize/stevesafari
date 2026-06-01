@@ -99,7 +99,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
 <h3 className="font-heading font-semibold text-foreground">Refer & Earn</h3>
 </div>
 <p className="text-sm text-muted-foreground mb-4">
- Share your link. Earn<span className="font-semibold text-safari-gold">KES {bonusAmount}</span>when someone you refer pays their application fee.
+ Share your link. Earn<span className="font-semibold text-safari-gold">{format(Number(bonusAmount) || 0, "KES")}</span>when someone you refer pays their application fee.
 </p>
 
 <div className="flex gap-2 mb-4">
