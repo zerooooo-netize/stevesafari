@@ -139,7 +139,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
 </div>
 <p className="text-[11px] text-muted-foreground mb-3">
  Use referral earnings to pay for documents, services or balances.
- Amounts up to KES {autoThreshold.toLocaleString()} are auto-approved.
+ Amounts up to {format(autoThreshold, "KES")} are auto-approved.
 </p>
 <div className="flex flex-col gap-2">
 <Input
