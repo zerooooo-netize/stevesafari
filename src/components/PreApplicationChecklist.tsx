@@ -19,6 +19,7 @@ interface Props {
  * Displays current state, locks "Submit" until all met.
  */
 const PreApplicationChecklist = ({ userId, applicationId, jobFee, onReady }: Props) =>{
+ const { format } = useCurrency();
  const [loading, setLoading] = useState(true);
  const [profileOk, setProfileOk] = useState(false);
  const [docsOk, setDocsOk] = useState(false);
