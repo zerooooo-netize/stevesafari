@@ -30,6 +30,7 @@ const MpesaRegWidget = ({
  onPaymentComplete: () =>void;
 }) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [sending, setSending] = useState(false);
  const [payStatus, setPayStatus] = useState<string | null>(null);
  const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
