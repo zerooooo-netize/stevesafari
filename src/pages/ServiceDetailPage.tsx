@@ -131,7 +131,7 @@ const MpesaPaymentWidget = ({
 </span></div><Button onClick={initiate} disabled={sending} className="w-full">{sending ? (
 <><Loader2 size={14} className="animate-spin mr-1"/>Processing...
 </>) : (
- `Pay KES ${amount.toLocaleString()} with M-Pesa`)}
+ `Pay ${format(amount, "KES")} with M-Pesa`)}
 </Button>{payStatus === "failed"&& (
 <p className="text-xs text-destructive text-center">Payment failed. Try again.</p>)}
  {payStatus === "timeout"&& (
