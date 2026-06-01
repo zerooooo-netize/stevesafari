@@ -354,7 +354,7 @@ const Dashboard = () =>{
 <div className="text-center py-6 text-sm text-muted-foreground"><Loader2 className="inline animate-spin mr-1" size={14} />Loading fee…</div>) : REGISTRATION_FEE<= 0 ? (
 <div className="bg-destructive/10 text-destructive rounded p-3 text-sm">Registration fee is not configured. Please contact support.
 </div>) : !showRegistrationPayment ? (
-<div className="space-y-4"><div className="bg-muted/30 rounded-xl p-4"><p className="text-sm mb-2">Registration Fee:<span className="font-bold text-lg">KES {REGISTRATION_FEE.toLocaleString()}</span></p><p className="text-xs text-muted-foreground">This fee covers agency processing and unlocks all job applications.</p></div><Button onClick={() =>setShowRegistrationPayment(true)} className="w-full" size="lg">Pay Registration Fee<ArrowRight size={16} className="ml-2"/></Button><Button variant="ghost" size="sm" className="w-full text-xs" onClick={() =>navigate("/welcome")}>← Switch to Document Services (no fee)
+<div className="space-y-4"><div className="bg-muted/30 rounded-xl p-4"><p className="text-sm mb-2">Registration Fee:<span className="font-bold text-lg">{format(REGISTRATION_FEE, "KES")}</span></p><p className="text-xs text-muted-foreground">This fee covers agency processing and unlocks all job applications.</p></div><Button onClick={() =>setShowRegistrationPayment(true)} className="w-full" size="lg">Pay Registration Fee<ArrowRight size={16} className="ml-2"/></Button><Button variant="ghost" size="sm" className="w-full text-xs" onClick={() =>navigate("/welcome")}>← Switch to Document Services (no fee)
 </Button></div>) : (
 <MpesaPaymentWidget
  userId={user!.id}
