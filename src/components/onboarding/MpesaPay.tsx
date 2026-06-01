@@ -111,7 +111,7 @@ const MpesaPay = ({ userId, amount, paymentType, description, applicationId, ser
  )}
 <Button onClick={pay} disabled={busy || status === "sent"} className="w-full">
  {busy &&<Loader2 size={16} className="mr-2 animate-spin" />}
- {status === "sent" ? "Waiting for M-Pesa prompt…" : `Pay KES ${amount.toLocaleString()} via M-Pesa`}
+ {status === "sent" ? "Waiting for M-Pesa prompt…" : `Pay ${format(amount, "KES")} via M-Pesa`}
 </Button>
 </div>
  );
