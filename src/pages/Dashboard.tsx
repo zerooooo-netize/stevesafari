@@ -524,7 +524,7 @@ const Dashboard = () =>{
 <h3 className="font-heading font-medium text-sm mb-3">Payment History</h3>{payments.length === 0 ? (
 <p className="text-muted-foreground text-sm text-center py-4">No payments yet</p>) : (
 <div className="space-y-2">{payments.map((p) =>(
-<div key={p.id} className="flex items-center justify-between bg-muted/50 rounded-lg p-3"><div><p className="text-sm font-medium">{p.currency} {Number(p.amount).toLocaleString()}</p><p className="text-xs text-muted-foreground capitalize">{p.payment_type?.replace("_", "")} • {new Date(p.created_at).toLocaleDateString()}</p></div><span className={`text-xs px-2 py-0.5 rounded-full ${p.status === 'completed'? ' bg-green-100 text-green-700': p.status === 'failed'? ' bg-red-100 text-red-700': ' bg-yellow-100 text-yellow-700'}`}>{p.status === "completed"? "": p.status === "failed"? "": ""} {p.status}
+<div key={p.id} className="flex items-center justify-between bg-muted/50 rounded-lg p-3"><div><p className="text-sm font-medium">{format(Number(p.amount), (p.currency as any) || "KES")}</p><p className="text-xs text-muted-foreground capitalize">{p.payment_type?.replace("_", "")} • {new Date(p.created_at).toLocaleDateString()}</p></div><span className={`text-xs px-2 py-0.5 rounded-full ${p.status === 'completed'? ' bg-green-100 text-green-700': p.status === 'failed'? ' bg-red-100 text-red-700': ' bg-yellow-100 text-yellow-700'}`}>{p.status === "completed"? "": p.status === "failed"? "": ""} {p.status}
 </span></div>))}
 </div>)}
 </section>)}
