@@ -504,7 +504,7 @@ const Dashboard = () =>{
 <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card"><h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">My Service Orders</h2>{serviceOrders.length === 0 ? (
 <div className="text-center py-8"><ShoppingBag size={40} className="mx-auto text-muted-foreground/30 mb-3"/><p className="text-muted-foreground text-sm mb-3">No service orders yet</p><Button size="sm" onClick={() =>navigate("/services")}>Browse Services</Button></div>) : (
 <div className="space-y-3">{serviceOrders.map((order) =>(
-<div key={order.id} className="border border-border rounded-xl p-4"><div className="flex justify-between items-start gap-2"><div><h3 className="font-semibold text-sm">{(order.services as any)?.name}</h3><p className="text-xs text-muted-foreground">{(order.services as any)?.currency} {Number((order.services as any)?.price).toLocaleString()}</p>{order.details &&<p className="text-xs text-muted-foreground mt-1">{order.details}</p>}
+<div key={order.id} className="border border-border rounded-xl p-4"><div className="flex justify-between items-start gap-2"><div><h3 className="font-semibold text-sm">{(order.services as any)?.name}</h3><p className="text-xs text-muted-foreground">{format(Number((order.services as any)?.price || 0), ((order.services as any)?.currency as any) || "KES")}</p>{order.details &&<p className="text-xs text-muted-foreground mt-1">{order.details}</p>}
 </div><span className={`text-xs px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${
  order.status === 'completed'? ' bg-green-100 text-green-700': 
  order.status === 'rejected'? ' bg-destructive/10 text-destructive': 
