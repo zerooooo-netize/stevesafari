@@ -30,6 +30,7 @@ const MpesaPaymentWidget = ({
  amount: number;
  onPaymentComplete: (receiptNumber?: string) =>void;
 }) =>{
+ const { format } = useCurrency();
  const [phone, setPhone] = useState("+254");
  const [sending, setSending] = useState(false);
  const [pollId, setPollId] = useState<string | null>(null);
