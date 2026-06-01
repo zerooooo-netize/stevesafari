@@ -48,6 +48,7 @@ const MpesaPaymentWidget = ({
  compact = false
 }: MpesaPaymentWidgetProps) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [amount, setAmount] = useState(fixedAmount ? String(fixedAmount) : "");
  const [selectedApp, setSelectedApp] = useState("");
  const [payMode, setPayMode] = useState<"full"| "deposit">("full");
