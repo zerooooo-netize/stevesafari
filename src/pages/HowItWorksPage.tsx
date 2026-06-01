@@ -67,7 +67,7 @@ const HowItWorksPage = () =>{
 <p className="p-4 text-sm text-muted-foreground text-center">No services listed.</p>)}
  {services.map((s, i) =>(
 <div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{s.name}</p>{s.description &&<p className="text-xs text-muted-foreground line-clamp-1">{s.description}</p>}
-</div><p className="font-bold text-safari-gold text-sm">{s.currency} {Number(s.price).toLocaleString()}</p></div>))}
+</div><p className="font-bold text-safari-gold text-sm">{format(Number(s.price), (s.currency as any) || "KES")}</p></div>))}
 </div></div>{settings.sponsorship_fee && (
 <div className="bg-muted/40 border border-border rounded-xl p-4 mt-5 text-sm"><p className="font-semibold mb-1">Sponsorship Application Fee</p><p className="text-muted-foreground text-xs">Can' t afford the full process? Apply for sponsorship for KES {Number(settings.sponsorship_fee).toLocaleString()}. Admin reviews each request.
 </p></div>)}
