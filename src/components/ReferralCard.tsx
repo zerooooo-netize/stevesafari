@@ -124,7 +124,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
 </div>
 <div className="bg-muted/50 rounded p-2">
 <p className="text-xs text-muted-foreground">Earned</p>
-<p className="font-bold text-foreground">KES {totalEarned.toLocaleString()}</p>
+<p className="font-bold text-foreground">{format(totalEarned, "KES")}</p>
 </div>
 </div>
 
