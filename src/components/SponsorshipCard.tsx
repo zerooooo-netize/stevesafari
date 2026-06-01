@@ -18,6 +18,7 @@ const statusColors: Record<string, string>= {
 };
 
 const SponsorshipCard = ({ userId }: Props) =>{
+ const { format } = useCurrency();
  const [enabled, setEnabled] = useState(true);
  const [fee, setFee] = useState("0");
  const [reason, setReason] = useState("");
