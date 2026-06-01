@@ -58,9 +58,9 @@ const HowItWorksPage = () =>{
 <p className="p-4 text-sm text-muted-foreground text-center">No active jobs at the moment.</p>)}
  {jobs.map((j, i) =>{
  const dep = j.deposit_enabled
- ? j.deposit_type === "fixed"? `KES ${Number(j.deposit_value).toLocaleString()}`: `${j.deposit_value}% (KES ${Math.round((Number(j.application_fee) * Number(j.deposit_value)) / 100).toLocaleString()})`: null;
+ ? j.deposit_type === "fixed"? format(Number(j.deposit_value), "KES"): `${j.deposit_value}% (${format(Math.round((Number(j.application_fee) * Number(j.deposit_value)) / 100), "KES")})`: null;
  return (
-<div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{j.title}</p><p className="text-xs text-muted-foreground">{j.country}</p></div><div className="text-right"><p className="font-bold text-safari-gold text-sm">KES {Number(j.application_fee).toLocaleString()}</p>{dep &&<p className="text-[11px] text-muted-foreground">Deposit: {dep}</p>}
+<div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{j.title}</p><p className="text-xs text-muted-foreground">{j.country}</p></div><div className="text-right"><p className="font-bold text-safari-gold text-sm">{format(Number(j.application_fee), "KES")}</p>{dep &&<p className="text-[11px] text-muted-foreground">Deposit: {dep}</p>}
 </div></div>);
  })}
 </div></div><div className="bg-card border border-border rounded-xl overflow-hidden shadow-card mt-5"><div className="bg-muted/50 p-4 border-b border-border"><h3 className="font-heading font-semibold text-sm">Document Service Fees</h3></div><div className="divide-y divide-border">{services.length === 0 && (
