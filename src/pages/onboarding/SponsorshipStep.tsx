@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 const SponsorshipStep = () =>{
+ const { format } = useCurrency();
  const { user } = useAuth();
  const navigate = useNavigate();
  const { num, bool, loading: sLoading } = useSettings([
