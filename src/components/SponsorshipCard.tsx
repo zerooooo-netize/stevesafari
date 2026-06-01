@@ -71,7 +71,7 @@ const SponsorshipCard = ({ userId }: Props) =>{
 <h3 className="font-heading font-semibold text-foreground">Need Financial Help?</h3>
 </div>
 <p className="text-sm text-muted-foreground mb-4">
- Apply for sponsorship assistance if you cannot afford the full process. A small<span className="font-semibold text-foreground">KES {Number(fee).toLocaleString()}</span>non-refundable application fee applies.
+ Apply for sponsorship assistance if you cannot afford the full process. A small<span className="font-semibold text-foreground">{format(Number(fee), "KES")}</span>non-refundable application fee applies.
 </p>
 
 <div className="space-y-3 mb-5">
