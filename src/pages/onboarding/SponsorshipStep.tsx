@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/useSettings";
 import { Home, Wallet, Upload, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const SponsorshipStep = () =>{
  const { user } = useAuth();
