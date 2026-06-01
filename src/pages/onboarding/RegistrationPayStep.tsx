@@ -9,6 +9,7 @@ import { Shield, Info } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 const RegistrationPayStep = () =>{
+ const { format } = useCurrency();
  const { user, profile, refreshProfile } = useAuth();
  const navigate = useNavigate();
  const { num, loading: sLoading } = useSettings(["registration_fee", "registration_deposit_percent"]);
