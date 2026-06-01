@@ -165,7 +165,7 @@ const MpesaPaymentWidget = ({
 <div className="text-center py-6"><CheckCircle2 size={32} className="mx-auto text-green-600 mb-3"/><p className="font-medium text-sm text-green-700">Payment Successful!</p><p className="text-xs text-muted-foreground mt-1">Receipt sent to your email.</p><Button size="sm" variant="outline" className="mt-3" onClick={() =>{ setPayStatus(null); setAmount(fixedAmount ? String(fixedAmount) : ""); }}>Make Another Payment
 </Button></div>) : (
 <div className="space-y-3"><div className="grid grid-cols-1 gap-3">{applications.length >0 && !fixedAmount && (
-<div className="sm:col-span-2"><Label className="text-xs">Pay for which application?</Label><select value={selectedApp} onChange={e =>applyJob(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm"><option value="">- Generic payment -</option>{applications.map(a =><option key={a.id} value={a.id}>{a.jobs?.title || "Application"} (KES {Number(a.jobs?.application_fee || 0).toLocaleString()})</option>)}
+<div className="sm:col-span-2"><Label className="text-xs">Pay for which application?</Label><select value={selectedApp} onChange={e =>applyJob(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm"><option value="">- Generic payment -</option>{applications.map(a =><option key={a.id} value={a.id}>{a.jobs?.title || "Application"} ({format(Number(a.jobs?.application_fee || 0), "KES")})</option>)}
 </select></div>)}
 
  {selectedApp && depositEnabled && depositAmount >0 && (
