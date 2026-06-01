@@ -169,7 +169,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
  {redemptions.slice(0, 5).map(r =>(
 <div key={r.id} className="flex items-center justify-between text-xs bg-muted/40 rounded p-2">
 <div className="min-w-0 flex-1">
-<p className="font-medium">KES {Number(r.amount).toLocaleString()}</p>
+<p className="font-medium">{format(Number(r.amount), "KES")}</p>
 <p className="text-muted-foreground truncate">{r.purpose}</p>
 </div>
 <span className={`shrink-0 px-2 py-0.5 rounded-full ${
