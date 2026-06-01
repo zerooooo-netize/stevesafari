@@ -125,7 +125,7 @@ const DocumentsStep = () =>{
 <div key={s.id} className="flex items-center justify-between gap-2 p-2 bg-muted/40 rounded">
 <div>
 <p className="text-sm font-medium">{s.name}</p>
-<p className="text-xs text-muted-foreground">KES {Number(s.price).toLocaleString()}</p>
+<p className="text-xs text-muted-foreground">{format(Number(s.price), (s.currency as any) || "KES")}</p>
 </div>
 <Button size="sm" variant="outline" onClick={() =>orderService(s.id)}>
 <Plus size={12} className="mr-1" />Order
