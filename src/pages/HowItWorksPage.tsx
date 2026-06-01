@@ -5,6 +5,7 @@ import TrustBar from "@/components/TrustBar";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/lib/seo";
 import { ShieldCheck, Clock, FileText, CreditCard, Plane, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const STAGES = [
  { icon: FileText, title: "1. Register & Choose Path", time: "5 minutes", desc: "Create your free account and pick whether you' re applying for jobs abroad or just need document services."},
@@ -15,6 +16,7 @@ const STAGES = [
 ];
 
 const HowItWorksPage = () =>{
+ const { format } = useCurrency();
  useSEO({
  title: "How It Works - Steve Safari Agency",
  description:
@@ -56,18 +58,18 @@ const HowItWorksPage = () =>{
 <p className="p-4 text-sm text-muted-foreground text-center">No active jobs at the moment.</p>)}
  {jobs.map((j, i) =>{
  const dep = j.deposit_enabled
- ? j.deposit_type === "fixed"? `KES ${Number(j.deposit_value).toLocaleString()}`: `${j.deposit_value}% (KES ${Math.round((Number(j.application_fee) * Number(j.deposit_value)) / 100).toLocaleString()})`: null;
+ ? j.deposit_type === "fixed"? format(Number(j.deposit_value), "KES"): `${j.deposit_value}% (${format(Math.round((Number(j.application_fee) * Number(j.deposit_value)) / 100), "KES")})`: null;
  return (
-<div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{j.title}</p><p className="text-xs text-muted-foreground">{j.country}</p></div><div className="text-right"><p className="font-bold text-safari-gold text-sm">KES {Number(j.application_fee).toLocaleString()}</p>{dep &&<p className="text-[11px] text-muted-foreground">Deposit: {dep}</p>}
+<div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{j.title}</p><p className="text-xs text-muted-foreground">{j.country}</p></div><div className="text-right"><p className="font-bold text-safari-gold text-sm">{format(Number(j.application_fee), "KES")}</p>{dep &&<p className="text-[11px] text-muted-foreground">Deposit: {dep}</p>}
 </div></div>);
  })}
 </div></div><div className="bg-card border border-border rounded-xl overflow-hidden shadow-card mt-5"><div className="bg-muted/50 p-4 border-b border-border"><h3 className="font-heading font-semibold text-sm">Document Service Fees</h3></div><div className="divide-y divide-border">{services.length === 0 && (
 <p className="p-4 text-sm text-muted-foreground text-center">No services listed.</p>)}
  {services.map((s, i) =>(
 <div key={i} className="p-4 flex items-center justify-between gap-3 flex-wrap"><div><p className="font-medium text-sm">{s.name}</p>{s.description &&<p className="text-xs text-muted-foreground line-clamp-1">{s.description}</p>}
-</div><p className="font-bold text-safari-gold text-sm">{s.currency} {Number(s.price).toLocaleString()}</p></div>))}
+</div><p className="font-bold text-safari-gold text-sm">{format(Number(s.price), (s.currency as any) || "KES")}</p></div>))}
 </div></div>{settings.sponsorship_fee && (
-<div className="bg-muted/40 border border-border rounded-xl p-4 mt-5 text-sm"><p className="font-semibold mb-1">Sponsorship Application Fee</p><p className="text-muted-foreground text-xs">Can' t afford the full process? Apply for sponsorship for KES {Number(settings.sponsorship_fee).toLocaleString()}. Admin reviews each request.
+<div className="bg-muted/40 border border-border rounded-xl p-4 mt-5 text-sm"><p className="font-semibold mb-1">Sponsorship Application Fee</p><p className="text-muted-foreground text-xs">Can' t afford the full process? Apply for sponsorship for {format(Number(settings.sponsorship_fee), "KES")}. Admin reviews each request.
 </p></div>)}
 </section>{/* Anti-scam */}
 <section className="container max-w-3xl mt-12"><div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5"><div className="flex items-start gap-3"><AlertCircle className="text-yellow-700 shrink-0 mt-0.5" size={20} /><div className="text-sm"><p className="font-semibold text-yellow-900 mb-2">Important - your safety</p><ul className="list-disc list-inside text-yellow-900 space-y-1 text-xs"><li>We<strong>never</strong>ask for payments outside this platform.</li><li>All transactions are recorded and traceable.</li><li>You receive an official receipt instantly after every payment.</li><li>Need help? Call {settings.business_phone || "us"} or email {settings.business_email || "us"}.</li></ul></div></div></div></section></main><Footer /></div>);

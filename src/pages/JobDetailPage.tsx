@@ -30,6 +30,7 @@ const MpesaRegWidget = ({
  onPaymentComplete: () =>void;
 }) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [sending, setSending] = useState(false);
  const [payStatus, setPayStatus] = useState<string | null>(null);
  const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
@@ -91,7 +92,7 @@ const MpesaRegWidget = ({
  return (
 <div className="space-y-3"><div><label className="text-xs font-medium">Phone Number</label><input
  type="tel" value={phone} onChange={(e) =>setPhone(e.target.value)}
- placeholder="+254712345678" className="w-full border rounded-md px-3 py-2 text-sm bg-background"/></div><Button onClick={initiate} disabled={sending} className="w-full">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay KES ${amount.toLocaleString()} with M-Pesa`}
+ placeholder="+254712345678" className="w-full border rounded-md px-3 py-2 text-sm bg-background"/></div><Button onClick={initiate} disabled={sending} className="w-full">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay ${format(amount, "KES")} with M-Pesa`}
 </Button></div>);
 };
 

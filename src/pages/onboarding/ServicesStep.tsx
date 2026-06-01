@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, Plus, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { withRetry } from "@/lib/dbRetry";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 /** Services-path step 2 - pick at least one service to order. */
 const ServicesStep = () =>{
+ const { format } = useCurrency();
  const { user } = useAuth();
  const navigate = useNavigate();
  const [services, setServices] = useState<any[]>([]);
@@ -59,7 +61,7 @@ const ServicesStep = () =>{
 <div className="min-w-0">
 <p className="font-semibold">{s.name}</p>
  {s.description &&<p className="text-xs text-muted-foreground line-clamp-2">{s.description}</p>}
-<p className="text-sm font-medium text-primary mt-1">KES {Number(s.price).toLocaleString()}</p>
+<p className="text-sm font-medium text-primary mt-1">{format(Number(s.price), (s.currency as any) || "KES")}</p>
 </div>
 </div>
  {ordered ? (

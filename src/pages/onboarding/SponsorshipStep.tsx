@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/useSettings";
 import { Home, Wallet, Upload, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const SponsorshipStep = () =>{
+ const { format } = useCurrency();
  const { user } = useAuth();
  const navigate = useNavigate();
  const { num, bool, loading: sLoading } = useSettings([
@@ -96,7 +98,7 @@ const SponsorshipStep = () =>{
 <Home className="text-primary" />
 <div className="flex-1">
 <p className="font-semibold">Pay accommodation fee via agency</p>
-<p className="text-xs text-muted-foreground">KES {fee.toLocaleString()} - we secure your housing</p>
+<p className="text-xs text-muted-foreground">{format(fee, "KES")} - we secure your housing</p>
 </div>
 </div>
 </button>

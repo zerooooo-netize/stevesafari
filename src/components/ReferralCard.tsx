@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Copy, Share2, Gift, Users, Wallet } from "lucide-react";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface Props {
  userId: string;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const ReferralCard = ({ userId, referralCode }: Props) =>{
+ const { format } = useCurrency();
  const [referrals, setReferrals] = useState<any[]>([]);
  const [redemptions, setRedemptions] = useState<any[]>([]);
  const [bonusAmount, setBonusAmount] = useState<string>("0");
@@ -97,7 +99,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
 <h3 className="font-heading font-semibold text-foreground">Refer & Earn</h3>
 </div>
 <p className="text-sm text-muted-foreground mb-4">
- Share your link. Earn<span className="font-semibold text-safari-gold">KES {bonusAmount}</span>when someone you refer pays their application fee.
+ Share your link. Earn<span className="font-semibold text-safari-gold">{format(Number(bonusAmount) || 0, "KES")}</span>when someone you refer pays their application fee.
 </p>
 
 <div className="flex gap-2 mb-4">
@@ -122,7 +124,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
 </div>
 <div className="bg-muted/50 rounded p-2">
 <p className="text-xs text-muted-foreground">Earned</p>
-<p className="font-bold text-foreground">KES {totalEarned.toLocaleString()}</p>
+<p className="font-bold text-foreground">{format(totalEarned, "KES")}</p>
 </div>
 </div>
 
@@ -133,11 +135,11 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
 <Wallet size={16} className="text-safari-gold" />
 <span className="text-sm font-semibold text-foreground">My Wallet</span>
 </div>
-<span className="text-sm font-bold text-safari-gold">KES {available.toLocaleString()}</span>
+<span className="text-sm font-bold text-safari-gold">{format(available, "KES")}</span>
 </div>
 <p className="text-[11px] text-muted-foreground mb-3">
  Use referral earnings to pay for documents, services or balances.
- Amounts up to KES {autoThreshold.toLocaleString()} are auto-approved.
+ Amounts up to {format(autoThreshold, "KES")} are auto-approved.
 </p>
 <div className="flex flex-col gap-2">
 <Input
@@ -167,7 +169,7 @@ const ReferralCard = ({ userId, referralCode }: Props) =>{
  {redemptions.slice(0, 5).map(r =>(
 <div key={r.id} className="flex items-center justify-between text-xs bg-muted/40 rounded p-2">
 <div className="min-w-0 flex-1">
-<p className="font-medium">KES {Number(r.amount).toLocaleString()}</p>
+<p className="font-medium">{format(Number(r.amount), "KES")}</p>
 <p className="text-muted-foreground truncate">{r.purpose}</p>
 </div>
 <span className={`shrink-0 px-2 py-0.5 rounded-full ${

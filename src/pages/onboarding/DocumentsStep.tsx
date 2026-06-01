@@ -9,10 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Upload, FileText, CheckCircle2, Loader2, ShoppingBag, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { withRetry } from "@/lib/dbRetry";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const COMMON_DOCS = ["Passport", "National ID", "CV / Resume", "Educational Certificates", "Police Clearance"];
 
 const DocumentsStep = () =>{
+ const { format } = useCurrency();
  const { user, profile } = useAuth();
  const navigate = useNavigate();
  const [docs, setDocs] = useState<any[]>([]);
@@ -123,7 +125,7 @@ const DocumentsStep = () =>{
 <div key={s.id} className="flex items-center justify-between gap-2 p-2 bg-muted/40 rounded">
 <div>
 <p className="text-sm font-medium">{s.name}</p>
-<p className="text-xs text-muted-foreground">KES {Number(s.price).toLocaleString()}</p>
+<p className="text-xs text-muted-foreground">{format(Number(s.price), (s.currency as any) || "KES")}</p>
 </div>
 <Button size="sm" variant="outline" onClick={() =>orderService(s.id)}>
 <Plus size={12} className="mr-1" />Order

@@ -19,6 +19,7 @@ const iconMap: Record<string, any>= { "file-text": FileText, "file-check": FileC
 // M-Pesa Payment Widget for services
 const MpesaPaymentWidget = ({ userId, serviceId, amount, onPaymentComplete }: { userId: string; serviceId: string; amount: number; onPaymentComplete: (receiptNumber?: string) =>void }) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [sending, setSending] = useState(false);
  const [pollId, setPollId] = useState<string | null>(null);
  const [payStatus, setPayStatus] = useState<string | null>(null);
@@ -93,7 +94,7 @@ const MpesaPaymentWidget = ({ userId, serviceId, amount, onPaymentComplete }: { 
  }
 
  return (
-<div className="space-y-3"><div><Label className="text-xs">Phone Number *</Label><Input value={phone} onChange={e =>setPhone(e.target.value)} placeholder="+254712345678" className="text-sm"/></div><div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5"><Shield size={12} className="text-safari-gold mt-0.5 shrink-0"/><span>Securely processed via M-Pesa (Kopo Kopo). Official receipt provided.</span></div><Button onClick={initiate} disabled={sending} className="w-full">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay KES ${amount.toLocaleString()} with M-Pesa`}
+<div className="space-y-3"><div><Label className="text-xs">Phone Number *</Label><Input value={phone} onChange={e =>setPhone(e.target.value)} placeholder="+254712345678" className="text-sm"/></div><div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5"><Shield size={12} className="text-safari-gold mt-0.5 shrink-0"/><span>Securely processed via M-Pesa (Kopo Kopo). Official receipt provided.</span></div><Button onClick={initiate} disabled={sending} className="w-full">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay ${format(amount, "KES")} with M-Pesa`}
 </Button>{payStatus === "failed"&&<p className="text-xs text-destructive text-center">Payment failed. Try again.</p>}
  {payStatus === "timeout"&&<p className="text-xs text-yellow-600 text-center">Payment not confirmed. Check history.</p>}
 </div>);

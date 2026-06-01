@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HandCoins, Info } from "lucide-react";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface Props { userId: string; }
 
@@ -17,6 +18,7 @@ const statusColors: Record<string, string>= {
 };
 
 const SponsorshipCard = ({ userId }: Props) =>{
+ const { format } = useCurrency();
  const [enabled, setEnabled] = useState(true);
  const [fee, setFee] = useState("0");
  const [reason, setReason] = useState("");
@@ -69,7 +71,7 @@ const SponsorshipCard = ({ userId }: Props) =>{
 <h3 className="font-heading font-semibold text-foreground">Need Financial Help?</h3>
 </div>
 <p className="text-sm text-muted-foreground mb-4">
- Apply for sponsorship assistance if you cannot afford the full process. A small<span className="font-semibold text-foreground">KES {Number(fee).toLocaleString()}</span>non-refundable application fee applies.
+ Apply for sponsorship assistance if you cannot afford the full process. A small<span className="font-semibold text-foreground">{format(Number(fee), "KES")}</span>non-refundable application fee applies.
 </p>
 
 <div className="space-y-3 mb-5">
@@ -104,7 +106,7 @@ const SponsorshipCard = ({ userId }: Props) =>{
  {list.map(s =>(
 <div key={s.id} className="flex items-center justify-between bg-muted/40 rounded p-2 text-xs">
 <div className="min-w-0 flex-1">
-<p className="font-medium">KES {Number(s.requested_amount).toLocaleString()}</p>
+<p className="font-medium">{format(Number(s.requested_amount), "KES")}</p>
 <p className="text-muted-foreground truncate">{s.reason}</p>
  {s.admin_notes &&<p className="text-muted-foreground italic mt-1">Admin: {s.admin_notes}</p>}
 </div>

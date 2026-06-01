@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface Props {
  userId: string;
@@ -22,6 +23,7 @@ interface Props {
  */
 const MpesaPay = ({ userId, amount, paymentType, description, applicationId, serviceOrderId, onSuccess }: Props) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [busy, setBusy] = useState(false);
  const [status, setStatus] = useState<"idle" | "sent" | "polling" | "completed" | "failed">("idle");
  const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -95,7 +97,7 @@ const MpesaPay = ({ userId, amount, paymentType, description, applicationId, ser
  return (
 <div className="space-y-3">
 <div className="bg-muted/50 rounded-lg p-3 text-sm">
-<div className="flex justify-between"><span>Amount</span><strong>KES {amount.toLocaleString()}</strong></div>
+<div className="flex justify-between"><span>Amount</span><strong>{format(amount, "KES")}</strong></div>
 <div className="text-xs text-muted-foreground mt-1">{description}</div>
 </div>
 <div>
@@ -109,7 +111,7 @@ const MpesaPay = ({ userId, amount, paymentType, description, applicationId, ser
  )}
 <Button onClick={pay} disabled={busy || status === "sent"} className="w-full">
  {busy &&<Loader2 size={16} className="mr-2 animate-spin" />}
- {status === "sent" ? "Waiting for M-Pesa prompt…" : `Pay KES ${amount.toLocaleString()} via M-Pesa`}
+ {status === "sent" ? "Waiting for M-Pesa prompt…" : `Pay ${format(amount, "KES")} via M-Pesa`}
 </Button>
 </div>
  );

@@ -25,6 +25,7 @@ import { downloadReceiptPDF } from "@/lib/receipt";
 import { useSettings } from "@/hooks/useSettings";
 import { withRetry } from "@/lib/dbRetry";
 import JourneyStatus from "@/components/JourneyStatus";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // --- Reusable M-Pesa Payment Widget (Extended for registration & services) ---
 interface MpesaPaymentWidgetProps {
@@ -47,6 +48,7 @@ const MpesaPaymentWidget = ({
  compact = false
 }: MpesaPaymentWidgetProps) =>{
  const [phone, setPhone] = useState("+254");
+ const { format } = useCurrency();
  const [amount, setAmount] = useState(fixedAmount ? String(fixedAmount) : "");
  const [selectedApp, setSelectedApp] = useState("");
  const [payMode, setPayMode] = useState<"full"| "deposit">("full");
@@ -163,12 +165,12 @@ const MpesaPaymentWidget = ({
 <div className="text-center py-6"><CheckCircle2 size={32} className="mx-auto text-green-600 mb-3"/><p className="font-medium text-sm text-green-700">Payment Successful!</p><p className="text-xs text-muted-foreground mt-1">Receipt sent to your email.</p><Button size="sm" variant="outline" className="mt-3" onClick={() =>{ setPayStatus(null); setAmount(fixedAmount ? String(fixedAmount) : ""); }}>Make Another Payment
 </Button></div>) : (
 <div className="space-y-3"><div className="grid grid-cols-1 gap-3">{applications.length >0 && !fixedAmount && (
-<div className="sm:col-span-2"><Label className="text-xs">Pay for which application?</Label><select value={selectedApp} onChange={e =>applyJob(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm"><option value="">- Generic payment -</option>{applications.map(a =><option key={a.id} value={a.id}>{a.jobs?.title || "Application"} (KES {Number(a.jobs?.application_fee || 0).toLocaleString()})</option>)}
+<div className="sm:col-span-2"><Label className="text-xs">Pay for which application?</Label><select value={selectedApp} onChange={e =>applyJob(e.target.value)} className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm"><option value="">- Generic payment -</option>{applications.map(a =><option key={a.id} value={a.id}>{a.jobs?.title || "Application"} ({format(Number(a.jobs?.application_fee || 0), "KES")})</option>)}
 </select></div>)}
 
  {selectedApp && depositEnabled && depositAmount >0 && (
-<div className="sm:col-span-2 flex gap-2"><button type="button" onClick={() =>setMode("full")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "full"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Pay Full (KES {fullFee.toLocaleString()})
-</button><button type="button" onClick={() =>setMode("deposit")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "deposit"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Deposit Only (KES {depositAmount.toLocaleString()})
+<div className="sm:col-span-2 flex gap-2"><button type="button" onClick={() =>setMode("full")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "full"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Pay Full ({format(fullFee, "KES")})
+</button><button type="button" onClick={() =>setMode("deposit")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border ${payMode === "deposit"? " bg-primary text-primary-foreground border-primary": " bg-background border-border"}`}>Deposit Only ({format(depositAmount, "KES")})
 </button></div>)}
 
 <div><Label className="text-xs">Phone Number *</Label><Input value={phone} onChange={e =>setPhone(e.target.value)} placeholder="+254712345678" className="text-sm"/></div>{!fixedAmount && (
@@ -183,8 +185,8 @@ const MpesaPaymentWidget = ({
  onChange={setDiscount}
  />)}
  {discount.discountAmount >0 && (
-<div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">Original: KES {(parseFloat(amount) || 0).toLocaleString()} • Discount: −KES {discount.discountAmount.toLocaleString()} •<strong>You pay: KES {discount.finalAmount.toLocaleString()}</strong></div>)}
-<div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5"><Shield size={12} className="text-safari-gold mt-0.5 shrink-0"/><span>Securely processed via M-Pesa. Official receipt provided.</span></div><Button onClick={initiate} disabled={sending} className="w-full text-sm">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay KES ${(discount.finalAmount >0 ? discount.finalAmount : parseFloat(amount) || 0).toLocaleString()} with M-Pesa`}
+<div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">Original: {format(parseFloat(amount) || 0, "KES")} • Discount: −{format(discount.discountAmount, "KES")} •<strong>You pay: {format(discount.finalAmount, "KES")}</strong></div>)}
+<div className="text-[11px] text-muted-foreground bg-muted/30 rounded p-2 flex items-start gap-1.5"><Shield size={12} className="text-safari-gold mt-0.5 shrink-0"/><span>Securely processed via M-Pesa. Official receipt provided.</span></div><Button onClick={initiate} disabled={sending} className="w-full text-sm">{sending ?<><Loader2 size={14} className="animate-spin mr-1"/>Processing...</>: `Pay ${format((discount.finalAmount >0 ? discount.finalAmount : parseFloat(amount) || 0), "KES")} with M-Pesa`}
 </Button>{payStatus === "failed"&&<p className="text-xs text-destructive text-center">Payment failed. Try again.</p>}
  {payStatus === "timeout"&&<p className="text-xs text-yellow-600 text-center">Payment not confirmed. Check history.</p>}
 </div>)}
@@ -221,6 +223,7 @@ const LevelProgress = ({ currentLevel, maxLevel = 5 }: { currentLevel: number; m
 // --- Main Dashboard Component ---
 const Dashboard = () =>{
  const { user, profile, isAdmin, signOut, refreshProfile } = useAuth();
+ const { format } = useCurrency();
  const navigate = useNavigate();
  const [applications, setApplications] = useState<any[]>([]);
  const [serviceOrders, setServiceOrders] = useState<any[]>([]);
@@ -351,7 +354,7 @@ const Dashboard = () =>{
 <div className="text-center py-6 text-sm text-muted-foreground"><Loader2 className="inline animate-spin mr-1" size={14} />Loading fee…</div>) : REGISTRATION_FEE<= 0 ? (
 <div className="bg-destructive/10 text-destructive rounded p-3 text-sm">Registration fee is not configured. Please contact support.
 </div>) : !showRegistrationPayment ? (
-<div className="space-y-4"><div className="bg-muted/30 rounded-xl p-4"><p className="text-sm mb-2">Registration Fee:<span className="font-bold text-lg">KES {REGISTRATION_FEE.toLocaleString()}</span></p><p className="text-xs text-muted-foreground">This fee covers agency processing and unlocks all job applications.</p></div><Button onClick={() =>setShowRegistrationPayment(true)} className="w-full" size="lg">Pay Registration Fee<ArrowRight size={16} className="ml-2"/></Button><Button variant="ghost" size="sm" className="w-full text-xs" onClick={() =>navigate("/welcome")}>← Switch to Document Services (no fee)
+<div className="space-y-4"><div className="bg-muted/30 rounded-xl p-4"><p className="text-sm mb-2">Registration Fee:<span className="font-bold text-lg">{format(REGISTRATION_FEE, "KES")}</span></p><p className="text-xs text-muted-foreground">This fee covers agency processing and unlocks all job applications.</p></div><Button onClick={() =>setShowRegistrationPayment(true)} className="w-full" size="lg">Pay Registration Fee<ArrowRight size={16} className="ml-2"/></Button><Button variant="ghost" size="sm" className="w-full text-xs" onClick={() =>navigate("/welcome")}>← Switch to Document Services (no fee)
 </Button></div>) : (
 <MpesaPaymentWidget
  userId={user!.id}
@@ -469,7 +472,7 @@ const Dashboard = () =>{
 </div><input type="file" className="hidden" onChange={uploadDocument} disabled={uploading} accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"/></label></div></div>{/* After upload, offer dynamic services from DB (no hardcoded amounts) */}
  {uploadedDocForService && !selectedServiceForPayment && activeServices.length >0 && (
 <div className="mb-4 p-4 border border-safari-gold/30 bg-safari-gold/5 rounded-xl"><p className="text-sm font-medium mb-2">Document uploaded! Need professional processing?</p><div className="space-y-2">{activeServices.map((s) =>(
-<Button key={s.id} variant="outline" size="sm" className="w-full justify-start" onClick={() =>setSelectedServiceForPayment(s)}><FileText size={14} className="mr-2"/>{s.name} ({s.currency || "KES"} {Number(s.price).toLocaleString()})
+<Button key={s.id} variant="outline" size="sm" className="w-full justify-start" onClick={() =>setSelectedServiceForPayment(s)}><FileText size={14} className="mr-2"/>{s.name} ({format(Number(s.price), (s.currency as any) || "KES")})
 </Button>))}
 <Button variant="ghost" size="sm" className="w-full" onClick={() =>setUploadedDocForService(null)}>Skip for now
 </Button></div></div>)}
@@ -501,7 +504,7 @@ const Dashboard = () =>{
 <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card"><h2 className="font-heading font-semibold flex items-center gap-2 mb-4 text-base sm:text-lg">My Service Orders</h2>{serviceOrders.length === 0 ? (
 <div className="text-center py-8"><ShoppingBag size={40} className="mx-auto text-muted-foreground/30 mb-3"/><p className="text-muted-foreground text-sm mb-3">No service orders yet</p><Button size="sm" onClick={() =>navigate("/services")}>Browse Services</Button></div>) : (
 <div className="space-y-3">{serviceOrders.map((order) =>(
-<div key={order.id} className="border border-border rounded-xl p-4"><div className="flex justify-between items-start gap-2"><div><h3 className="font-semibold text-sm">{(order.services as any)?.name}</h3><p className="text-xs text-muted-foreground">{(order.services as any)?.currency} {Number((order.services as any)?.price).toLocaleString()}</p>{order.details &&<p className="text-xs text-muted-foreground mt-1">{order.details}</p>}
+<div key={order.id} className="border border-border rounded-xl p-4"><div className="flex justify-between items-start gap-2"><div><h3 className="font-semibold text-sm">{(order.services as any)?.name}</h3><p className="text-xs text-muted-foreground">{format(Number((order.services as any)?.price || 0), ((order.services as any)?.currency as any) || "KES")}</p>{order.details &&<p className="text-xs text-muted-foreground mt-1">{order.details}</p>}
 </div><span className={`text-xs px-2.5 py-1 rounded-full font-medium whitespace-nowrap ${
  order.status === 'completed'? ' bg-green-100 text-green-700': 
  order.status === 'rejected'? ' bg-destructive/10 text-destructive': 
@@ -521,7 +524,7 @@ const Dashboard = () =>{
 <h3 className="font-heading font-medium text-sm mb-3">Payment History</h3>{payments.length === 0 ? (
 <p className="text-muted-foreground text-sm text-center py-4">No payments yet</p>) : (
 <div className="space-y-2">{payments.map((p) =>(
-<div key={p.id} className="flex items-center justify-between bg-muted/50 rounded-lg p-3"><div><p className="text-sm font-medium">{p.currency} {Number(p.amount).toLocaleString()}</p><p className="text-xs text-muted-foreground capitalize">{p.payment_type?.replace("_", "")} • {new Date(p.created_at).toLocaleDateString()}</p></div><span className={`text-xs px-2 py-0.5 rounded-full ${p.status === 'completed'? ' bg-green-100 text-green-700': p.status === 'failed'? ' bg-red-100 text-red-700': ' bg-yellow-100 text-yellow-700'}`}>{p.status === "completed"? "": p.status === "failed"? "": ""} {p.status}
+<div key={p.id} className="flex items-center justify-between bg-muted/50 rounded-lg p-3"><div><p className="text-sm font-medium">{format(Number(p.amount), (p.currency as any) || "KES")}</p><p className="text-xs text-muted-foreground capitalize">{p.payment_type?.replace("_", "")} • {new Date(p.created_at).toLocaleDateString()}</p></div><span className={`text-xs px-2 py-0.5 rounded-full ${p.status === 'completed'? ' bg-green-100 text-green-700': p.status === 'failed'? ' bg-red-100 text-red-700': ' bg-yellow-100 text-yellow-700'}`}>{p.status === "completed"? "": p.status === "failed"? "": ""} {p.status}
 </span></div>))}
 </div>)}
 </section>)}
