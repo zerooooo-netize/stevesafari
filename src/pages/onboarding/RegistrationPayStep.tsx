@@ -6,6 +6,7 @@ import MpesaPay from "@/components/onboarding/MpesaPay";
 import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 import { Shield, Info } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const RegistrationPayStep = () =>{
  const { user, profile, refreshProfile } = useAuth();
