@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, FileText, CheckCircle2, Loader2, ShoppingBag, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { withRetry } from "@/lib/dbRetry";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const COMMON_DOCS = ["Passport", "National ID", "CV / Resume", "Educational Certificates", "Police Clearance"];
 
