@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, Plus, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { withRetry } from "@/lib/dbRetry";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 /** Services-path step 2 - pick at least one service to order. */
 const ServicesStep = () =>{
