@@ -33,10 +33,10 @@ const Navbar = () =>{
 
  return (
 <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
-<div className="container flex items-center justify-between h-24 sm:h-28">
-<Link to="/" className="flex items-center gap-3 sm:gap-4">
-<img src={logoUrl} alt={name} className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain" />
-<span className="font-heading font-bold text-2xl sm:text-3xl md:text-4xl text-foreground leading-tight">
+<div className="container flex items-center justify-between h-[clamp(4.5rem,8vw,7.5rem)]">
+<Link to="/" className="flex items-center gap-2.5 sm:gap-3 md:gap-4 min-w-0">
+<img src={logoUrl} alt={name} className="object-contain shrink-0" style={{ height: 'clamp(3rem, 6vw, 5.5rem)', width: 'clamp(3rem, 6vw, 5.5rem)' }} />
+<span className="font-heading font-extrabold tracking-tight text-foreground leading-none truncate" style={{ fontSize: 'clamp(1.25rem, 2.2vw, 2.25rem)' }}>
   {lead}{accent &&<><span className="text-safari-gold">{accent}</span></>}
 </span>
 </Link>
