@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import {
  Briefcase, Users, CreditCard, FileText, Settings, Plane, ShoppingBag,
- Plus, Pencil, Trash2, ArrowLeft, X, Eye, Check, XCircle, Star, Gift, HandCoins, Wallet
+ Plus, Pencil, Trash2, ArrowLeft, X, Eye, Check, XCircle, Star, Gift, HandCoins, Wallet, Smartphone
 } from "lucide-react";
+import AdminMpesaSTK from "@/components/admin/AdminMpesaSTK";
 
-type Tab = "jobs"| "services"| "applications"| "service_orders"| "users"| "payments"| "batches"| "settings"| "templates"| "stories"| "referrals"| "sponsorship"| "wallet";
+type Tab = "jobs"| "services"| "applications"| "service_orders"| "users"| "payments"| "mpesa"| "batches"| "settings"| "templates"| "stories"| "referrals"| "sponsorship"| "wallet";
 
 const AdminPanel = () =>{
  const { isAdmin, signOut } = useAuth();
@@ -26,6 +27,7 @@ const AdminPanel = () =>{
  { key: "service_orders", label: "Service Orders", icon: ShoppingBag },
  { key: "users", label: "Users", icon: Users },
  { key: "payments", label: "Payments", icon: CreditCard },
+ { key: "mpesa", label: "M-Pesa STK", icon: Smartphone },
  { key: "batches", label: "Travel Batches", icon: Plane },
  { key: "stories", label: "Success Stories", icon: Star },
  { key: "referrals", label: "Referrals", icon: Gift },
@@ -50,7 +52,8 @@ const AdminPanel = () =>{
  {activeTab === "applications"&&<AdminApplications />}
  {activeTab === "service_orders"&&<AdminServiceOrders />}
  {activeTab === "users"&&<AdminUsers />}
- {activeTab === "payments"&&<AdminPayments />}
+  {activeTab === "payments"&&<AdminPayments />}
+  {activeTab === "mpesa"&&<AdminMpesaSTK />}
  {activeTab === "batches"&&<AdminBatches />}
  {activeTab === "stories"&&<AdminSuccessStories />}
  {activeTab === "referrals"&&<AdminReferrals />}
