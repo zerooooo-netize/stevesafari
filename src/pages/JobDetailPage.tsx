@@ -23,13 +23,15 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 const MpesaRegWidget = ({
  userId,
  amount,
+ initialPhone,
  onPaymentComplete,
 }: {
  userId: string;
  amount: number;
+ initialPhone?: string;
  onPaymentComplete: () =>void;
 }) =>{
- const [phone, setPhone] = useState("+254");
+ const [phone, setPhone] = useState(initialPhone || "+254");
  const { format } = useCurrency();
  const [sending, setSending] = useState(false);
  const [payStatus, setPayStatus] = useState<string | null>(null);
@@ -219,6 +221,7 @@ const JobDetailPage = () =>{
 </p><MpesaRegWidget
  userId={user!.id}
  amount={REG_FEE}
+ initialPhone={profile?.phone || undefined}
  onPaymentComplete={async () =>{
  await refreshProfile();
  setShowRegistrationPrompt(false);

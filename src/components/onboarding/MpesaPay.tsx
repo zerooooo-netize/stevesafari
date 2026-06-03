@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,6 +6,7 @@ import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Props {
  userId: string;
@@ -22,11 +23,17 @@ interface Props {
  * Polls payment status every 3s for up to 90s.
  */
 const MpesaPay = ({ userId, amount, paymentType, description, applicationId, serviceOrderId, onSuccess }: Props) =>{
- const [phone, setPhone] = useState("+254");
+ const { profile } = useAuth();
+ const [phone, setPhone] = useState(profile?.phone || "+254");
  const { format } = useCurrency();
  const [busy, setBusy] = useState(false);
  const [status, setStatus] = useState<"idle" | "sent" | "polling" | "completed" | "failed">("idle");
  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+ useEffect(() => {
+   if (profile?.phone && phone === "+254") setPhone(profile.phone);
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+ }, [profile?.phone]);
 
  const STK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mpesa-stk-push`;
 
@@ -101,8 +108,11 @@ const MpesaPay = ({ userId, amount, paymentType, description, applicationId, ser
 <div className="text-xs text-muted-foreground mt-1">{description}</div>
 </div>
 <div>
-<Label htmlFor="phone">M-Pesa Phone</Label>
-<Input id="phone" value={phone} onChange={(e) =>setPhone(e.target.value)} placeholder="+254712345678" />
+<Label htmlFor="phone" className="flex items-center justify-between">
+  <span>M-Pesa Phone</span>
+  {profile?.phone && phone === profile.phone && <span className="text-[10px] text-muted-foreground">from your profile</span>}
+</Label>
+<Input id="phone" value={phone} onChange={(e) =>setPhone(e.target.value)} placeholder="+254712345678" inputMode="tel" autoComplete="tel" />
 </div>
  {errorMsg && (
 <div className="bg-destructive/10 text-destructive text-xs rounded p-2 flex items-start gap-2">
