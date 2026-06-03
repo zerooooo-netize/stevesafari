@@ -41,13 +41,15 @@ const getPasswordStrength = (pwd: string): { score: number; label: string; color
   return { score: 4, label: "Strong", color: "text-green-500" };
 };
 
+type Mode = "login" | "signup" | "forgot";
+
 const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const refFromUrl = (searchParams.get("ref") || "").toUpperCase();
-  // After auth, take user to "/" - Home auto-resumes them at their next onboarding step
+  const initialMode = (searchParams.get("mode") as Mode) || (refFromUrl ? "signup" : "login");
   const redirectTo = searchParams.get("redirect") || "/";
 
-  const [isLogin, setIsLogin] = useState(!refFromUrl);
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -55,12 +57,18 @@ const AuthPage = () => {
   const [referralCode, setReferralCode] = useState(refFromUrl);
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(false);
 
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
 
+  const isLogin = mode === "login";
+  const isSignup = mode === "signup";
+  const isForgot = mode === "forgot";
+
   const passwordStrength = getPasswordStrength(password);
+
 
   useEffect(() => {
     // If user is already logged in, send to redirectTo (defaults to /welcome -> handles path choice)
@@ -72,16 +80,24 @@ const AuthPage = () => {
   useEffect(() => {
     if (refFromUrl) {
       setReferralCode(refFromUrl);
-      setIsLogin(false);
+      setMode("signup");
     }
   }, [refFromUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      if (isLogin) {
+      if (isForgot) {
+        if (!email) { toast.error("Enter your email"); setLoading(false); return; }
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setResetSent(true);
+        toast.success("Reset link sent. Check your inbox.");
+      } else if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) throw error;
         toast.success("Welcome back");
